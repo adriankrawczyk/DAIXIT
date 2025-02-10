@@ -1,9 +1,7 @@
 import * as THREE from "three";
-import handleResize from "./eventListeners/handleResize";
+import handleEventListeners from "./eventListeners/handleEventListeners";
 import addObjects from "./objects/addObjects";
 import camera from "./camera/camera";
-import orbit from "./util/orbit";
-import addOrbit from "./util/orbit";
 
 const CANVAS_COLOR = 0x000000;
 
@@ -20,7 +18,6 @@ const scene = new THREE.Scene();
 function animate() {
   renderer.render(scene, camera);
 }
-
+handleEventListeners(renderer);
 addObjects(scene);
-handleResize(renderer);
 renderer.setAnimationLoop(animate);
