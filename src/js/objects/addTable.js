@@ -1,4 +1,4 @@
-import gltfLoader from "../util/GLTFLoader";
+import gltfLoader from "../util/three/gltfLoader";
 
 export default function addTable(scene) {
   gltfLoader.load("/kitchen_table.glb", (glb) => {
