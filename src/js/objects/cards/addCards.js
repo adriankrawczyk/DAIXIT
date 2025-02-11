@@ -28,11 +28,16 @@ export default function addCards(scene) {
     card.position.set(cardPosition.x, cardPosition.y, cardPosition.z);
 
     card.name = "card";
+    card.hoverable = true;
     scene.add(card);
+
     hand.set(card.uuid, {
       startX: card.position.x,
       startY: card.position.y,
       startZ: card.position.z,
+      startRotationX: card.rotation.x,
+      startRotationY: card.rotation.y,
+      startRotationZ: card.rotation.z,
       chosenOnTable: false,
     });
   }
