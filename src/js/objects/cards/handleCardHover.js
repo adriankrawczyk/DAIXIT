@@ -15,12 +15,16 @@ export default function handleCardHover(intersects) {
   if (hoveredCard !== currentCard) {
     if (currentCard) {
       previousCard = currentCard;
-
-      const prevState = hand.get(previousCard.uuid);
-      if (prevState) {
+      const prevCardData = hand.get(previousCard.uuid);
+      if (prevCardData.chosenOnTable) {
+        currentCard = null;
+        previousCard = null;
+        return;
+      }
+      if (prevCardData) {
         gsap.to(previousCard.position, {
-          x: prevState.startX,
-          y: prevState.startY,
+          x: prevCardData.startX,
+          y: prevCardData.startY,
           duration: 0.3,
           ease: "power2.out",
         });
@@ -30,9 +34,10 @@ export default function handleCardHover(intersects) {
     currentCard = hoveredCard;
 
     if (currentCard) {
-      const startPos = hand.get(currentCard.uuid);
-      const targetX = startPos.startX + MAX_OFFSET;
-      const targetY = startPos.startY + MAX_OFFSET;
+      const cardData = hand.get(currentCard.uuid);
+
+      const targetX = cardData.startX + MAX_OFFSET;
+      const targetY = cardData.startY + MAX_OFFSET;
 
       gsap.to(currentCard.position, {
         x: targetX,

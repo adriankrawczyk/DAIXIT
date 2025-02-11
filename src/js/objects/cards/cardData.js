@@ -1,3 +1,8 @@
 let hand = new Map();
+let chosenCardOnTable;
 
-export { hand };
+function setChosenCardOnTable(newChosenCardOnTable) {
+  chosenCardOnTable = newChosenCardOnTable;
+}
+
+export { hand, chosenCardOnTable, setChosenCardOnTable };

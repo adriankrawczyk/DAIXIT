@@ -1,18 +1,23 @@
 import gsap from "gsap";
-import { hand } from "./cardData";
+import { hand, setChosenCardOnTable, chosenCardOnTable } from "./cardData";
 
 export default function handleCardClick(intersects) {
   if (!intersects.length) return;
-
   const clickedCard = intersects[0].object;
   if (clickedCard.name !== "card") return;
 
-  const startZ = hand.get(clickedCard.uuid).startZ;
-  hand.delete(clickedCard.uuid);
+  setChosenCardOnTable(clickedCard);
+  const chosenCardOnTableData = hand.get(chosenCardOnTable.uuid);
 
-  clickedCard.name = "";
+  chosenCardOnTableData.chosenOnTable = true;
 
-  gsap.to(clickedCard.rotation, {
+  hand.set(chosenCardOnTable.uuid, chosenCardOnTableData);
+
+  const startZ = chosenCardOnTableData.startZ;
+
+  chosenCardOnTable.name = "";
+
+  gsap.to(chosenCardOnTable.rotation, {
     x: -Math.PI / 2,
     y: 0,
     z: 0,
@@ -20,7 +25,7 @@ export default function handleCardClick(intersects) {
     ease: "power2.out",
   });
 
-  gsap.to(clickedCard.position, {
+  gsap.to(chosenCardOnTable.position, {
     x: 2 + startZ * 2,
     y: 4,
     z: startZ,

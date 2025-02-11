@@ -33,6 +33,7 @@ export default function addCards(scene) {
       startX: card.position.x,
       startY: card.position.y,
       startZ: card.position.z,
+      chosenOnTable: false,
     });
   }
 }
