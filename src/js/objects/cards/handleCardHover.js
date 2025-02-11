@@ -1,10 +1,11 @@
+import cardStates from "./cardStates";
+
 const MAX_OFFSET = 0.2;
 const MOVE_SPEED = 0.15;
 const FRAME_TIME = 1000 / 60;
 
 let currentCard = null;
 let targetCard = null;
-let cardStates = new Map();
 let animationFrame = null;
 let lastFrameTime = 0;
 
@@ -23,7 +24,7 @@ function animate(currentTime) {
 
   let isAnimating = false;
 
-  if (targetCard) {
+  if (targetCard && cardStates.get(targetCard.uuid)) {
     const startPos = cardStates.get(targetCard.uuid);
     const dx = startPos.startX - targetCard.position.x;
     const dy = startPos.startY - targetCard.position.y;
@@ -39,7 +40,7 @@ function animate(currentTime) {
     }
   }
 
-  if (currentCard) {
+  if (currentCard && cardStates.get(currentCard.uuid)) {
     const startPos = cardStates.get(currentCard.uuid);
     const targetX = startPos.startX + MAX_OFFSET;
     const targetY = startPos.startY + MAX_OFFSET;
@@ -87,3 +88,4 @@ export default function handleCardHover(intersects) {
     }
   }
 }
+export { currentCard, targetCard };
