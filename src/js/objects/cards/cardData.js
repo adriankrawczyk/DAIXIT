@@ -1,3 +1,3 @@
 let hand = new Map();
 
-export default hand;
+export { hand };

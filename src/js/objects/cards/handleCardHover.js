@@ -1,5 +1,5 @@
 import gsap from "gsap";
-import hand from "./hand";
+import { hand } from "./cardData";
 
 const MAX_OFFSET = 0.2;
 

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import hand from "./hand";
+import { hand } from "./cardData";
 
 export default function addCards(scene) {
   const textureLoader = new THREE.TextureLoader();

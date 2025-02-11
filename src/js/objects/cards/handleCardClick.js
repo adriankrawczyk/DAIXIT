@@ -1,5 +1,5 @@
 import gsap from "gsap";
-import hand from "./hand";
+import { hand } from "./cardData";
 
 export default function handleCardClick(intersects) {
   if (!intersects.length) return;
