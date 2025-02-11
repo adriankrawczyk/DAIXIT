@@ -15,7 +15,7 @@ export default function addCards(scene) {
   ];
   for (let i = 0; i < 5; i++) {
     // z,y,-x
-    const cardPosition = new THREE.Vector3(3.5, 4, (i - 2) / 2.5);
+    const cardPosition = new THREE.Vector3(4, 4, (i - 2) / 2.5);
     const cardRotation = new THREE.Vector3(
       Math.PI / 2 - i / 100,
       -Math.PI / 4,
@@ -25,6 +25,7 @@ export default function addCards(scene) {
     const card = new THREE.Mesh(cardGeo, cardMat);
     card.rotation.set(cardRotation.x, cardRotation.y, cardRotation.z);
     card.position.set(cardPosition.x, cardPosition.y, cardPosition.z);
+    card.name = "card";
     scene.add(card);
   }
 }
