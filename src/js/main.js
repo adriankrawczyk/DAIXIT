@@ -18,6 +18,7 @@ const scene = new THREE.Scene();
 function animate() {
   renderer.render(scene, camera);
 }
-handleEventListeners(renderer);
+
+handleEventListeners(renderer, scene);
 addObjects(scene);
 renderer.setAnimationLoop(animate);

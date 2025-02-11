@@ -3,9 +3,9 @@ import mousePosition from "../mouse/mousePosition";
 import { Vector3 } from "three";
 import inBounds from "../util/math/inBounds";
 
-const Y_OFFSET = 4;
+const Y_OFFSET = 2.75;
 const MIN_Y = 2;
-const MAX_Y = 2.75;
+const MAX_Y = 3.5;
 const MIN_X = -0.7;
 const MAX_X = 0.7;
 

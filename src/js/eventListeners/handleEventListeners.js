@@ -1,7 +1,7 @@
 import handleMouseMove from "./handleMouseMove";
 import handleResize from "./handleResize";
 
-export default function handleEventListeners(renderer) {
+export default function handleEventListeners(renderer, scene) {
   handleResize(renderer);
-  handleMouseMove();
+  handleMouseMove(scene);
 }

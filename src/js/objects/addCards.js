@@ -14,15 +14,12 @@ export default function addCards(scene) {
     new THREE.MeshBasicMaterial({ map: cardTexture }),
   ];
   for (let i = 0; i < 5; i++) {
-    const cardPosition = new THREE.Vector3(
-      3.5,
-      4 - Math.abs(i - 2) / 30,
-      (i - 2) / 2
-    );
+    // z,y,-x
+    const cardPosition = new THREE.Vector3(3.5, 4, (i - 2) / 2.5);
     const cardRotation = new THREE.Vector3(
-      Math.PI / 2,
+      Math.PI / 2 - i / 100,
       -Math.PI / 4,
-      Math.PI / 2
+      Math.PI / 2 - 0.1
     );
 
     const card = new THREE.Mesh(cardGeo, cardMat);
