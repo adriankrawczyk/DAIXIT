@@ -13,7 +13,7 @@ export default function setCameraLookAt() {
   camera.lookAt(
     new Vector3(
       0,
-      inBounds(Y_OFFSET - mousePosition.y, MIN_Y, MAX_Y),
+      inBounds(mousePosition.y + Y_OFFSET, MIN_Y, MAX_Y),
       inBounds(-mousePosition.x, MIN_X, MAX_X)
     )
   );
