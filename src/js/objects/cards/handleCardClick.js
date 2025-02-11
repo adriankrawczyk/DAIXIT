@@ -1,5 +1,5 @@
 import gsap from "gsap";
-import cardStates from "./cardStates";
+import hand from "./hand";
 
 export default function handleCardClick(intersects) {
   if (!intersects.length) return;
@@ -7,8 +7,8 @@ export default function handleCardClick(intersects) {
   const clickedCard = intersects[0].object;
   if (clickedCard.name !== "card") return;
 
-  const startZ = cardStates.get(clickedCard.uuid).startZ;
-  cardStates.delete(clickedCard.uuid);
+  const startZ = hand.get(clickedCard.uuid).startZ;
+  hand.delete(clickedCard.uuid);
 
   clickedCard.name = "";
 

@@ -1,5 +1,5 @@
 import gsap from "gsap";
-import cardStates from "./cardStates";
+import hand from "./hand";
 
 const MAX_OFFSET = 0.2;
 
@@ -16,7 +16,7 @@ export default function handleCardHover(intersects) {
     if (currentCard) {
       previousCard = currentCard;
 
-      const prevState = cardStates.get(previousCard.uuid);
+      const prevState = hand.get(previousCard.uuid);
       if (prevState) {
         gsap.to(previousCard.position, {
           x: prevState.startX,
@@ -30,7 +30,7 @@ export default function handleCardHover(intersects) {
     currentCard = hoveredCard;
 
     if (currentCard) {
-      const startPos = cardStates.get(currentCard.uuid);
+      const startPos = hand.get(currentCard.uuid);
       const targetX = startPos.startX + MAX_OFFSET;
       const targetY = startPos.startY + MAX_OFFSET;
 

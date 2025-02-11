@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import cardStates from "./cardStates";
+import hand from "./hand";
 
 export default function addCards(scene) {
   const textureLoader = new THREE.TextureLoader();
@@ -29,7 +29,7 @@ export default function addCards(scene) {
 
     card.name = "card";
     scene.add(card);
-    cardStates.set(card.uuid, {
+    hand.set(card.uuid, {
       startX: card.position.x,
       startY: card.position.y,
       startZ: card.position.z,
