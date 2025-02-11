@@ -2,6 +2,7 @@ import raycaster from "./raycaster";
 import camera from "../camera/camera";
 import mousePosition from "../mouse/mousePosition";
 import { Vector2 } from "three";
+import handleCardHover from "../objects/cards/handleCardHover";
 
 export default function updateRaycaster(scene) {
   raycaster.setFromCamera(
@@ -9,8 +10,5 @@ export default function updateRaycaster(scene) {
     camera
   );
   const intersects = raycaster.intersectObjects(scene.children);
-  intersects.forEach((intersect) => {
-    if (intersect.object.name == "card") {
-    }
-  });
+  handleCardHover(intersects);
 }

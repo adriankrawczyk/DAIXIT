@@ -1,5 +1,5 @@
 import addLights from "../lights/addLights";
-import addCards from "./addCards";
+import addCards from "./cards/addCards";
 import addTable from "./addTable";
 
 export default function addObjects(scene) {
