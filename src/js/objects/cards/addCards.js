@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import cardStates from "./cardStates";
 
 export default function addCards(scene) {
   const textureLoader = new THREE.TextureLoader();
@@ -25,7 +26,13 @@ export default function addCards(scene) {
     const card = new THREE.Mesh(cardGeo, cardMat);
     card.rotation.set(cardRotation.x, cardRotation.y, cardRotation.z);
     card.position.set(cardPosition.x, cardPosition.y, cardPosition.z);
+
     card.name = "card";
     scene.add(card);
+    cardStates.set(card.uuid, {
+      startX: card.position.x,
+      startY: card.position.y,
+      startZ: card.position.z,
+    });
   }
 }

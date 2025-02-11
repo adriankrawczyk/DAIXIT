@@ -21,9 +21,9 @@ export default function handleCardClick(intersects) {
   });
 
   gsap.to(clickedCard.position, {
-    x: 2,
+    x: 2 + startZ * 2,
     y: 4,
-    z: startZ * 2,
+    z: startZ,
     duration: 0.5,
     ease: "power2.out",
   });

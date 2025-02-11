@@ -12,14 +12,6 @@ export default function handleCardHover(intersects) {
       ? intersects[0].object
       : null;
 
-  if (hoveredCard && !cardStates.has(hoveredCard.uuid)) {
-    cardStates.set(hoveredCard.uuid, {
-      startX: hoveredCard.position.x,
-      startY: hoveredCard.position.y,
-      startZ: hoveredCard.position.z,
-    });
-  }
-
   if (hoveredCard !== currentCard) {
     if (currentCard) {
       previousCard = currentCard;
