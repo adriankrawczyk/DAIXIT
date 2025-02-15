@@ -1,7 +1,6 @@
 import "./App.css";
 import { Canvas } from "@react-three/fiber";
 import Scene from "./components/Scene";
-import { OrbitControls } from "@react-three/drei";
 
 const App = () => {
   return (
@@ -11,11 +10,10 @@ const App = () => {
           near: 0.001,
           far: 1000,
           aspect: window.innerWidth / window.innerHeight,
-          position: [0, 2, 4.5],
+          position: [0, 2, 4.4],
         }}
       >
         <Scene />
-        <OrbitControls />
       </Canvas>
     </>
   );
