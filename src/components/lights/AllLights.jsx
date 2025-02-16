@@ -2,8 +2,8 @@ import React from 'react'
 import AmbientLight from './AmbientLight';
 import DirectionalLight from './DirectionalLight';
 
-const DIRECTIONAL_LIGHT_POSITION = [0, 10, 10];
-const DIRECTIONAL_LIGHT_INTENSITY = 0.8
+const DIRECTIONAL_LIGHT_POSITION = [0, 2, 2.4];
+const DIRECTIONAL_LIGHT_INTENSITY = 1
 const DIRECTIONAL_LIGHT_COLOR = 0xffffff
 
 const AMBIENT_LIGHT_INTENSITY = 0.3

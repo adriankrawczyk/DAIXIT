@@ -11,7 +11,6 @@ const MAX_X = 1;
 const CameraControls = () => {
   useFrame(({ camera, mouse }) => {
     camera.lookAt(new Vector3(mouse.x, mouse.y, -5));
-    console.log(camera);
   });
 
   return null;
