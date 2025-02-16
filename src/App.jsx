@@ -1,6 +1,7 @@
 import "./App.css";
 import { Canvas } from "@react-three/fiber";
 import Scene from "./components/Scene";
+import Lobby from "./components/lobby/Lobby";
 
 const App = () => {
   return (
