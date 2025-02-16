@@ -14,7 +14,7 @@ const App = () => {
           position: [0, 2, 4.4],
         }}
       >
-        <Scene />
+        <Lobby />
       </Canvas>
     </>
   );
