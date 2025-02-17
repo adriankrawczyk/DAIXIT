@@ -2,6 +2,7 @@ import { ref, set, update, get, onDisconnect } from "firebase/database";
 import { database } from "./firebaseConfig";
 
 let playerUid;
+let playerName = localStorage.getItem("name");
 
 function setPlayerData(newUID) {
   playerUid = newUID;
@@ -13,7 +14,8 @@ function setPlayerData(newUID) {
   onDisconnect(playerRef).remove();
 }
 
-function setPlayerName(playerName) {
+function setPlayerName(newPlayerName) {
+  playerName = newPlayerName;
   const playerRef = ref(database, `players/${playerUid}`);
   update(playerRef, { name: playerName }).catch((error) =>
     console.error("Error updating player name:", error)
@@ -38,4 +40,4 @@ async function getUserCount() {
   }
 }
 
-export { playerUid, setPlayerData, setPlayerName, getUserCount };
+export { playerUid, playerName, setPlayerData, setPlayerName, getUserCount };

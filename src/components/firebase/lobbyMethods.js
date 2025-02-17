@@ -1,12 +1,16 @@
 import { ref, set, update, get, push } from "firebase/database";
 import { database } from "./firebaseConfig";
-import { playerUid } from "./playerMethods";
+import { playerUid, playerName } from "./playerMethods";
 
 async function newGame() {
   const gamesRef = ref(database, "games");
   const newGameRef = push(gamesRef);
   try {
-    await set(newGameRef, { uid: playerUid, gameId: newGameRef.key });
+    await set(newGameRef, {
+      host: playerName,
+      uid: playerUid,
+      gameId: newGameRef.key,
+    });
     return newGameRef.key;
   } catch (error) {
     console.error("Error creating game:", error);
@@ -18,7 +22,13 @@ async function getGames() {
   const gamesRef = ref(database, "games");
   try {
     const snapshot = await get(gamesRef);
-    return snapshot.exists() ? snapshot.val() : {};
+    const gamesObject = snapshot.val();
+    if (!gamesObject) return [];
+    const gamesArray = Object.entries(gamesObject).map(([id, data]) => ({
+      ...data,
+    }));
+
+    return gamesArray;
   } catch (error) {
     console.error("Error fetching games:", error);
     return null;

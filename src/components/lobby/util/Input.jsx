@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import TextLabel from "./TextLabel";
+import { setPlayerName } from "../../firebase/playerMethods";
 
 const Input = ({ position, dimensions, set }) => {
   const [text, setText] = useState("");
@@ -9,7 +10,10 @@ const Input = ({ position, dimensions, set }) => {
 
   useEffect(() => {
     const prevName = localStorage.getItem("name");
-    if (prevName) setText(prevName);
+    if (prevName) {
+      setPlayerName(prevName);
+      setText(prevName);
+    }
   }, []);
 
   useEffect(() => {
