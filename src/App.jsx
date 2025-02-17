@@ -1,6 +1,7 @@
 import "./App.css";
 import { Canvas } from "@react-three/fiber";
 import Scene from "./components/Scene";
+import Lobby from "./components/lobby/Lobby";
 
 const App = () => {
   return (
@@ -13,7 +14,7 @@ const App = () => {
           position: [0, 2, 4.4],
         }}
       >
-        <Scene />
+        <Lobby />
       </Canvas>
     </>
   );
