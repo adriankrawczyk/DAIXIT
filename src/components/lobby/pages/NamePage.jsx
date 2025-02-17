@@ -2,7 +2,7 @@ import TextLabel from "../util/TextLabel";
 import Button from "../util/Button";
 import Input from "../util/Input";
 import { useState } from "react";
-import { setPlayerName } from "../../firebase/firebaseConfig";
+import { setPlayerName } from "../../firebase/playerMethods";
 
 const NamePage = ({ setPlayClicked }) => {
   const [name, setName] = useState("");

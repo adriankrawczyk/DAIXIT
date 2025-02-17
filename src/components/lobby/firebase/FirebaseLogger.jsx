@@ -3,8 +3,9 @@ import {
   auth,
   signInAnonymously,
   onAuthStateChanged,
-  setPlayerData,
 } from "../../firebase/firebaseConfig";
+
+import { setPlayerData } from "../../firebase/playerMethods";
 
 const FirebaseLogger = () => {
   useEffect(() => {
