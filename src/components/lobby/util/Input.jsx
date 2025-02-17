@@ -8,6 +8,11 @@ const Input = ({ position, dimensions, set }) => {
   const ref = useRef();
 
   useEffect(() => {
+    const prevName = localStorage.getItem("name");
+    if (prevName) setText(prevName);
+  }, []);
+
+  useEffect(() => {
     if (!isFocused) return;
 
     const handleKeyDown = (event) => {

@@ -2,13 +2,16 @@ import TextLabel from "../util/TextLabel";
 import Button from "../util/Button";
 import Input from "../util/Input";
 import { useState } from "react";
+import { setPlayerName } from "../../firebase/firebaseConfig";
 
-const NamePage = () => {
+const NamePage = ({ setPlayClicked }) => {
   const [name, setName] = useState("");
+
   const handleClick = (e) => {
     e.stopPropagation();
-    alert(name);
     localStorage.setItem("name", name);
+    setPlayerName(name);
+    setPlayClicked(true);
   };
   return (
     <>

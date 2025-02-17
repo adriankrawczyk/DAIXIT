@@ -1,5 +1,6 @@
 import { useState } from "react";
 import NamePage from "../pages/NamePage";
+import LobbyPage from "../pages/LobbyPage";
 
 const BoardBackground = () => {
   return (
@@ -11,10 +12,16 @@ const BoardBackground = () => {
 };
 
 const Board = () => {
+  const [playClicked, setPlayClicked] = useState(false); // to change
+
   return (
     <mesh position={[0, 1.9, 3.5]} rotation={[-Math.PI / 16, 0, 0]}>
       <BoardBackground />
-      {localStorage.getItem("name") ? <></> : <NamePage />}
+      {playClicked ? (
+        <LobbyPage />
+      ) : (
+        <NamePage setPlayClicked={setPlayClicked} />
+      )}
     </mesh>
   );
 };
