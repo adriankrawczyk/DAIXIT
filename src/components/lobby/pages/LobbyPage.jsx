@@ -3,9 +3,11 @@ import TextLabel from "../util/TextLabel";
 import { getUserCount } from "../../firebase/playerMethods";
 import Button from "../util/Button";
 import { newGame } from "../../firebase/lobbyMethods";
+import { useNavigate } from "react-router-dom";
 
 const LobbyPage = () => {
   const [userCount, setUserCount] = useState(0);
+  let navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserCount = async () => {
@@ -17,9 +19,9 @@ const LobbyPage = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const HandleNewGameClicked = () => {
-    const game = newGame();
-    console.log(game);
+  const HandleNewGameClicked = async () => {
+    const game = await newGame();
+    navigate(`/game/${game}`);
   };
 
   return (
