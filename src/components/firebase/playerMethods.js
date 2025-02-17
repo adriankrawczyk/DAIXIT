@@ -27,7 +27,6 @@ async function getUserCount() {
     const snapshot = await get(playersRef);
     if (snapshot.exists()) {
       const userCount = Object.keys(snapshot.val()).length;
-      console.log(`Total users: ${userCount}`);
       return userCount;
     } else {
       console.log("No users found.");
@@ -39,4 +38,4 @@ async function getUserCount() {
   }
 }
 
-export { setPlayerData, setPlayerName, getUserCount };
+export { playerUid, setPlayerData, setPlayerName, getUserCount };

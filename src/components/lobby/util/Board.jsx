@@ -12,7 +12,7 @@ const BoardBackground = () => {
 };
 
 const Board = () => {
-  const [playClicked, setPlayClicked] = useState(false); // to change
+  const [playClicked, setPlayClicked] = useState(true); // to change
 
   return (
     <mesh position={[0, 1.9, 3.5]} rotation={[-Math.PI / 16, 0, 0]}>
