@@ -2,7 +2,7 @@ import { ref, set, update, get, onDisconnect } from "firebase/database";
 import { database } from "./firebaseConfig";
 
 let playerUid;
-let playerName = localStorage.getItem("name");
+let playerName;
 
 function setPlayerData(newUID) {
   playerUid = newUID;
