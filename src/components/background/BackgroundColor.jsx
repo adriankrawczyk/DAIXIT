@@ -19,12 +19,12 @@ const BackgroundColor = () => {
         <sphereGeometry args={[1,64,64]} />
         <LayerMaterial side={THREE.BackSide}>
             <Depth
-            colorA={"#ff9bd8"}
-            colorB={"#7745ff"}
+            colorA={"#e978be"}
+            colorB={"#5d31d4"}
             alpha={1}
             mode="normal"
-            near={130}
-            far={200}
+            near={100}
+            far={300}
             origin={[100,100,-100]}
             />
         </LayerMaterial>
