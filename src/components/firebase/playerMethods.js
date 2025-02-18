@@ -4,10 +4,23 @@ import { database } from "./firebaseConfig";
 let playerUid;
 let playerName;
 
+async function fetchPlayerData(chosenUid) {
+  const playerRef = ref(database, `players/${chosenUid}`);
+  try {
+    const snapshot = await get(playerRef);
+    if (snapshot.exists()) {
+      console.log("Player Data:", snapshot.val());
+    } else {
+      console.log("No data available");
+    }
+  } catch (error) {
+    console.error("Error fetching player data:", error);
+  }
+}
+
 function setPlayerData(newUID) {
   playerUid = newUID;
   const playerRef = ref(database, `players/${playerUid}`);
-
   set(playerRef, {
     uid: playerUid,
     joinedAt: new Date().toISOString(),
@@ -42,4 +55,11 @@ async function getUserCount() {
   }
 }
 
-export { playerUid, playerName, setPlayerData, setPlayerName, getUserCount };
+export {
+  playerUid,
+  playerName,
+  setPlayerData,
+  setPlayerName,
+  getUserCount,
+  fetchPlayerData,
+};

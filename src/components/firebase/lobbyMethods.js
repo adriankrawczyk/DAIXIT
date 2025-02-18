@@ -1,15 +1,14 @@
 import { ref, set, update, get, push } from "firebase/database";
 import { database } from "./firebaseConfig";
-import { playerUid, playerName } from "./playerMethods";
+import { playerUid, playerName, fetchPlayerData } from "./playerMethods";
 
 async function newGame() {
   const gamesRef = ref(database, "games");
-  const playerRef = ref(database, `players/${playerUid}`);
-
+  const playerData = fetchPlayerData(playerUid);
   const newGameRef = push(gamesRef);
   try {
     await set(newGameRef, {
-      host: playerName,
+      host: playerData.name,
       uid: playerUid,
       gameId: newGameRef.key,
     });
