@@ -6,6 +6,7 @@ import {
 } from "../../firebase/firebaseConfig";
 
 import { setPlayerData } from "../../firebase/playerMethods";
+import { leaveGame } from "../../firebase/lobbyMethods";
 
 const FirebaseLogger = () => {
   useEffect(() => {
@@ -13,9 +14,14 @@ const FirebaseLogger = () => {
       console.error("Auth Error:", error)
     );
 
-    const unsubscribe = onAuthStateChanged(auth, (player) => {
+    const unsubscribe = onAuthStateChanged(auth, async (player) => {
       if (player) {
-        setPlayerData(player.uid);
+        await setPlayerData(player.uid);
+        const currentGame = localStorage.getItem("currentGame");
+        if (currentGame) {
+          leaveGame(currentGame, player.uid);
+          localStorage.setItem("currentGame", "");
+        }
       }
     });
 

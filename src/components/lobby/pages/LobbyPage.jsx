@@ -1,39 +1,87 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import TextLabel from "../util/TextLabel";
 import { getUserCount } from "../../firebase/playerMethods";
 import Button from "../util/Button";
-import { getGames, newGame } from "../../firebase/lobbyMethods";
+import { getGames, joinToGame, newGame } from "../../firebase/lobbyMethods";
 import { useNavigate } from "react-router-dom";
 import GameListElement from "../util/GameListElement";
+import { debounce } from "lodash";
 
 const LobbyPage = ({ setPlayClicked }) => {
   const [userCount, setUserCount] = useState(0);
   const [games, setGames] = useState([]);
-
+  const [isProcessing, setIsProcessing] = useState(false);
   let navigate = useNavigate();
+
   useEffect(() => {
     const fetchUserCount = async () => {
       const count = await getUserCount();
       setUserCount(count);
     };
     const fetchGames = async () => {
-      const games = await getGames();
-      setGames(games);
+      const newGames = await getGames();
+      setGames(newGames);
     };
-    fetchGames();
-    fetchUserCount();
-    const intervalId = setInterval(fetchUserCount, 1000);
+    const fetch = () => {
+      fetchUserCount();
+      fetchGames();
+    };
+
+    fetch();
+
+    const intervalId = setInterval(() => {
+      fetch();
+    }, 1000);
+
     return () => clearInterval(intervalId);
   }, []);
 
   const HandleNewGameClicked = async () => {
-    const gameId = await newGame();
-    navigate(`/game/${gameId}`);
+    if (isProcessing) {
+      return;
+    }
+    setIsProcessing(true);
+    try {
+      const gameId = await newGame();
+      localStorage.setItem("currentGame", gameId);
+      navigate(`/game/${gameId}`);
+    } catch (error) {
+      console.error("Error creating new game:", error);
+      setIsProcessing(false);
+    }
   };
 
-  const HandleJoinClick = (gameId) => {
-    navigate(`/game/${gameId}`);
+  const DebouncedHandleNewGame = useCallback(
+    debounce(HandleNewGameClicked, 300, {
+      leading: true,
+      trailing: false,
+    }),
+    [isProcessing]
+  );
+
+  const HandleJoinClick = async (gameId) => {
+    if (isProcessing) {
+      return;
+    }
+    setIsProcessing(true);
+    try {
+      await joinToGame(gameId);
+      localStorage.setItem("currentGame", gameId);
+      navigate(`/game/${gameId}`);
+    } catch (error) {
+      console.error("Error joining game:", error);
+      setIsProcessing(false);
+    }
   };
+
+  const DebouncedHandleJoinClick = useCallback(
+    (gameId) =>
+      debounce(() => HandleJoinClick(gameId), 300, {
+        leading: true,
+        trailing: false,
+      }),
+    [isProcessing]
+  );
 
   return (
     <>
@@ -44,17 +92,16 @@ const LobbyPage = ({ setPlayClicked }) => {
         text={`Currently online: ${userCount}`}
       />
       {games && games.length > 0 ? (
-        games.map((game, index) => {
-          return (
-            <GameListElement
-              key={game.gameId}
-              index={index}
-              host={game.host}
-              gameId={game.gameId}
-              HandleJoinClick={HandleJoinClick}
-            />
-          );
-        })
+        games.map((game, index) => (
+          <GameListElement
+            key={game.gameId}
+            index={index}
+            host={game.host}
+            gameId={game.gameId}
+            HandleJoinClick={DebouncedHandleJoinClick(game.gameId)}
+            disabled={isProcessing}
+          />
+        ))
       ) : (
         <TextLabel
           position={[0, 0.3, 0.1]}
@@ -65,8 +112,9 @@ const LobbyPage = ({ setPlayClicked }) => {
       <Button
         position={[0.7, -0.45, 0.1]}
         dimensions={[0.2, 0.1, 0.01]}
-        text="New game"
-        handleClick={HandleNewGameClicked}
+        text={isProcessing ? "Joining..." : "New game"}
+        handleClick={DebouncedHandleNewGame}
+        disabled={isProcessing}
       />
     </>
   );

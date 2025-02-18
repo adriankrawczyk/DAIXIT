@@ -15,6 +15,7 @@
     "firebase": "^11.3.1",
     "gsap": "^3.12.7",
     "lamina": "^1.1.23",
+    "lodash": "^4.17.21",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.1.5"
