@@ -19,6 +19,7 @@ const Card = ({
     TextureLoader,
     "https://storage.googleapis.com/daixit_photos/dixit_20250215200353.png"
   );
+  const reverse = useLoader(TextureLoader, "/card.png");
   const [cardImage, setCardImage] = useState(defaultTexture);
 
   useEffect(() => {
@@ -82,12 +83,13 @@ const Card = ({
       }}
     >
       <boxGeometry args={[0.64, 0.896, 0.02]} />
-      <meshBasicMaterial attachArray="material" color="white" />
-      <meshBasicMaterial attachArray="material" color="white" />
-      <meshBasicMaterial attachArray="material" color="white" />
-      <meshBasicMaterial attachArray="material" color="white" />
-      <meshStandardMaterial attachArray="material" map={cardImage} />
-      <meshStandardMaterial attachArray="material" map={cardImage} />
+
+      <meshStandardMaterial attach="material-0" map={reverse} />
+      <meshStandardMaterial attach="material-1" map={reverse} />
+      <meshStandardMaterial attach="material-2" map={reverse} />
+      <meshStandardMaterial attach="material-3" map={reverse} />
+      <meshStandardMaterial attach="material-4" map={cardImage} />
+      <meshStandardMaterial attach="material-5" map={reverse} />
     </mesh>
   );
 };

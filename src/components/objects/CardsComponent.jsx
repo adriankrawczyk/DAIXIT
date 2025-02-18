@@ -47,7 +47,7 @@ const CardsComponent = ({ numberOfCards }) => {
         ease: "power2.in",
       });
       gsap.to(cardsRef.current[index].current.rotation, {
-        x: -Math.PI / 2,
+        x: Math.PI / 2,
         y: 0,
         z: -Math.PI / 2,
         duration: 0.2,
