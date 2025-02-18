@@ -7,9 +7,11 @@ let playerName;
 function setPlayerData(newUID) {
   playerUid = newUID;
   const playerRef = ref(database, `players/${playerUid}`);
+
   set(playerRef, {
     uid: playerUid,
     joinedAt: new Date().toISOString(),
+    name: localStorage.getItem("name"),
   });
   onDisconnect(playerRef).remove();
 }

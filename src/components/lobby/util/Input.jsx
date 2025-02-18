@@ -11,7 +11,6 @@ const Input = ({ position, dimensions, set }) => {
   useEffect(() => {
     const prevName = localStorage.getItem("name");
     if (prevName) {
-      setPlayerName(prevName);
       setText(prevName);
     }
   }, []);

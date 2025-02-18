@@ -4,6 +4,8 @@ import { playerUid, playerName } from "./playerMethods";
 
 async function newGame() {
   const gamesRef = ref(database, "games");
+  const playerRef = ref(database, `players/${playerUid}`);
+
   const newGameRef = push(gamesRef);
   try {
     await set(newGameRef, {
