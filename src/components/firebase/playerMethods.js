@@ -9,9 +9,7 @@ async function fetchPlayerData(chosenUid) {
   try {
     const snapshot = await get(playerRef);
     if (snapshot.exists()) {
-      return Object.entries(snapshot.val()).map(([id, data]) => ({
-        ...data,
-      }));
+      return snapshot.val();
     } else {
       console.log("No data available");
       return "";

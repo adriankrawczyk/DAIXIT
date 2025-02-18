@@ -5,13 +5,16 @@ import { playerUid, playerName, fetchPlayerData } from "./playerMethods";
 async function newGame() {
   const gamesRef = ref(database, "games");
   const playerData = await fetchPlayerData(playerUid);
+  playerData.host = true;
   const newGameRef = push(gamesRef);
   try {
     await set(newGameRef, {
       host: playerData.name,
       uid: playerUid,
       gameId: newGameRef.key,
-      players: [playerData],
+      players: {
+        [playerData.uid]: playerData,
+      },
     });
     return newGameRef.key;
   } catch (error) {
@@ -21,11 +24,19 @@ async function newGame() {
 }
 
 async function joinToGame(gameId) {
-  const gameRef = ref(database, `games/${gameId}`);
-  const playerData = await fetchPlayerData(playerUid);
-  update(gameRef, { players: [...playerData] }).catch((error) =>
-    console.error("Error updating player name:", error)
-  );
+  try {
+    const gameRef = ref(database, `games/${gameId}/players`);
+    const playerData = await fetchPlayerData(playerUid);
+    playerData.host = false;
+
+    if (!playerData || !playerData.uid) {
+      throw new Error("Invalid player data");
+    }
+
+    await update(gameRef, { [playerData.uid]: playerData });
+  } catch (error) {
+    console.error("Error updating player data:", error);
+  }
 }
 
 async function getGames() {

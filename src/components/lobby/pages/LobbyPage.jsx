@@ -9,7 +9,7 @@ import GameListElement from "../util/GameListElement";
 const LobbyPage = ({ setPlayClicked }) => {
   const [userCount, setUserCount] = useState(0);
   const [games, setGames] = useState([]);
-
+  const [gameClicked, setGameClicked] = useState(false);
   let navigate = useNavigate();
   useEffect(() => {
     const fetchUserCount = async () => {
@@ -31,12 +31,16 @@ const LobbyPage = ({ setPlayClicked }) => {
   }, []);
 
   const HandleNewGameClicked = async () => {
+    if (gameClicked) return;
     const gameId = await newGame();
+    setGameClicked(true);
     navigate(`/game/${gameId}`);
   };
 
   const HandleJoinClick = (gameId) => {
+    if (gameClicked) return;
     joinToGame(gameId);
+    setGameClicked(true);
     navigate(`/game/${gameId}`);
   };
 
