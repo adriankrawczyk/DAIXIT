@@ -13,7 +13,6 @@ const Scene = () => {
       <CameraControls />
       <CardsComponent numberOfCards={5} />
       <Table />
-      <OrbitControls />
       <FullBackground />
     </>
   );
