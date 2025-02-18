@@ -4,6 +4,7 @@ import CameraControls from "./camera/CameraControls";
 import Table from "./objects/Table";
 import CardsComponent from "./objects/CardsComponent";
 import { OrbitControls } from "@react-three/drei";
+import FullBackground from "./background/FullBackground";
 
 const Scene = () => {
   return (
@@ -12,6 +13,8 @@ const Scene = () => {
       <CameraControls />
       <CardsComponent numberOfCards={5}/>
       <Table />
+      <OrbitControls/>
+      <FullBackground/>
     </>
   );
 };

@@ -23,7 +23,7 @@ const CardsComponent = ({ numberOfCards }) => {
      if (cardsRef.current[index]?.current) 
     {
         setDisableHover(true);
-      gsap.to(cardsRef.current[index].current.position, { x:0.2, y:1, z:1, 
+      gsap.to(cardsRef.current[index].current.position, { x:0.2, y:0.5, z:0.3, 
         duration: 0.2,
         ease: "power2.in"
       });
