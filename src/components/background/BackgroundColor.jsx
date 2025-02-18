@@ -3,11 +3,7 @@ import { Depth, LayerMaterial } from "lamina";
 import React, { useRef } from "react";
 import * as THREE from "three";
 
-<<<<<<< HEAD
-const BG_SPEED = 0.05
-=======
 const BG_SPEED = 0.05;
->>>>>>> 7315abd717de71c737155d2a7ffb18b087ca2d31
 
 const BackgroundColor = () => {
   const backgroundRef = useRef();
