@@ -6,8 +6,8 @@ import { getGames, joinToGame, newGame } from "../../firebase/lobbyMethods";
 import { useNavigate } from "react-router-dom";
 import GameListElement from "../util/GameListElement";
 import { debounce } from "lodash";
-import { getCameraData } from "../../firebase/gameMethods";
-import { useCamera } from "../../context/CameraContext";
+import { getSetupData } from "../../firebase/gameMethods";
+import { useSetup } from "../../context/SetupContext";
 
 const LobbyPage = ({ setPlayClicked }) => {
   const [userCount, setUserCount] = useState(0);
@@ -18,7 +18,7 @@ const LobbyPage = ({ setPlayClicked }) => {
     setCameraLookAt,
     setCameraLookAtMultiplier,
     setDirectionalLightPosition,
-  } = useCamera();
+  } = useSetup();
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -52,11 +52,12 @@ const LobbyPage = ({ setPlayClicked }) => {
     try {
       const gameId = await newGame();
       localStorage.setItem("currentGame", gameId);
-      const cameraData = await getCameraData(gameId);
-      setCameraPosition(cameraData.position);
-      setCameraLookAt(cameraData.lookAt);
-      setCameraLookAtMultiplier(cameraData.multiplier);
-      setDirectionalLightPosition(cameraData.directionalLightPosition);
+      const { position, lookAt, multiplier, directionalLightPosition } =
+        await getSetupData(gameId);
+      setCameraPosition(position);
+      setCameraLookAt(lookAt);
+      setCameraLookAtMultiplier(multiplier);
+      setDirectionalLightPosition(directionalLightPosition);
       navigate(`/game/${gameId}`);
     } catch (error) {
       console.error("Error creating new game:", error);
@@ -80,11 +81,12 @@ const LobbyPage = ({ setPlayClicked }) => {
     try {
       await joinToGame(gameId);
       localStorage.setItem("currentGame", gameId);
-      const cameraData = await getCameraData(gameId);
-      setCameraPosition(cameraData.position);
-      setCameraLookAt(cameraData.lookAt);
-      setCameraLookAtMultiplier(cameraData.multiplier);
-      setDirectionalLightPosition(cameraData.directionalLightPosition);
+      const { position, lookAt, multiplier, directionalLightPosition } =
+        await getSetupData(gameId);
+      setCameraPosition(position);
+      setCameraLookAt(lookAt);
+      setCameraLookAtMultiplier(multiplier);
+      setDirectionalLightPosition(directionalLightPosition);
       navigate(`/game/${gameId}`);
     } catch (error) {
       console.error("Error joining game:", error);

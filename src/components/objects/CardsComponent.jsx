@@ -43,17 +43,17 @@ const CardsComponent = ({ numberOfCards }) => {
         x: 0.2,
         y: 0.5,
         z: 0.3,
-        duration: 0.2,
-        ease: "power2.in",
+        duration: 0.5,
+        ease: "power2.out",
       });
       gsap.to(cardsRef.current[index].current.rotation, {
         x: Math.PI / 2,
         y: 0,
         z: -Math.PI / 2,
-        duration: 0.2,
-        ease: "power2.in",
+        duration: 0.5,
+        ease: "power2.out",
       });
-      gsap.delayedCall(0.2, () => setDisableHover(false));
+      gsap.delayedCall(0.5, () => setDisableHover(false));
     }
   };
 
@@ -64,17 +64,17 @@ const CardsComponent = ({ numberOfCards }) => {
         x: (index - 2) / 2 + 0.2,
         y: 0.75,
         z: 3 + index * 0.01,
-        duration: 0.2,
+        duration: 0.5,
         ease: "power2.out",
       });
       gsap.to(cardsRef.current[index].current.rotation, {
         x: -Math.PI / 8,
         y: 0,
         z: Math.PI / 16,
-        duration: 0.2,
+        duration: 0.5,
         ease: "power2.out",
       });
-      gsap.delayedCall(0.2, () => setDisableHover(false));
+      gsap.delayedCall(0.5, () => setDisableHover(false));
     }
   };
 

@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { Vector3 } from "three";
 import inBounds from "../../util/maths/inBounds";
-import { useCamera } from "../context/CameraContext";
+import { useSetup } from "../context/SetupContext";
 
 const Y_OFFSET = 3;
 const MIN_Y = 2.5;
@@ -10,7 +10,7 @@ const MIN_X = -1;
 const MAX_X = 1;
 
 const CameraControls = () => {
-  const { cameraLookAt, cameraLookAtMultiplier } = useCamera();
+  const { cameraLookAt, cameraLookAtMultiplier } = useSetup();
   useFrame(({ camera, mouse }) => {
     camera.lookAt(
       new Vector3(

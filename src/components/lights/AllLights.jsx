@@ -1,7 +1,7 @@
 import React from "react";
 import AmbientLight from "./AmbientLight";
 import DirectionalLight from "./DirectionalLight";
-import { useCamera } from "../context/CameraContext";
+import { useSetup } from "../context/SetupContext";
 
 const DIRECTIONAL_LIGHT_INTENSITY = 1;
 const DIRECTIONAL_LIGHT_COLOR = 0xffffff;
@@ -10,7 +10,7 @@ const AMBIENT_LIGHT_INTENSITY = 0.3;
 const AMBIENT_LIGHT_COLOR = 0xa3a3a3;
 
 const AllLights = () => {
-  const { directionalLightPosition } = useCamera();
+  const { directionalLightPosition } = useSetup();
   return (
     <>
       <AmbientLight

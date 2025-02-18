@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-const CameraContext = createContext();
+const SetupContext = createContext();
 
-export const CameraProvider = ({ children }) => {
+export const SetupProvider = ({ children }) => {
   const [cameraPosition, setCameraPosition] = useState([0, 2, 4.4]);
   const [cameraLookAt, setCameraLookAt] = useState([0, 0, -5]);
   const [cameraLookAtMultiplier, setCameraLookAtMultiplier] = useState([
@@ -12,7 +12,7 @@ export const CameraProvider = ({ children }) => {
     0, 2, 2.4,
   ]);
   return (
-    <CameraContext.Provider
+    <SetupContext.Provider
       value={{
         cameraPosition,
         setCameraPosition,
@@ -25,8 +25,8 @@ export const CameraProvider = ({ children }) => {
       }}
     >
       {children}
-    </CameraContext.Provider>
+    </SetupContext.Provider>
   );
 };
 
-export const useCamera = () => useContext(CameraContext);
+export const useSetup = () => useContext(SetupContext);

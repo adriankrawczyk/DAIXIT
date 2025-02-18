@@ -10,11 +10,11 @@ import {
 } from "react-router-dom";
 import { useEffect } from "react";
 import { useThree } from "@react-three/fiber";
-import { CameraProvider, useCamera } from "./components/context/CameraContext";
+import { SetupProvider, useSetup } from "./components/context/SetupContext";
 
 const CameraUpdater = () => {
   const { camera } = useThree();
-  const { cameraPosition } = useCamera();
+  const { cameraPosition } = useSetup();
 
   useEffect(() => {
     camera.position.set(...cameraPosition);
@@ -26,7 +26,7 @@ const CameraUpdater = () => {
 
 const AppContent = () => {
   const location = useLocation();
-  const { cameraPosition } = useCamera();
+  const { cameraPosition } = useSetup();
   return (
     <Canvas
       camera={{
@@ -47,11 +47,11 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <CameraProvider>
+    <SetupProvider>
       <Router>
         <AppContent />
       </Router>
-    </CameraProvider>
+    </SetupProvider>
   );
 };
 
