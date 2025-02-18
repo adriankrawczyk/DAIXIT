@@ -10,7 +10,7 @@ Title: Kitchen table
 import React from "react";
 import { useGLTF } from "@react-three/drei";
 
-export default function Model(props) {
+export default function kitchenTable(props) {
   const { nodes, materials } = useGLTF("/kitchen_table.glb");
   return (
     <group {...props} dispose={null}>
