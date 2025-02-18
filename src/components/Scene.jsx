@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import AllLights from "./lights/AllLights";
 import CameraControls from "./camera/CameraControls";
 import Table from "./objects/Table";
@@ -11,10 +11,10 @@ const Scene = () => {
     <>
       <AllLights />
       <CameraControls />
-      <CardsComponent numberOfCards={5}/>
+      <CardsComponent numberOfCards={5} />
       <Table />
-      <OrbitControls/>
-      <FullBackground/>
+      <OrbitControls />
+      <FullBackground />
     </>
   );
 };

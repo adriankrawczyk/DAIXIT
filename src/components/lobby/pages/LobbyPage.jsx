@@ -9,8 +9,9 @@ import GameListElement from "../util/GameListElement";
 const LobbyPage = ({ setPlayClicked }) => {
   const [userCount, setUserCount] = useState(0);
   const [games, setGames] = useState([]);
-  const [gameClicked, setGameClicked] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   let navigate = useNavigate();
+
   useEffect(() => {
     const fetchUserCount = async () => {
       const count = await getUserCount();
@@ -20,28 +21,50 @@ const LobbyPage = ({ setPlayClicked }) => {
       const newGames = await getGames();
       setGames(newGames);
     };
-    const fetch = async () => {
+    const fetch = () => {
       fetchUserCount();
       fetchGames();
     };
-    fetchGames();
-    fetchUserCount();
-    const intervalId = setInterval(fetch, 1000);
+
+    fetch();
+
+    const intervalId = setInterval(() => {
+      fetch();
+    }, 1000);
+
     return () => clearInterval(intervalId);
   }, []);
 
   const HandleNewGameClicked = async () => {
-    if (gameClicked) return;
-    const gameId = await newGame();
-    setGameClicked(true);
-    navigate(`/game/${gameId}`);
+    if (isProcessing || localStorage.getItem("currentGame")) {
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      const gameId = await newGame();
+      localStorage.setItem("currentGame", gameId);
+      navigate(`/game/${gameId}`);
+    } catch (error) {
+      console.error("Error creating new game:", error);
+      setIsProcessing(false);
+    }
   };
 
-  const HandleJoinClick = (gameId) => {
-    if (gameClicked) return;
-    joinToGame(gameId);
-    setGameClicked(true);
-    navigate(`/game/${gameId}`);
+  const HandleJoinClick = async (gameId) => {
+    if (isProcessing || localStorage.getItem("currentGame")) {
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      await joinToGame(gameId);
+      localStorage.setItem("currentGame", gameId);
+      navigate(`/game/${gameId}`);
+    } catch (error) {
+      console.error("Error joining game:", error);
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -53,17 +76,16 @@ const LobbyPage = ({ setPlayClicked }) => {
         text={`Currently online: ${userCount}`}
       />
       {games && games.length > 0 ? (
-        games.map((game, index) => {
-          return (
-            <GameListElement
-              key={game.gameId}
-              index={index}
-              host={game.host}
-              gameId={game.gameId}
-              HandleJoinClick={HandleJoinClick}
-            />
-          );
-        })
+        games.map((game, index) => (
+          <GameListElement
+            key={game.gameId}
+            index={index}
+            host={game.host}
+            gameId={game.gameId}
+            HandleJoinClick={() => HandleJoinClick(game.gameId)}
+            disabled={isProcessing}
+          />
+        ))
       ) : (
         <TextLabel
           position={[0, 0.3, 0.1]}
@@ -74,8 +96,9 @@ const LobbyPage = ({ setPlayClicked }) => {
       <Button
         position={[0.7, -0.45, 0.1]}
         dimensions={[0.2, 0.1, 0.01]}
-        text="New game"
+        text={isProcessing ? "Joining..." : "New game"}
         handleClick={HandleNewGameClicked}
+        disabled={isProcessing}
       />
     </>
   );
