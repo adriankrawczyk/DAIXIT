@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import TextLabel from "../util/TextLabel";
 import { getUserCount } from "../../firebase/playerMethods";
 import Button from "../util/Button";
 import { getGames, joinToGame, newGame } from "../../firebase/lobbyMethods";
 import { useNavigate } from "react-router-dom";
 import GameListElement from "../util/GameListElement";
+import { debounce } from "lodash";
 
 const LobbyPage = ({ setPlayClicked }) => {
   const [userCount, setUserCount] = useState(0);
@@ -36,12 +37,11 @@ const LobbyPage = ({ setPlayClicked }) => {
   }, []);
 
   const HandleNewGameClicked = async () => {
-    if (isProcessing || localStorage.getItem("currentGame")) {
+    if (isProcessing) {
       return;
     }
-
+    setIsProcessing(true);
     try {
-      setIsProcessing(true);
       const gameId = await newGame();
       localStorage.setItem("currentGame", gameId);
       navigate(`/game/${gameId}`);
@@ -51,13 +51,20 @@ const LobbyPage = ({ setPlayClicked }) => {
     }
   };
 
+  const DebouncedHandleNewGame = useCallback(
+    debounce(HandleNewGameClicked, 300, {
+      leading: true,
+      trailing: false,
+    }),
+    [isProcessing]
+  );
+
   const HandleJoinClick = async (gameId) => {
-    if (isProcessing || localStorage.getItem("currentGame")) {
+    if (isProcessing) {
       return;
     }
-
+    setIsProcessing(true);
     try {
-      setIsProcessing(true);
       await joinToGame(gameId);
       localStorage.setItem("currentGame", gameId);
       navigate(`/game/${gameId}`);
@@ -66,6 +73,15 @@ const LobbyPage = ({ setPlayClicked }) => {
       setIsProcessing(false);
     }
   };
+
+  const DebouncedHandleJoinClick = useCallback(
+    (gameId) =>
+      debounce(() => HandleJoinClick(gameId), 300, {
+        leading: true,
+        trailing: false,
+      }),
+    [isProcessing]
+  );
 
   return (
     <>
@@ -82,7 +98,7 @@ const LobbyPage = ({ setPlayClicked }) => {
             index={index}
             host={game.host}
             gameId={game.gameId}
-            HandleJoinClick={() => HandleJoinClick(game.gameId)}
+            HandleJoinClick={DebouncedHandleJoinClick(game.gameId)}
             disabled={isProcessing}
           />
         ))
@@ -97,7 +113,7 @@ const LobbyPage = ({ setPlayClicked }) => {
         position={[0.7, -0.45, 0.1]}
         dimensions={[0.2, 0.1, 0.01]}
         text={isProcessing ? "Joining..." : "New game"}
-        handleClick={HandleNewGameClicked}
+        handleClick={DebouncedHandleNewGame}
         disabled={isProcessing}
       />
     </>
