@@ -19,12 +19,14 @@ const Clouds = () => {
      <CloudFragment 
         startingPosition={[-2,-0.2,2]} 
         scale={1} 
+        key={0}
         cloudSpeed={0.1} 
         spread={4}
         sign = {1}
         />
-    {cloudsLayout.current.map((item) => (
+    {cloudsLayout.current.map((item,key) => (
         <CloudFragment 
+        key={key+1}
         startingPosition={item.startingPosition} 
         scale={item.scale} 
         cloudSpeed={item.cloudSpeed} 

@@ -4,7 +4,7 @@ import { Depth, LayerMaterial } from 'lamina'
 import React, { useRef } from 'react'
 import * as THREE from "three"
 
-const CloudFragment = ({startingPosition, scale, cloudSpeed, spread, sign }) => {
+const CloudFragment = ({startingPosition, scale, cloudSpeed, spread, sign, key }) => {
   const cloudRef = useRef();
   useFrame( (state, delta) => {
     cloudRef.current.position.x = sign*Math.sin(state.clock.getElapsedTime() * cloudSpeed) * spread
