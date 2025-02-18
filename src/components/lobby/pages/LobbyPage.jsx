@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import TextLabel from "../util/TextLabel";
 import { getUserCount } from "../../firebase/playerMethods";
 import Button from "../util/Button";
-import { getGames, newGame } from "../../firebase/lobbyMethods";
+import { getGames, joinToGame, newGame } from "../../firebase/lobbyMethods";
 import { useNavigate } from "react-router-dom";
 import GameListElement from "../util/GameListElement";
 
@@ -17,12 +17,16 @@ const LobbyPage = ({ setPlayClicked }) => {
       setUserCount(count);
     };
     const fetchGames = async () => {
-      const games = await getGames();
-      setGames(games);
+      const newGames = await getGames();
+      setGames(newGames);
+    };
+    const fetch = async () => {
+      fetchUserCount();
+      fetchGames();
     };
     fetchGames();
     fetchUserCount();
-    const intervalId = setInterval(fetchUserCount, 1000);
+    const intervalId = setInterval(fetch, 1000);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -32,6 +36,7 @@ const LobbyPage = ({ setPlayClicked }) => {
   };
 
   const HandleJoinClick = (gameId) => {
+    joinToGame(gameId);
     navigate(`/game/${gameId}`);
   };
 

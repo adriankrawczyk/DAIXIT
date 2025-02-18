@@ -13,9 +13,9 @@ const FirebaseLogger = () => {
       console.error("Auth Error:", error)
     );
 
-    const unsubscribe = onAuthStateChanged(auth, (player) => {
+    const unsubscribe = onAuthStateChanged(auth, async (player) => {
       if (player) {
-        setPlayerData(player.uid);
+        await setPlayerData(player.uid);
       }
     });
 

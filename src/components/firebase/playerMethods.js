@@ -9,16 +9,19 @@ async function fetchPlayerData(chosenUid) {
   try {
     const snapshot = await get(playerRef);
     if (snapshot.exists()) {
-      console.log("Player Data:", snapshot.val());
+      return Object.entries(snapshot.val()).map(([id, data]) => ({
+        ...data,
+      }));
     } else {
       console.log("No data available");
+      return "";
     }
   } catch (error) {
     console.error("Error fetching player data:", error);
   }
 }
 
-function setPlayerData(newUID) {
+async function setPlayerData(newUID) {
   playerUid = newUID;
   const playerRef = ref(database, `players/${playerUid}`);
   set(playerRef, {

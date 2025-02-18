@@ -4,19 +4,28 @@ import { playerUid, playerName, fetchPlayerData } from "./playerMethods";
 
 async function newGame() {
   const gamesRef = ref(database, "games");
-  const playerData = fetchPlayerData(playerUid);
+  const playerData = await fetchPlayerData(playerUid);
   const newGameRef = push(gamesRef);
   try {
     await set(newGameRef, {
       host: playerData.name,
       uid: playerUid,
       gameId: newGameRef.key,
+      players: [playerData],
     });
     return newGameRef.key;
   } catch (error) {
     console.error("Error creating game:", error);
     return null;
   }
+}
+
+async function joinToGame(gameId) {
+  const gameRef = ref(database, `games/${gameId}`);
+  const playerData = await fetchPlayerData(playerUid);
+  update(gameRef, { players: [...playerData] }).catch((error) =>
+    console.error("Error updating player name:", error)
+  );
 }
 
 async function getGames() {
@@ -69,4 +78,4 @@ async function getGames() {
 //   }
 // }
 
-export { newGame, getGames };
+export { newGame, getGames, joinToGame };
