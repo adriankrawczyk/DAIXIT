@@ -14,6 +14,7 @@ async function newGame() {
   const gamesRef = ref(database, "games");
   const playerData = await fetchPlayerData(playerUid);
   playerData.host = true;
+
   const newGameRef = push(gamesRef);
   try {
     await set(newGameRef, {
@@ -37,7 +38,6 @@ async function joinToGame(gameId) {
     const gameRef = ref(database, `games/${gameId}/players`);
     const playerData = await fetchPlayerData(playerUid);
     playerData.host = false;
-
     if (!playerData || !playerData.uid) {
       throw new Error("Invalid player data");
     }
