@@ -10,6 +10,7 @@ import Cone from "./objects/Cone";
 import { joinToGame } from "./firebase/lobbyMethods";
 import { useSetup } from "./context/SetupContext";
 import { getSetupData } from "./firebase/gameMethods";
+import FirebaseLogger from "./lobby/firebase/firebaseLogger";
 
 const Scene = () => {
   const {
@@ -36,9 +37,11 @@ const Scene = () => {
     setCardsPosition(cardsPosition);
     setCardsRotation(cardsRotation);
   };
+
   useEffect(() => {
     const join = async () => {
-      const gameId = localStorage.getItem("currentGame");
+      const gameId = window.location.href.split("/").pop();
+      if (!localStorage.getItem("name")) await FirebaseLogger();
       await joinToGame(gameId);
       setup(gameId);
     };

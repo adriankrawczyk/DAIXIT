@@ -1,5 +1,7 @@
 import { ref, get } from "firebase/database";
 import { database } from "./firebaseConfig";
+import { setPlayerName } from "./playerMethods";
+import FirebaseLogger from "../lobby/firebase/firebaseLogger";
 
 async function getSetupData(gameId) {
   const players = await getPlayers(gameId);
@@ -42,5 +44,4 @@ async function getPlayers(gameId) {
   );
   return playersObjectArray;
 }
-
 export { getSetupData };
