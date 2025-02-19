@@ -5,26 +5,25 @@ import * as THREE from "three"
 
 const CENTER_POSITION = [0,-0.5,0]
 
-const Planets = ({texture, positionRadius, speed}) => {
+const Planets = ({texture, positionRadius, speed, fi}) => {
   const material = useLoader(THREE.TextureLoader, texture);
   const ref = useRef();
-  const sign = ( Math.random() * 3 ) % 2 === 0 ? 1 : -1;
-  const position = [ (Math.random() - 2) * positionRadius, Math.random() * 2 + 1, 0]
-  position[2] = Math.sqrt(positionRadius*positionRadius - position[0]*position[0]) * sign;
+  const position = CENTER_POSITION;
+  position[1] = Math.random() * 4;
 
   useFrame( (state) => {
     ref.current.rotation.x = state.clock.getElapsedTime() * 0.1;
     ref.current.rotation.y = state.clock.getElapsedTime() * 0.1;
     ref.current.rotation.z = state.clock.getElapsedTime() * 0.1;
 
-    ref.current.position.x = CENTER_POSITION[0] + Math.sin(state.clock.getElapsedTime() * speed) * positionRadius;  
-    ref.current.position.z = CENTER_POSITION[2] + Math.cos(state.clock.getElapsedTime() * speed) * positionRadius;  
+    ref.current.position.x = CENTER_POSITION[0] + Math.sin(state.clock.getElapsedTime() * speed + fi) * positionRadius;  
+    ref.current.position.z = CENTER_POSITION[2] + Math.cos(state.clock.getElapsedTime() * speed + fi) * positionRadius;  
   })
 
 
   return (
     <mesh position={position} ref={ref}>
-    <sphereGeometry args={[0.1]}/>
+    <sphereGeometry args={[0.2]}/>
     <meshStandardMaterial attach="material" map={material}/>
     </mesh>
   )
