@@ -1,8 +1,10 @@
 import { ref, set, update, get, onDisconnect } from "firebase/database";
 import { database } from "./firebaseConfig";
 
-let playerUid = localStorage.getItem("playerUid");
-let playerName;
+// const DEFAULT_PLAYER_NAME = "Guest" + Math.random().toString(36).slice(0, 10);
+
+// if (!localStorage.getItem("playerName")) {
+// }
 
 async function fetchPlayerData(chosenUid) {
   const playerRef = ref(database, `players/${chosenUid}`);
@@ -20,11 +22,10 @@ async function fetchPlayerData(chosenUid) {
 }
 
 async function setPlayerData(newUID) {
-  playerUid = newUID;
-  localStorage.setItem("playerUid", playerUid);
-  const playerRef = ref(database, `players/${playerUid}`);
+  localStorage.setItem("playerUid", newUID);
+  const playerRef = ref(database, `players/${newUID}`);
   set(playerRef, {
-    uid: playerUid,
+    uid: newUID,
     joinedAt: new Date().toISOString(),
     name: localStorage.getItem("name"),
   });
@@ -32,9 +33,9 @@ async function setPlayerData(newUID) {
 }
 
 function setPlayerName(newPlayerName) {
-  playerName = newPlayerName;
+  const playerUid = localStorage.getItem("playerUid");
   const playerRef = ref(database, `players/${playerUid}`);
-  update(playerRef, { name: playerName }).catch((error) =>
+  update(playerRef, { name: newPlayerName }).catch((error) =>
     console.error("Error updating player name:", error)
   );
 }
@@ -57,11 +58,4 @@ async function getUserCount() {
   }
 }
 
-export {
-  playerUid,
-  playerName,
-  setPlayerData,
-  setPlayerName,
-  getUserCount,
-  fetchPlayerData,
-};
+export { setPlayerData, setPlayerName, getUserCount, fetchPlayerData };

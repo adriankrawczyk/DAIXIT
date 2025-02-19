@@ -1,6 +1,5 @@
 import { ref, get } from "firebase/database";
 import { database } from "./firebaseConfig";
-import { playerUid, playerName, fetchPlayerData } from "./playerMethods";
 
 async function getSetupData(gameId) {
   const players = await getPlayers(gameId);

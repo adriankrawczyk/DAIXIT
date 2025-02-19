@@ -8,9 +8,10 @@ import {
   remove,
 } from "firebase/database";
 import { database } from "./firebaseConfig";
-import { playerUid, playerName, fetchPlayerData } from "./playerMethods";
+import { fetchPlayerData } from "./playerMethods";
 
 async function newGame() {
+  const playerUid = localStorage.getItem("playerUid");
   const gamesRef = ref(database, "games");
   const playerData = await fetchPlayerData(playerUid);
   playerData.host = true;
@@ -33,6 +34,7 @@ async function newGame() {
 
 async function joinToGame(gameId) {
   try {
+    const playerUid = localStorage.getItem("playerUid");
     const gameRef = ref(database, `games/${gameId}/players`);
     const playerData = await fetchPlayerData(playerUid);
     playerData.host = false;
