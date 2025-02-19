@@ -9,7 +9,7 @@ import Paddle_Boat from "../../public/Paddle_Boat";
 import Cone from "./objects/Cone";
 import { getActivePlayersInGame, joinToGame } from "./firebase/lobbyMethods";
 import { useSetup } from "./context/SetupContext";
-import { getSetupData } from "./firebase/gameMethods";
+import { getPosition } from "./firebase/gameMethods";
 import FirebaseLogger from "./lobby/firebase/firebaseLogger";
 
 const Scene = () => {
@@ -29,7 +29,7 @@ const Scene = () => {
       directionalLightPosition,
       cardsPosition,
       cardsRotation,
-    } = await getSetupData(gameId);
+    } = await getPosition();
     setCameraPosition(position);
     setCameraLookAt(lookAt);
     setCameraLookAtMultiplier(multiplier);
@@ -55,7 +55,7 @@ const Scene = () => {
       {/* <Table /> */}
       {/* <OrbitControls/> */}
       {/* <Paddle_Boat/> */}
-      <Cone/>
+      <Cone />
       <FullBackground />
     </>
   );

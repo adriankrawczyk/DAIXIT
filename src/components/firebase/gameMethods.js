@@ -3,8 +3,7 @@ import { database } from "./firebaseConfig";
 import { setPlayerName } from "./playerMethods";
 import FirebaseLogger from "../lobby/firebase/firebaseLogger";
 
-async function getSetupData(gameId) {
-  const players = await getPlayers(gameId);
+async function getSetupData(n) {
   const defaultObj = {
     position: [0, 2, 4.4],
     lookAt: [0, 0, -5],
@@ -13,7 +12,7 @@ async function getSetupData(gameId) {
     cardsPosition: [0, 0, 0],
     cardsRotation: [0, 0, 0],
   };
-  switch (players.length) {
+  switch (n) {
     case 1: {
       return defaultObj;
     }
@@ -33,6 +32,36 @@ async function getSetupData(gameId) {
   }
 }
 
+async function getPosition() {
+  const gameId = window.location.href.split("/").pop();
+  const playerId = localStorage.getItem("playerUid");
+  if (!gameId || !playerId) {
+    console.error("Missing gameId or playerId in localStorage");
+    return null;
+  }
+
+  const currentGameDataRef = ref(
+    database,
+    `games/${gameId}/players/${playerId}/currentGameData`
+  );
+
+  try {
+    const gameDataSnapshot = await get(currentGameDataRef);
+    const gameData = gameDataSnapshot.val();
+
+    if (!gameData || typeof gameData.position === "undefined") {
+      console.error("Invalid game data or position not found");
+      return null;
+    }
+
+    console.log("Player position:", gameData.position);
+    return getSetupData(gameData.position);
+  } catch (error) {
+    console.error("Error fetching player position:", error);
+    return null;
+  }
+}
+
 async function getPlayers(gameId) {
   const playersRef = ref(database, `games/${gameId}/players`);
   const snapshot = await get(playersRef);
@@ -44,4 +73,4 @@ async function getPlayers(gameId) {
   );
   return playersObjectArray;
 }
-export { getSetupData };
+export { getPosition };
