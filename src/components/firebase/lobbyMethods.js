@@ -8,22 +8,29 @@ import {
   remove,
 } from "firebase/database";
 import { database } from "./firebaseConfig";
-import { playerUid, playerName, fetchPlayerData } from "./playerMethods";
+import { fetchPlayerData } from "./playerMethods";
 
 async function newGame() {
+  const playerUid = localStorage.getItem("playerUid");
+  if (!playerUid) {
+    console.error("No player UID found in localStorage");
+    return null;
+  }
+
   const gamesRef = ref(database, "games");
   const playerData = await fetchPlayerData(playerUid);
-  playerData.host = true;
+  if (!playerData || !playerData.uid) {
+    console.error("Invalid player data");
+    return null;
+  }
 
   const newGameRef = push(gamesRef);
   try {
     await set(newGameRef, {
       host: playerData.name,
-      uid: playerData.uid,
+      hostUid: playerData.uid,
       gameId: newGameRef.key,
-      players: {
-        [playerData.uid]: playerData,
-      },
+      players: {},
     });
     setupDisconnectHandlers(newGameRef.key, playerData.uid);
     return newGameRef.key;
@@ -35,15 +42,37 @@ async function newGame() {
 
 async function joinToGame(gameId) {
   try {
-    const gameRef = ref(database, `games/${gameId}/players`);
+    const playerUid = localStorage.getItem("playerUid");
+    if (!playerUid) {
+      throw new Error("No player UID found in localStorage");
+    }
+
     const playerData = await fetchPlayerData(playerUid);
-    playerData.host = false;
     if (!playerData || !playerData.uid) {
       throw new Error("Invalid player data");
     }
 
-    await update(gameRef, { [playerData.uid]: playerData });
-    setupDisconnectHandlers(gameId, playerData.uid);
+    const { name } = playerData;
+    const players = await getPlayersInGame(gameId);
+    const playersArray = players ? Object.values(players) : [];
+
+    const currentGameData = {
+      position: playersArray.length,
+    };
+
+    const playerInGameRef = ref(
+      database,
+      `games/${gameId}/players/${playerUid}`
+    );
+    await update(playerInGameRef, {
+      name,
+      inGame: true,
+      currentGameData,
+    });
+
+    onDisconnect(playerInGameRef).update({ inGame: false });
+
+    setupDisconnectHandlers(gameId, playerUid);
   } catch (error) {
     console.error("Error updating player data:", error);
   }
@@ -51,19 +80,44 @@ async function joinToGame(gameId) {
 
 async function getGames() {
   const gamesRef = ref(database, "games");
+
   try {
     const snapshot = await get(gamesRef);
     const gamesObject = snapshot.val();
     if (!gamesObject) return [];
-    const gamesArray = Object.entries(gamesObject).map(([id, data]) => ({
-      ...data,
-    }));
+
+    const gamesArray = [];
+
+    for (const [gameId, gameData] of Object.entries(gamesObject)) {
+      const players = gameData.players || {};
+
+      const allPlayersInactive =
+        Object.values(players).length > 0 &&
+        Object.values(players).every((player) => player.inGame === false);
+
+      if (allPlayersInactive) {
+        await remove(ref(database, `games/${gameId}`));
+      } else {
+        gamesArray.push({ ...gameData });
+      }
+    }
 
     return gamesArray;
   } catch (error) {
     console.error("Error fetching games:", error);
-    return null;
+    return [];
   }
+}
+
+async function getPlayersInGame(gameId) {
+  const playersRef = ref(database, `games/${gameId}/players`);
+  const playersSnapshot = await get(playersRef);
+  return playersSnapshot.val() || {};
+}
+
+async function getActivePlayersInGame(gameId) {
+  const players = await getPlayersInGame(gameId);
+  return Object.values(players).filter((player) => player.inGame);
 }
 
 async function leaveGame(gameId, playerId) {
@@ -72,43 +126,30 @@ async function leaveGame(gameId, playerId) {
     return;
   }
 
-  const playerInGameRef = ref(database, `games/${gameId}/players/${playerId}`);
   const gameRef = ref(database, `games/${gameId}`);
+  const playerInGameRef = ref(database, `games/${gameId}/players/${playerId}`);
 
-  try {
-    await remove(playerInGameRef);
+  await update(playerInGameRef, { inGame: false });
+  localStorage.removeItem("currentGame");
 
-    const gameSnapshot = await get(gameRef);
-    if (gameSnapshot.exists()) {
-      const gameData = gameSnapshot.val();
-      if (!gameData.players || Object.keys(gameData.players).length === 0) {
-        await remove(gameRef);
-      }
-    }
-  } catch (error) {
-    console.error("Error leaving game:", error);
+  const activePlayers = await getActivePlayersInGame(gameId);
+  if (activePlayers.length === 0) {
+    await remove(gameRef);
   }
 }
 
 function setupDisconnectHandlers(gameId, playerId) {
   if (!gameId || !playerId) return;
 
-  const playerInGameRef = ref(database, `games/${gameId}/players/${playerId}`);
-  const gameRef = ref(database, `games/${gameId}`);
-
-  const onDisconnectRef = onDisconnect(playerInGameRef);
-
-  onDisconnectRef.remove();
-
-  window.addEventListener("beforeunload", async (event) => {
-    await leaveGame(gameId, playerId);
+  window.addEventListener("beforeunload", () => {
+    leaveGame(gameId, playerId);
   });
 
   return () => {
-    window.removeEventListener("beforeunload", async (event) => {
-      await leaveGame(gameId, playerId);
+    window.removeEventListener("beforeunload", () => {
+      leaveGame(gameId, playerId);
     });
   };
 }
 
-export { newGame, getGames, joinToGame, leaveGame };
+export { newGame, getGames, joinToGame, leaveGame, getActivePlayersInGame };

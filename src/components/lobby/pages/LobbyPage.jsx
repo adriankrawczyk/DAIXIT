@@ -6,19 +6,12 @@ import { getGames, joinToGame, newGame } from "../../firebase/lobbyMethods";
 import { useNavigate } from "react-router-dom";
 import GameListElement from "../util/GameListElement";
 import { debounce } from "lodash";
-import { getCameraData } from "../../firebase/gameMethods";
-import { useCamera } from "../../context/CameraContext";
 
 const LobbyPage = ({ setPlayClicked }) => {
   const [userCount, setUserCount] = useState(0);
   const [games, setGames] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const {
-    setCameraPosition,
-    setCameraLookAt,
-    setCameraLookAtMultiplier,
-    setDirectionalLightPosition,
-  } = useCamera();
+
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -52,11 +45,6 @@ const LobbyPage = ({ setPlayClicked }) => {
     try {
       const gameId = await newGame();
       localStorage.setItem("currentGame", gameId);
-      const cameraData = await getCameraData(gameId);
-      setCameraPosition(cameraData.position);
-      setCameraLookAt(cameraData.lookAt);
-      setCameraLookAtMultiplier(cameraData.multiplier);
-      setDirectionalLightPosition(cameraData.directionalLightPosition);
       navigate(`/game/${gameId}`);
     } catch (error) {
       console.error("Error creating new game:", error);
@@ -78,13 +66,7 @@ const LobbyPage = ({ setPlayClicked }) => {
     }
     setIsProcessing(true);
     try {
-      await joinToGame(gameId);
       localStorage.setItem("currentGame", gameId);
-      const cameraData = await getCameraData(gameId);
-      setCameraPosition(cameraData.position);
-      setCameraLookAt(cameraData.lookAt);
-      setCameraLookAtMultiplier(cameraData.multiplier);
-      setDirectionalLightPosition(cameraData.directionalLightPosition);
       navigate(`/game/${gameId}`);
     } catch (error) {
       console.error("Error joining game:", error);

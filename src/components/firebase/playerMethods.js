@@ -1,9 +1,6 @@
 import { ref, set, update, get, onDisconnect } from "firebase/database";
 import { database } from "./firebaseConfig";
 
-let playerUid;
-let playerName;
-
 async function fetchPlayerData(chosenUid) {
   const playerRef = ref(database, `players/${chosenUid}`);
   try {
@@ -20,20 +17,23 @@ async function fetchPlayerData(chosenUid) {
 }
 
 async function setPlayerData(newUID) {
-  playerUid = newUID;
-  const playerRef = ref(database, `players/${playerUid}`);
+  localStorage.setItem("playerUid", newUID);
+  const playerRef = ref(database, `players/${newUID}`);
   set(playerRef, {
-    uid: playerUid,
+    uid: newUID,
     joinedAt: new Date().toISOString(),
     name: localStorage.getItem("name"),
+    loggedIn: true,
   });
-  onDisconnect(playerRef).remove();
+
+  const onDisconnectRef = onDisconnect(playerRef);
+  onDisconnectRef.update({ loggedIn: false });
 }
 
 function setPlayerName(newPlayerName) {
-  playerName = newPlayerName;
+  const playerUid = localStorage.getItem("playerUid");
   const playerRef = ref(database, `players/${playerUid}`);
-  update(playerRef, { name: playerName }).catch((error) =>
+  update(playerRef, { name: newPlayerName }).catch((error) =>
     console.error("Error updating player name:", error)
   );
 }
@@ -44,8 +44,11 @@ async function getUserCount() {
   try {
     const snapshot = await get(playersRef);
     if (snapshot.exists()) {
-      const userCount = Object.keys(snapshot.val()).length;
-      return userCount;
+      const users = snapshot.val();
+      const loggedInCount = Object.values(users).filter(
+        (user) => user.loggedIn === true
+      ).length;
+      return loggedInCount;
     } else {
       console.log("No users found.");
       return 0;
@@ -56,11 +59,4 @@ async function getUserCount() {
   }
 }
 
-export {
-  playerUid,
-  playerName,
-  setPlayerData,
-  setPlayerName,
-  getUserCount,
-  fetchPlayerData,
-};
+export { setPlayerData, setPlayerName, getUserCount, fetchPlayerData };

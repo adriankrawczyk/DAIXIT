@@ -7,28 +7,26 @@ import {
 
 import { setPlayerData } from "../../firebase/playerMethods";
 import { leaveGame } from "../../firebase/lobbyMethods";
+import { setPlayerName } from "../../firebase/playerMethods";
 
-const FirebaseLogger = () => {
-  useEffect(() => {
-    signInAnonymously(auth).catch((error) =>
-      console.error("Auth Error:", error)
-    );
+const FirebaseLogger = async () => {
+  await signInAnonymously(auth).catch((error) =>
+    console.error("Auth Error:", error)
+  );
 
-    const unsubscribe = onAuthStateChanged(auth, async (player) => {
-      if (player) {
-        await setPlayerData(player.uid);
-        const currentGame = localStorage.getItem("currentGame");
-        if (currentGame) {
-          leaveGame(currentGame, player.uid);
-          localStorage.setItem("currentGame", "");
-        }
-      }
-    });
+  if (!localStorage.getItem("name")) {
+    const DEFAULT_PLAYER_NAME =
+      "GUEST_" + Math.random().toString(36).slice(0, 5);
+    localStorage.setItem("name", DEFAULT_PLAYER_NAME);
+    setPlayerName(DEFAULT_PLAYER_NAME);
+  }
+  const unsubscribe = onAuthStateChanged(auth, async (player) => {
+    if (player) {
+      await setPlayerData(player.uid);
+    }
+  });
 
-    return () => unsubscribe();
-  }, []);
-
-  return null;
+  return () => unsubscribe();
 };
 
 export default FirebaseLogger;
