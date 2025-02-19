@@ -76,10 +76,17 @@ async function leaveGame(gameId, playerId) {
     console.error("Invalid gameId or playerId");
     return;
   }
-  const playerInGameRef = ref(database, `games/${gameId}/players/${playerId}`);
-  localStorage.setItem("currentGame", false);
-  await update(playerInGameRef, { inGame: false });
   const gameRef = ref(database, `games/${gameId}`);
+
+  const gameSnapshot = await get(gameRef);
+
+  if (!gameSnapshot.exists()) {
+    // Game does not exist
+    return;
+  }
+  const playerInGameRef = ref(database, `games/${gameId}/players/${playerId}`);
+  await update(playerInGameRef, { inGame: false });
+  localStorage.setItem("currentGame", "");
   if ((await getActivePlayersInGame(gameId)) === 0) await remove(gameRef);
 }
 
