@@ -41,7 +41,6 @@ async function joinToGame(gameId) {
     if (!playerData || !playerData.uid) {
       throw new Error("Invalid player data");
     }
-
     await update(gameRef, { [playerData.uid]: playerData });
     setupDisconnectHandlers(gameId, playerData.uid);
   } catch (error) {
@@ -94,7 +93,6 @@ function setupDisconnectHandlers(gameId, playerId) {
   if (!gameId || !playerId) return;
 
   const playerInGameRef = ref(database, `games/${gameId}/players/${playerId}`);
-  const gameRef = ref(database, `games/${gameId}`);
 
   const onDisconnectRef = onDisconnect(playerInGameRef);
 

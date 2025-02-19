@@ -29,7 +29,6 @@ async function setPlayerData(newUID) {
     joinedAt: new Date().toISOString(),
     name: localStorage.getItem("name"),
   });
-  onDisconnect(playerRef).remove();
 }
 
 function setPlayerName(newPlayerName) {
