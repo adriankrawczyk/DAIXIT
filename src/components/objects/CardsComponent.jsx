@@ -2,13 +2,22 @@ import React, { useEffect, useRef, useState } from "react";
 import Card from "./Card";
 import gsap from "gsap";
 import { useSetup } from "../context/SetupContext";
+import AcceptButton from "./AcceptButton";
+import { repeat } from "lodash";
+import DeclineButton from "./DeclineButton";
 
 const CardsComponent = ({ numberOfCards }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
   const [currentClicked, setCurrentClicked] = useState(-1);
   const [disableHover, setDisableHover] = useState(false);
   const [photoUrls, setPhotoUrls] = useState([]);
+
+
   const previouslyClickedRef = useRef(-1);
+  const acceptButtonRef = useRef();
+  const declineButtonRef = useRef();
+
+
   const { cardsPosition, cardsRotation } = useSetup();
 
   useEffect(() => {
@@ -67,6 +76,29 @@ const CardsComponent = ({ numberOfCards }) => {
     }
   };
 
+  const showCardCloser = (index) => {
+    if (cardsRef.current[index]?.current) {
+
+      gsap.to(cardsRef.current[index].current.position, {
+        x: 0,
+        y: 1.9,
+        z: 3.8,
+        duration: 0.5,
+        ease: "power2.in",
+      });
+
+      gsap.to(cardsRef.current[index].current.rotation, {
+        x: -Math.PI/15,
+        y: 0,
+        z: 0,
+        duration: 0.5,
+        ease: "power2.out",
+      });
+
+    }
+  }
+
+
   const backToHand = (index) => {
     if (cardsRef.current[index]?.current) {
       setDisableHover(true);
@@ -88,19 +120,44 @@ const CardsComponent = ({ numberOfCards }) => {
     }
   };
 
+  const pickingCardsButtonsTransition = () => {
+    gsap.to(acceptButtonRef.current.scale, {
+      x: 1,
+      y: 1,
+      z: 1,
+      duration: 0.5,
+      ease: "power2.inOut",
+    });
+
+    gsap.to(declineButtonRef.current.scale, {
+      x: 1,
+      y: 1,
+      z: 1,
+      duration: 0.5,
+      ease: "power2.inOut",
+    });
+  }
+
+
   useEffect(() => {
-    if (previouslyClickedRef.current !== -1) {
-      backToHand(previouslyClickedRef.current);
+    // if (previouslyClickedRef.current !== -1) {
+    //   backToHand(previouslyClickedRef.current);
+    // }
+
+    // if (currentClicked !== -1) {
+    //   addCardOnTable(currentClicked);
+    //   backToHand(previouslyClickedRef.current);
+    //   previouslyClickedRef.current = currentClicked;
+    // } else {
+    //   backToHand(currentClicked);
+    //   previouslyClickedRef.current = -1;
+    // }
+    if (currentClicked !== -1) {
+    showCardCloser(currentClicked)
+    pickingCardsButtonsTransition();
     }
 
-    if (currentClicked !== -1) {
-      addCardOnTable(currentClicked);
-      backToHand(previouslyClickedRef.current);
-      previouslyClickedRef.current = currentClicked;
-    } else {
-      backToHand(currentClicked);
-      previouslyClickedRef.current = -1;
-    }
+
   }, [currentClicked]);
 
   return (
@@ -120,6 +177,15 @@ const CardsComponent = ({ numberOfCards }) => {
           imageUrl={photoUrls[key]}
         />
       ))}
+
+      {currentClicked !== -1 && (
+      <>
+    <AcceptButton ref={acceptButtonRef} />
+    <DeclineButton ref={declineButtonRef} />
+      </>
+      )}
+
+      
     </>
   );
 };

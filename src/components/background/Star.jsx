@@ -3,15 +3,17 @@ import React, { useRef } from 'react'
 
 const X_ALTITUDE = 20;
 const Y_ALTITUDE = 5;
+const Z_ALTITUDE = 20;
 
-const Star = ({position, xSign, ySign, xSpeed, ySpeed}) => {
+
+const Star = ({position, xSign, ySign, zSign, xSpeed, ySpeed, zSpeed}) => {
     const starRef = useRef();
 
     useFrame((state)=>{
         // state
-        starRef.current.position.x = position[0] + Math.cos(state.clock.getElapsedTime() * xSpeed) * X_ALTITUDE * xSign
-        starRef.current.position.y = position[1] + Math.sin(state.clock.getElapsedTime() * ySpeed) * Y_ALTITUDE * ySign
-        starRef.current.position.z = position[2] + Math.cos(state.clock.getElapsedTime() * 0.5)
+        starRef.current.position.x = position[0] + Math.cos(state.clock.getElapsedTime() * xSpeed) * X_ALTITUDE * xSign;
+        starRef.current.position.y = position[1] + Math.sin(state.clock.getElapsedTime() * ySpeed) * Y_ALTITUDE * ySign;
+        starRef.current.position.z = position[2] + Math.cos(state.clock.getElapsedTime() * zSpeed) * Z_ALTITUDE * zSign;
     })
    
   return (
