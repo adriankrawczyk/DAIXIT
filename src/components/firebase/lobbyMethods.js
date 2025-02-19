@@ -47,6 +47,7 @@ async function joinToGame(gameId) {
 
     await update(playerInGameRef, { name, inGame: true });
     onDisconnect(playerInGameRef).update({ inGame: false });
+    listenForPlayerLeave(gameId, playerUid);
 
     setupDisconnectHandlers(gameId, playerData.uid);
   } catch (error) {
@@ -56,13 +57,28 @@ async function joinToGame(gameId) {
 
 async function getGames() {
   const gamesRef = ref(database, "games");
+
   try {
     const snapshot = await get(gamesRef);
     const gamesObject = snapshot.val();
+
     if (!gamesObject) return [];
-    const gamesArray = Object.entries(gamesObject).map(([id, data]) => ({
-      ...data,
-    }));
+
+    const gamesArray = [];
+
+    for (const [gameId, gameData] of Object.entries(gamesObject)) {
+      const players = gameData.players || {};
+
+      const allPlayersInactive =
+        Object.values(players).length > 0 &&
+        Object.values(players).every((player) => player.inGame === false);
+
+      if (allPlayersInactive) {
+        await remove(ref(database, `games/${gameId}`));
+      } else {
+        gamesArray.push({ ...gameData });
+      }
+    }
 
     return gamesArray;
   } catch (error) {
@@ -70,6 +86,7 @@ async function getGames() {
     return null;
   }
 }
+
 async function getActivePlayersInGame(gameId) {
   const playersRef = ref(database, `games/${gameId}/players`);
   const playersSnapshot = await get(playersRef);
