@@ -1,7 +1,7 @@
 import { ref, set, update, get, onDisconnect } from "firebase/database";
 import { database } from "./firebaseConfig";
 
-let playerUid;
+let playerUid = localStorage.getItem("playerUid");
 let playerName;
 
 async function fetchPlayerData(chosenUid) {
@@ -21,6 +21,7 @@ async function fetchPlayerData(chosenUid) {
 
 async function setPlayerData(newUID) {
   playerUid = newUID;
+  localStorage.setItem("playerUid", playerUid);
   const playerRef = ref(database, `players/${playerUid}`);
   set(playerRef, {
     uid: playerUid,

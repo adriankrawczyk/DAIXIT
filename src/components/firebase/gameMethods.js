@@ -4,14 +4,17 @@ import { playerUid, playerName, fetchPlayerData } from "./playerMethods";
 
 async function getSetupData(gameId) {
   const players = await getPlayers(gameId);
+  const defaultObj = {
+    position: [0, 2, 4.4],
+    lookAt: [0, 0, -5],
+    multiplier: [1, 1, 1],
+    directionalLightPosition: [0, 2, 2.4],
+    cardsPosition: [0, 0, 0],
+    cardsRotation: [0, 0, 0],
+  };
   switch (players.length) {
     case 1: {
-      return {
-        position: [0, 2, 4.4],
-        lookAt: [0, 0, -5],
-        multiplier: [1, 1, 1],
-        directionalLightPosition: [0, 2, 2.4],
-      };
+      return defaultObj;
     }
     case 2: {
       return {
@@ -19,10 +22,12 @@ async function getSetupData(gameId) {
         lookAt: [0, 0, 5],
         multiplier: [-1, 1, 1],
         directionalLightPosition: [0, 2, -2.4],
+        cardsPosition: [0, 0, 0],
+        cardsRotation: [0, Math.PI, 0],
       };
     }
     default: {
-      return { position: [0, 2, 4.4] };
+      return defaultObj;
     }
   }
 }

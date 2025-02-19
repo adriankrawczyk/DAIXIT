@@ -21,9 +21,7 @@ async function newGame() {
       host: playerData.name,
       uid: playerData.uid,
       gameId: newGameRef.key,
-      players: {
-        [playerData.uid]: playerData,
-      },
+      players: {},
     });
     setupDisconnectHandlers(newGameRef.key, playerData.uid);
     return newGameRef.key;

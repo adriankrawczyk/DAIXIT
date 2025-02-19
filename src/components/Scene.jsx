@@ -7,17 +7,52 @@ import { OrbitControls } from "@react-three/drei";
 import FullBackground from "./background/FullBackground";
 import Paddle_Boat from "../../public/Paddle_Boat";
 import Cone from "./objects/Cone";
+import { joinToGame } from "./firebase/lobbyMethods";
+import { useSetup } from "./context/SetupContext";
+import { getSetupData } from "./firebase/gameMethods";
 
 const Scene = () => {
+  const {
+    setCameraPosition,
+    setCameraLookAt,
+    setCameraLookAtMultiplier,
+    setDirectionalLightPosition,
+    setCardsPosition,
+    setCardsRotation,
+  } = useSetup();
+  const setup = async (gameId) => {
+    const {
+      position,
+      lookAt,
+      multiplier,
+      directionalLightPosition,
+      cardsPosition,
+      cardsRotation,
+    } = await getSetupData(gameId);
+    setCameraPosition(position);
+    setCameraLookAt(lookAt);
+    setCameraLookAtMultiplier(multiplier);
+    setDirectionalLightPosition(directionalLightPosition);
+    setCardsPosition(cardsPosition);
+    setCardsRotation(cardsRotation);
+  };
+  useEffect(() => {
+    const join = async () => {
+      const gameId = localStorage.getItem("currentGame");
+      await joinToGame(gameId);
+      setup(gameId);
+    };
+    join();
+  }, []);
   return (
     <>
       <AllLights />
       <CameraControls />
       <CardsComponent numberOfCards={5} />
-      {/* <Table /> */}
+      <Table />
       {/* <OrbitControls/> */}
-      {/* <Paddle_Boat/> */}
-      <Cone/>
+      {/* <Paddle_Boat /> */}
+      {/* <Cone/> */}
       <FullBackground />
     </>
   );

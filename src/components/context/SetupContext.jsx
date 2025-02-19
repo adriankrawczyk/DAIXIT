@@ -11,6 +11,9 @@ export const SetupProvider = ({ children }) => {
   const [directionalLightPosition, setDirectionalLightPosition] = useState([
     0, 2, 2.4,
   ]);
+  const [cardsPosition, setCardsPosition] = useState([0, 0, 0]);
+  const [cardsRotation, setCardsRotation] = useState([0, 0, 0]);
+
   return (
     <SetupContext.Provider
       value={{
@@ -22,6 +25,10 @@ export const SetupProvider = ({ children }) => {
         setCameraLookAtMultiplier,
         directionalLightPosition,
         setDirectionalLightPosition,
+        cardsPosition,
+        setCardsPosition,
+        cardsRotation,
+        setCardsRotation,
       }}
     >
       {children}

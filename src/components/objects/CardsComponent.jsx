@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Card from "./Card";
 import gsap from "gsap";
+import { useSetup } from "../context/SetupContext";
 
 const CardsComponent = ({ numberOfCards }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
@@ -8,6 +9,7 @@ const CardsComponent = ({ numberOfCards }) => {
   const [disableHover, setDisableHover] = useState(false);
   const [photoUrls, setPhotoUrls] = useState([]);
   const previouslyClickedRef = useRef(-1);
+  const { cardsPosition, cardsRotation } = useSetup();
 
   useEffect(() => {
     const fetchPhotos = async () => {
@@ -30,8 +32,16 @@ const CardsComponent = ({ numberOfCards }) => {
 
   const cardsLayout = useRef(
     Array.from({ length: numberOfCards }, (_, i) => ({
-      position: [(i - 2) / 2 + 0.2, 0.75, 3 + i * 0.01],
-      rotation: [-Math.PI / 8, 0, Math.PI / 16],
+      position: [
+        (i - 2) / 2 + 0.2 + cardsPosition[0],
+        0.75 + cardsPosition[1],
+        3 + i * 0.01 + cardsPosition[2],
+      ],
+      rotation: [
+        -Math.PI / 8 + cardsRotation[0],
+        cardsRotation[1],
+        Math.PI / 16 + cardsRotation[2],
+      ],
     }))
   );
   const cardsRef = useRef([]);
@@ -61,9 +71,9 @@ const CardsComponent = ({ numberOfCards }) => {
     if (cardsRef.current[index]?.current) {
       setDisableHover(true);
       gsap.to(cardsRef.current[index].current.position, {
-        x: (index - 2) / 2 + 0.2,
-        y: 0.75,
-        z: 3 + index * 0.01,
+        x: (index - 2) / 2 + 0.2 + cardsPosition[0],
+        y: 0.75 + cardsPosition[1],
+        z: 3 + index * 0.01 + cardsPosition[2],
         duration: 0.5,
         ease: "power2.out",
       });
