@@ -12,8 +12,18 @@ import { fetchPlayerData } from "./playerMethods";
 
 async function newGame() {
   const playerUid = localStorage.getItem("playerUid");
+  if (!playerUid) {
+    console.error("No player UID found in localStorage");
+    return null;
+  }
+
   const gamesRef = ref(database, "games");
   const playerData = await fetchPlayerData(playerUid);
+  if (!playerData || !playerData.uid) {
+    console.error("Invalid player data");
+    return null;
+  }
+
   const newGameRef = push(gamesRef);
   try {
     await set(newGameRef, {
@@ -33,23 +43,36 @@ async function newGame() {
 async function joinToGame(gameId) {
   try {
     const playerUid = localStorage.getItem("playerUid");
-    const gameRef = ref(database, `games/${gameId}/players`);
+    if (!playerUid) {
+      throw new Error("No player UID found in localStorage");
+    }
+
     const playerData = await fetchPlayerData(playerUid);
-    playerData.inGame = true;
     if (!playerData || !playerData.uid) {
       throw new Error("Invalid player data");
     }
+
     const { name } = playerData;
+    const players = await getPlayersInGame(gameId);
+    const playersArray = players ? Object.values(players) : [];
+
+    const currentGameData = {
+      position: playersArray.length,
+    };
+
     const playerInGameRef = ref(
       database,
       `games/${gameId}/players/${playerUid}`
     );
+    await update(playerInGameRef, {
+      name,
+      inGame: true,
+      currentGameData,
+    });
 
-    await update(playerInGameRef, { name, inGame: true });
     onDisconnect(playerInGameRef).update({ inGame: false });
-    listenForPlayerLeave(gameId, playerUid);
 
-    setupDisconnectHandlers(gameId, playerData.uid);
+    setupDisconnectHandlers(gameId, playerUid);
   } catch (error) {
     console.error("Error updating player data:", error);
   }
@@ -61,7 +84,6 @@ async function getGames() {
   try {
     const snapshot = await get(gamesRef);
     const gamesObject = snapshot.val();
-
     if (!gamesObject) return [];
 
     const gamesArray = [];
@@ -83,16 +105,19 @@ async function getGames() {
     return gamesArray;
   } catch (error) {
     console.error("Error fetching games:", error);
-    return null;
+    return [];
   }
 }
 
-async function getActivePlayersInGame(gameId) {
+async function getPlayersInGame(gameId) {
   const playersRef = ref(database, `games/${gameId}/players`);
   const playersSnapshot = await get(playersRef);
-  const players = playersSnapshot.val();
-  return Object.values(players).filter((player) => player.inGame === true)
-    .length;
+  return playersSnapshot.val() || {};
+}
+
+async function getActivePlayersInGame(gameId) {
+  const players = await getPlayersInGame(gameId);
+  return Object.values(players).filter((player) => player.inGame);
 }
 
 async function leaveGame(gameId, playerId) {
@@ -100,36 +125,29 @@ async function leaveGame(gameId, playerId) {
     console.error("Invalid gameId or playerId");
     return;
   }
+
   const gameRef = ref(database, `games/${gameId}`);
-
-  const gameSnapshot = await get(gameRef);
-
-  if (!gameSnapshot.exists()) {
-    // Game does not exist
-    return;
-  }
   const playerInGameRef = ref(database, `games/${gameId}/players/${playerId}`);
+
   await update(playerInGameRef, { inGame: false });
-  localStorage.setItem("currentGame", "");
-  if ((await getActivePlayersInGame(gameId)) === 0) await remove(gameRef);
+  localStorage.removeItem("currentGame");
+
+  const activePlayers = await getActivePlayersInGame(gameId);
+  if (activePlayers.length === 0) {
+    await remove(gameRef);
+  }
 }
 
 function setupDisconnectHandlers(gameId, playerId) {
   if (!gameId || !playerId) return;
 
-  const playerInGameRef = ref(database, `games/${gameId}/players/${playerId}`);
-
-  const onDisconnectRef = onDisconnect(playerInGameRef);
-
-  //onDisconnectRef.update({ inGame: false });
-
-  window.addEventListener("beforeunload", async (event) => {
-    await leaveGame(gameId, playerId);
+  window.addEventListener("beforeunload", () => {
+    leaveGame(gameId, playerId);
   });
 
   return () => {
-    window.removeEventListener("beforeunload", async (event) => {
-      await leaveGame(gameId, playerId);
+    window.removeEventListener("beforeunload", () => {
+      leaveGame(gameId, playerId);
     });
   };
 }
