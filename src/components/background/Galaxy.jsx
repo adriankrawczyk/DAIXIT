@@ -35,7 +35,7 @@ const Galaxy = () => {
     }
     {
         planetTextures.current.map( (item, key) => (
-            <Planets texture={item} positionRadius={(key+1)*1.4 + 2} speed={Math.random() * 0.4 + 0.1}/>
+            <Planets texture={item} positionRadius={(key+1)*1.3 + 3} speed={Math.random() * 0.1 + 0.05} fi={Math.random() * Math.PI}/>
         ))
     }
     <GalaxyInstances/>
