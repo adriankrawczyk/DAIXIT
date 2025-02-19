@@ -7,7 +7,7 @@ import { OrbitControls } from "@react-three/drei";
 import FullBackground from "./background/FullBackground";
 import Paddle_Boat from "../../public/Paddle_Boat";
 import Cone from "./objects/Cone";
-import { joinToGame } from "./firebase/lobbyMethods";
+import { getActivePlayersInGame, joinToGame } from "./firebase/lobbyMethods";
 import { useSetup } from "./context/SetupContext";
 import { getSetupData } from "./firebase/gameMethods";
 import FirebaseLogger from "./lobby/firebase/firebaseLogger";

@@ -1,11 +1,6 @@
 import { ref, set, update, get, onDisconnect } from "firebase/database";
 import { database } from "./firebaseConfig";
 
-// const DEFAULT_PLAYER_NAME = "Guest" + Math.random().toString(36).slice(0, 10);
-
-// if (!localStorage.getItem("playerName")) {
-// }
-
 async function fetchPlayerData(chosenUid) {
   const playerRef = ref(database, `players/${chosenUid}`);
   try {
@@ -28,7 +23,12 @@ async function setPlayerData(newUID) {
     uid: newUID,
     joinedAt: new Date().toISOString(),
     name: localStorage.getItem("name"),
+    loggedIn: true,
   });
+
+  const onDisconnectRef = onDisconnect(playerRef);
+
+  onDisconnectRef.update({ loggedIn: false });
 }
 
 function setPlayerName(newPlayerName) {
@@ -45,8 +45,11 @@ async function getUserCount() {
   try {
     const snapshot = await get(playersRef);
     if (snapshot.exists()) {
-      const userCount = Object.keys(snapshot.val()).length;
-      return userCount;
+      const users = snapshot.val();
+      const loggedInCount = Object.values(users).filter(
+        (user) => user.loggedIn === true
+      ).length;
+      return loggedInCount;
     } else {
       console.log("No users found.");
       return 0;
