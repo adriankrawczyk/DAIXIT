@@ -13,10 +13,10 @@ async function getSetupData(n) {
     cardsRotation: [0, 0, 0],
   };
   switch (n) {
-    case 1: {
+    case 0: {
       return defaultObj;
     }
-    case 2: {
+    case 1: {
       return {
         position: [0, 2, -4.4],
         lookAt: [0, 0, 5],
@@ -54,7 +54,6 @@ async function getPosition() {
       return null;
     }
 
-    console.log("Player position:", gameData.position);
     return getSetupData(gameData.position);
   } catch (error) {
     console.error("Error fetching player position:", error);
