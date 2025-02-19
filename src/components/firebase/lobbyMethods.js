@@ -40,7 +40,14 @@ async function joinToGame(gameId) {
       throw new Error("Invalid player data");
     }
     const { name } = playerData;
-    await update(gameRef, { [playerData.uid]: { name, inGame: true } });
+    const playerInGameRef = ref(
+      database,
+      `games/${gameId}/players/${playerUid}`
+    );
+
+    await update(playerInGameRef, { name, inGame: true });
+    onDisconnect(playerInGameRef).update({ inGame: false });
+
     setupDisconnectHandlers(gameId, playerData.uid);
   } catch (error) {
     console.error("Error updating player data:", error);

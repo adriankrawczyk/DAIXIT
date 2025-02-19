@@ -9,7 +9,6 @@ import { getActivePlayersInGame } from "../firebase/lobbyMethods";
 const Lobby = () => {
   FirebaseLogger();
   const gameId = localStorage.getItem("currentGame");
-
   if (gameId) {
     leaveGame(gameId, localStorage.getItem("playerUid"));
   }

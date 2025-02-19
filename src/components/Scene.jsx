@@ -43,7 +43,7 @@ const Scene = () => {
       const gameId = window.location.href.split("/").pop();
       if (!localStorage.getItem("name")) await FirebaseLogger();
       await joinToGame(gameId);
-      setup(gameId);
+      await setup(gameId);
     };
     join();
   }, []);

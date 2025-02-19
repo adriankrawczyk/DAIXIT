@@ -20,17 +20,12 @@ const FirebaseLogger = async () => {
     localStorage.setItem("name", DEFAULT_PLAYER_NAME);
     setPlayerName(DEFAULT_PLAYER_NAME);
   }
-
   const unsubscribe = onAuthStateChanged(auth, async (player) => {
     if (player) {
       await setPlayerData(player.uid);
-      const currentGame = window.location.href.split("/").pop();
-      if (currentGame) {
-        leaveGame(currentGame, player.uid);
-        localStorage.setItem("currentGame", "");
-      }
     }
   });
+
   return () => unsubscribe();
 };
 

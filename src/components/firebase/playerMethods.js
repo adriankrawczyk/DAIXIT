@@ -27,7 +27,6 @@ async function setPlayerData(newUID) {
   });
 
   const onDisconnectRef = onDisconnect(playerRef);
-
   onDisconnectRef.update({ loggedIn: false });
 }
 
