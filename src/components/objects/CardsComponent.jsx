@@ -9,7 +9,7 @@ const CardsComponent = ({ numberOfCards }) => {
   const [disableHover, setDisableHover] = useState(false);
   const [photoUrls, setPhotoUrls] = useState([]);
   const previouslyClickedRef = useRef(-1);
-  const { cardsPosition, cardsRotation } = useSetup();
+  const { cardsPosition, cardsRotation, playerPosition } = useSetup();
 
   useEffect(() => {
     const fetchPhotos = async () => {
@@ -30,21 +30,24 @@ const CardsComponent = ({ numberOfCards }) => {
     fetchPhotos();
   }, [numberOfCards]);
 
-  const cardsLayout = useRef(
-    Array.from({ length: numberOfCards }, (_, i) => ({
-      position: [
-        (i - 2) / 2 + 0.2 + cardsPosition[0],
-        0.75 + cardsPosition[1],
-        3 + i * 0.01 + cardsPosition[2],
-      ],
-      rotation: [
-        -Math.PI / 8 + cardsRotation[0],
-        cardsRotation[1],
-        Math.PI / 16 + cardsRotation[2],
-      ],
-    }))
-  );
   const cardsRef = useRef([]);
+
+  const calculateCardsLayout = () => {
+    return Array.from({ length: numberOfCards }, (_, i) => ({
+      position: [
+        (i - 2) / 2 + cardsPosition[0],
+        cardsPosition[1],
+        i * 0.01 + cardsPosition[2],
+      ],
+      rotation: cardsRotation,
+    }));
+  };
+
+  const [cardsLayout, setCardsLayout] = useState(calculateCardsLayout());
+
+  useEffect(() => {
+    setCardsLayout(calculateCardsLayout());
+  }, [cardsPosition, cardsRotation]);
 
   const addCardOnTable = (index) => {
     if (cardsRef.current[index]?.current) {
@@ -105,7 +108,7 @@ const CardsComponent = ({ numberOfCards }) => {
 
   return (
     <>
-      {cardsLayout.current.map((item, key) => (
+      {cardsLayout.map((item, key) => (
         <Card
           index={key}
           key={key}
@@ -118,6 +121,8 @@ const CardsComponent = ({ numberOfCards }) => {
           position={item.position}
           rotation={item.rotation}
           imageUrl={photoUrls[key]}
+          zOffset={cardsPosition[2]}
+          playerPosition={playerPosition}
         />
       ))}
     </>

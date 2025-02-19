@@ -20,9 +20,11 @@ const Scene = () => {
     setDirectionalLightPosition,
     setCardsPosition,
     setCardsRotation,
+    setPlayerPosition,
   } = useSetup();
   const setup = async (gameId) => {
     const {
+      playerPosition,
       position,
       lookAt,
       multiplier,
@@ -37,6 +39,7 @@ const Scene = () => {
     setDirectionalLightPosition(directionalLightPosition);
     setCardsPosition(cardsPosition);
     setCardsRotation(cardsRotation);
+    setPlayerPosition(playerPosition);
   };
 
   useEffect(() => {

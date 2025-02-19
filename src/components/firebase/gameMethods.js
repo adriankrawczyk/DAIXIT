@@ -5,12 +5,13 @@ import FirebaseLogger from "../lobby/firebase/firebaseLogger";
 
 async function getSetupData(n) {
   const defaultObj = {
+    playerPosition: 0,
     position: [0, 2, 4.4],
     lookAt: [0, 0, -5],
     multiplier: [1, 1, 1],
     directionalLightPosition: [0, 2, 2.4],
-    cardsPosition: [0, 0, 0],
-    cardsRotation: [0, 0, 0],
+    cardsPosition: [0, 0.75, 3],
+    cardsRotation: [-Math.PI / 8, 0, Math.PI / 16],
   };
   switch (n) {
     case 0: {
@@ -18,12 +19,13 @@ async function getSetupData(n) {
     }
     case 1: {
       return {
+        playerPosition: 1,
         position: [0, 2, -4.4],
         lookAt: [0, 0, 5],
         multiplier: [-1, 1, 1],
         directionalLightPosition: [0, 2, -2.4],
-        cardsPosition: [0, 0, 0],
-        cardsRotation: [0, Math.PI, 0],
+        cardsPosition: [0, 0.75, -3],
+        cardsRotation: [Math.PI / 8, Math.PI, Math.PI / 16],
       };
     }
     default: {

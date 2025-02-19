@@ -66,7 +66,7 @@ async function joinToGame(gameId) {
     );
     const playerInGameRefSnapshot = await get(playerInGameRef);
     const playerInGameData = playerInGameRefSnapshot.val();
-    if (!playerInGameData) await update(playerInGameRef, { currentGameData }); // to fix
+    if (!playerInGameData) await update(playerInGameRef, { currentGameData });
 
     await update(playerInGameRef, {
       name,

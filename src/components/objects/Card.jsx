@@ -14,6 +14,8 @@ const Card = ({
   setCurrentClicked,
   imageUrl,
   index,
+  zOffset,
+  playerPosition,
 }) => {
   const defaultTexture = useLoader(
     TextureLoader,
@@ -36,7 +38,7 @@ const Card = ({
 
   const hoverAnimation = () => {
     gsap.to(currentCardRef.current.position, {
-      z: 3.03 + index * 0.03,
+      z: (playerPosition === 0 ? 0.03 : -0.12) + index * 0.03 + zOffset, // temporary, only for 2 players
       duration: 0.2,
       ease: "power2.in",
     });
@@ -44,7 +46,7 @@ const Card = ({
 
   const unhoverAnimation = () => {
     gsap.to(currentCardRef.current.position, {
-      z: 3 + index * 0.01,
+      z: index * 0.01 + zOffset,
       duration: 0.2,
       ease: "power2.out",
     });
