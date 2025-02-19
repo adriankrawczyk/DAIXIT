@@ -19,8 +19,8 @@ const BackgroundColor = () => {
       <sphereGeometry args={[1, 64, 64]} />
       <LayerMaterial side={THREE.BackSide}>
         <Depth
-          colorA={"#e978be"}
-          colorB={"#5d31d4"}
+          colorA={"#190042"}
+          colorB={"#624475"}
           alpha={1}
           mode="normal"
           near={100}
