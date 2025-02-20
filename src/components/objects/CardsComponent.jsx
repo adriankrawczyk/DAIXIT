@@ -2,33 +2,42 @@ import React, { useEffect, useRef, useState } from "react";
 import Card from "./Card";
 import gsap from "gsap";
 import { useSetup } from "../context/SetupContext";
+import {
+  setHandInDatabase,
+  getHandFromDatabase,
+  getRandomCard,
+  fetchAllPhotos,
+} from "../firebase/gameMethods";
 
 const CardsComponent = ({ numberOfCards }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
   const [currentClicked, setCurrentClicked] = useState(-1);
   const [disableHover, setDisableHover] = useState(false);
   const [photoUrls, setPhotoUrls] = useState([]);
+  const [allPhotos, setAllPhotos] = useState([]);
   const previouslyClickedRef = useRef(-1);
   const { cardsPosition, cardsRotation, playerPosition } = useSetup();
 
   useEffect(() => {
-    const fetchPhotos = async () => {
-      const url = "https://storage.googleapis.com/storage/v1/b/daixit_photos/o";
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-        const urls = data.items.map(
-          (item) => `https://storage.googleapis.com/daixit_photos/${item.name}`
-        );
-        const shuffled = urls.sort(() => 0.5 - Math.random());
-        setPhotoUrls(shuffled.slice(0, numberOfCards));
-      } catch (error) {
-        console.error("Error fetching photos:", error);
-      }
-    };
+    async function start() {
+      const handFromDatabase = await getHandFromDatabase();
+      if (handFromDatabase.length === 0) setStartingHand();
+      else setPhotoUrls(handFromDatabase);
+    }
+    async function setStartingHand() {
+      const fetchedPhotos = await fetchAllPhotos();
+      setAllPhotos(fetchedPhotos);
 
-    fetchPhotos();
-  }, [numberOfCards]);
+      if (fetchedPhotos.length > 0) {
+        const newPhotoUrls = Array.from({ length: numberOfCards }, () =>
+          getRandomCard(fetchedPhotos)
+        );
+        setPhotoUrls(newPhotoUrls);
+        await setHandInDatabase(newPhotoUrls);
+      }
+    }
+    start();
+  }, []);
 
   const cardsRef = useRef([]);
 

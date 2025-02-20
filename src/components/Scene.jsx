@@ -57,7 +57,7 @@ const Scene = () => {
       <CameraControls />
       <CardsComponent numberOfCards={5} />
       {/* <Table /> */}
-      <OrbitControls />
+      {/* <OrbitControls /> */}
       {/* <Paddle_Boat/> */}
       <Cone />
       <FullBackground />

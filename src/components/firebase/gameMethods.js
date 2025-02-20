@@ -1,4 +1,4 @@
-import { ref, get } from "firebase/database";
+import { ref, get, update } from "firebase/database";
 import { database } from "./firebaseConfig";
 import { setPlayerName } from "./playerMethods";
 import FirebaseLogger from "../lobby/firebase/firebaseLogger";
@@ -35,20 +35,10 @@ async function getSetupData(n) {
 }
 
 async function getPosition() {
-  const gameId = window.location.href.split("/").pop();
-  const playerId = localStorage.getItem("playerUid");
-  if (!gameId || !playerId) {
-    console.error("Missing gameId or playerId in localStorage");
-    return null;
-  }
-
-  const currentGameDataRef = ref(
-    database,
-    `games/${gameId}/players/${playerId}/currentGameData`
-  );
+  const playerCurrentGameDataRef = await getPlayersCurrentGameDataRef();
 
   try {
-    const gameDataSnapshot = await get(currentGameDataRef);
+    const gameDataSnapshot = await get(playerCurrentGameDataRef);
     const gameData = gameDataSnapshot.val();
 
     if (!gameData || typeof gameData.position === "undefined") {
@@ -63,6 +53,50 @@ async function getPosition() {
   }
 }
 
+async function setHandInDatabase(hand) {
+  const playerCurrentGameDataRef = await getPlayersCurrentGameDataRef();
+  try {
+    await update(playerCurrentGameDataRef, { hand });
+  } catch (error) {
+    console.error("Error fetching player position:", error);
+    return null;
+  }
+}
+
+function getRandomCard(allPhotos) {
+  const randomIndex = Math.floor(Math.random() * allPhotos.length);
+  return allPhotos[randomIndex];
+}
+
+async function getHandFromDatabase() {
+  const playerCurrentGameDataRef = await getPlayersCurrentGameDataRef();
+  const snapshot = await get(playerCurrentGameDataRef);
+  const hand = snapshot.val().hand;
+  if (!hand) return [];
+  return Object.values(hand);
+}
+
+async function getPlayersCurrentGameDataRef() {
+  const playerId = localStorage.getItem("playerUid");
+  const gameId = window.location.href.split("/").pop();
+
+  return ref(database, `games/${gameId}/players/${playerId}/currentGameData`);
+}
+
+async function fetchAllPhotos() {
+  const url = "https://storage.googleapis.com/storage/v1/b/daixit_photos/o";
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data.items.map(
+      (item) => `https://storage.googleapis.com/daixit_photos/${item.name}`
+    );
+  } catch (error) {
+    console.error("Error fetching photos:", error);
+    return [];
+  }
+}
+
 async function getPlayers(gameId) {
   const playersRef = ref(database, `games/${gameId}/players`);
   const snapshot = await get(playersRef);
@@ -74,4 +108,10 @@ async function getPlayers(gameId) {
   );
   return playersObjectArray;
 }
-export { getPosition };
+export {
+  getPosition,
+  setHandInDatabase,
+  getRandomCard,
+  fetchAllPhotos,
+  getHandFromDatabase,
+};
