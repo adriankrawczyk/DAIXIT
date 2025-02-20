@@ -55,6 +55,8 @@ async function getPosition() {
 
 async function setHandInDatabase(hand) {
   const playerCurrentGameDataRef = await getPlayersCurrentGameDataRef();
+  const snapshot = await get(playerCurrentGameDataRef);
+  if (!snapshot.val()) return;
   try {
     await update(playerCurrentGameDataRef, { hand });
   } catch (error) {
@@ -127,6 +129,22 @@ async function getPlayers(gameId) {
   );
   return playersObjectArray;
 }
+
+const calculateCardsLayout = (playerSetup, numberOfCards) => {
+  if (!playerSetup) return [];
+
+  const { cardsPosition, cardsRotation } = playerSetup;
+
+  return Array.from({ length: numberOfCards }, (_, i) => ({
+    position: [
+      (i - 2) / 2 + cardsPosition[0],
+      cardsPosition[1],
+      i * 0.01 + cardsPosition[2],
+    ],
+    rotation: cardsRotation,
+  }));
+};
+
 export {
   getPosition,
   setHandInDatabase,
@@ -135,4 +153,5 @@ export {
   getHandFromDatabase,
   getOtherPlayersData,
   getSetupData,
+  calculateCardsLayout,
 };

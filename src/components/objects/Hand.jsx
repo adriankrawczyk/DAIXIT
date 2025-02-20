@@ -8,6 +8,7 @@ import {
   getRandomCard,
   fetchAllPhotos,
 } from "../firebase/gameMethods";
+import { calculateCardsLayout } from "../firebase/gameMethods";
 
 const Hand = ({ numberOfCards }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
@@ -41,21 +42,14 @@ const Hand = ({ numberOfCards }) => {
 
   const cardsRef = useRef([]);
 
-  const calculateCardsLayout = () => {
-    return Array.from({ length: numberOfCards }, (_, i) => ({
-      position: [
-        (i - 2) / 2 + cardsPosition[0],
-        cardsPosition[1],
-        i * 0.01 + cardsPosition[2],
-      ],
-      rotation: cardsRotation,
-    }));
-  };
-
-  const [cardsLayout, setCardsLayout] = useState(calculateCardsLayout());
+  const [cardsLayout, setCardsLayout] = useState(
+    calculateCardsLayout({ cardsPosition, cardsRotation }, numberOfCards)
+  );
 
   useEffect(() => {
-    setCardsLayout(calculateCardsLayout());
+    setCardsLayout(
+      calculateCardsLayout({ cardsPosition, cardsRotation }, numberOfCards)
+    );
   }, [cardsPosition, cardsRotation]);
 
   const addCardOnTable = (index) => {

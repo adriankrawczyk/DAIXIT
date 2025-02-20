@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Card from "./Card";
 import gsap from "gsap";
 import { getOtherPlayersData, getSetupData } from "../firebase/gameMethods";
+import { calculateCardsLayout } from "../firebase/gameMethods";
 
 const OtherPlayerHand = ({ numberOfCards = 5 }) => {
   const [otherPlayersData, setOtherPlayersData] = useState([]);
@@ -25,25 +26,10 @@ const OtherPlayerHand = ({ numberOfCards = 5 }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const calculateCardsLayout = (playerSetup) => {
-    if (!playerSetup) return [];
-
-    const { cardsPosition, cardsRotation } = playerSetup;
-
-    return Array.from({ length: numberOfCards }, (_, i) => ({
-      position: [
-        (i - 2) / 2 + cardsPosition[0],
-        cardsPosition[1],
-        i * 0.01 + cardsPosition[2],
-      ],
-      rotation: cardsRotation,
-    }));
-  };
-
   return (
     <>
       {otherPlayerHandsData.map((playerHand, playerIndex) => {
-        const cardsLayout = calculateCardsLayout(playerHand);
+        const cardsLayout = calculateCardsLayout(playerHand, numberOfCards);
 
         return cardsLayout.map((cardLayout, cardIndex) => (
           <Card
