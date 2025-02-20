@@ -20,7 +20,7 @@ const CardsComponent = ({ numberOfCards }) => {
   const cardsRef = useRef([]);
 
 
-  const { cardsPosition, cardsRotation } = useSetup();
+  const { cardsPosition, cardsRotation, playerPosition } = useSetup();
 
   useEffect(() => {
     const fetchPhotos = async () => {
@@ -41,9 +41,8 @@ const CardsComponent = ({ numberOfCards }) => {
     fetchPhotos();
   }, [numberOfCards]);
 
-  const cardsRef = useRef([]);
 
-  const calculateCardsLayout = () => {
+  const cardsLayout = () => {
     return Array.from({ length: numberOfCards }, (_, i) => ({
       position: [
         (i - 2) / 2 + cardsPosition[0],
@@ -55,8 +54,7 @@ const CardsComponent = ({ numberOfCards }) => {
         cardsRotation[1],
         Math.PI / 16 + cardsRotation[2],
       ],
-    }))
-  );
+    }))};
 
   const addCardOnTable = (index) => {
     if (cardsRef.current[index]?.current) {
@@ -64,7 +62,7 @@ const CardsComponent = ({ numberOfCards }) => {
       gsap.to(cardsRef.current[index].current.position, {
         x: 0,
         y: 0.6,
-        z: 3 * playerPosition === 0 ? 1 : -1, // temporary, for 2 players
+        z: (playerPosition === 0 ? -1 : 1), // temporary, for 2 players
         duration: 0.5,
         ease: "power2.out",
       });
@@ -169,7 +167,7 @@ const CardsComponent = ({ numberOfCards }) => {
 
   return (
     <>
-      {cardsLayout.map((item, key) => (
+      {cardsLayout().map((item, key) => (
         <Card
           index={key}
           key={key}
