@@ -89,7 +89,7 @@ const Galaxy = () => {
 
     {
         planetTextures.current.map( (item, key) => (
-            <Planets texture={item} positionRadius={(key+1)*1.5 + 3} speed={Math.random() * 0.02 + 0.01} fi={Math.random() * Math.PI}/>
+            <Planets key={key} texture={item} positionRadius={(key+1)*1.5 + 3} speed={Math.random() * 0.02 + 0.01} fi={Math.random() * Math.PI}/>
         ))
     }
     <GalaxyInstances/>

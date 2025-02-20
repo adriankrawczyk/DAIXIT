@@ -7,6 +7,8 @@ const Card = ({
   cardsRef,
   position,
   rotation,
+  inMenu,
+  selectedCard,
   currentHovered,
   disableHover,
   setCurrentHovered,
@@ -60,7 +62,8 @@ const Card = ({
         if (
           !disableHover &&
           currentClicked !== index &&
-          currentHovered !== index
+          currentHovered !== index &&
+          selectedCard !== index
         ) {
           hoverAnimation();
           setCurrentHovered(index);
@@ -71,7 +74,8 @@ const Card = ({
         if (
           !disableHover &&
           currentClicked !== index &&
-          currentHovered === index
+          currentHovered === index && 
+          selectedCard !== index
         ) {
           unhoverAnimation();
           setCurrentHovered(-1);
@@ -79,7 +83,9 @@ const Card = ({
       }}
       onClick={(e) => {
         e.stopPropagation();
-        setCurrentClicked(currentClicked === index ? -1 : index);
+        if (!inMenu){
+        setCurrentClicked(index); // changed the logic here!
+        }
       }}
     >
       <boxGeometry args={[0.64, 0.896, 0.02]} />

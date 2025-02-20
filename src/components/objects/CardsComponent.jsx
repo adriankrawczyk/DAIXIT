@@ -2,20 +2,22 @@ import React, { useEffect, useRef, useState } from "react";
 import Card from "./Card";
 import gsap from "gsap";
 import { useSetup } from "../context/SetupContext";
-import AcceptButton from "./AcceptButton";
-import { repeat } from "lodash";
-import DeclineButton from "./DeclineButton";
+import ActionButton from "./ActionButton";
 
 const CardsComponent = ({ numberOfCards }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
   const [currentClicked, setCurrentClicked] = useState(-1);
+
+  const [selectedCard, setSelectedCard] = useState(-1);
+  const [inMenu, setinMenu] = useState(false);
+
   const [disableHover, setDisableHover] = useState(false);
   const [photoUrls, setPhotoUrls] = useState([]);
 
 
-  const previouslyClickedRef = useRef(-1);
   const acceptButtonRef = useRef();
   const declineButtonRef = useRef();
+  const cardsRef = useRef([]);
 
 
   const { cardsPosition, cardsRotation } = useSetup();
@@ -53,7 +55,6 @@ const CardsComponent = ({ numberOfCards }) => {
       ],
     }))
   );
-  const cardsRef = useRef([]);
 
   const addCardOnTable = (index) => {
     if (cardsRef.current[index]?.current) {
@@ -98,7 +99,6 @@ const CardsComponent = ({ numberOfCards }) => {
     }
   }
 
-
   const backToHand = (index) => {
     if (cardsRef.current[index]?.current) {
       setDisableHover(true);
@@ -140,25 +140,30 @@ const CardsComponent = ({ numberOfCards }) => {
 
 
   useEffect(() => {
-    // if (previouslyClickedRef.current !== -1) {
-    //   backToHand(previouslyClickedRef.current);
-    // }
-
-    // if (currentClicked !== -1) {
-    //   addCardOnTable(currentClicked);
-    //   backToHand(previouslyClickedRef.current);
-    //   previouslyClickedRef.current = currentClicked;
-    // } else {
-    //   backToHand(currentClicked);
-    //   previouslyClickedRef.current = -1;
-    // }
-    if (currentClicked !== -1) {
+    if (currentClicked !== -1 && selectedCard === -1) {
     showCardCloser(currentClicked)
     pickingCardsButtonsTransition();
+    setinMenu(true);
     }
-
-
   }, [currentClicked]);
+
+
+    // chosen card context
+  // ACCEPT BUTTON CLICK 
+  const acceptClicked = () => {
+    setSelectedCard(currentClicked)
+    addCardOnTable(currentClicked)
+    setCurrentClicked(-1)
+    setinMenu(false);
+  }
+
+
+  // DECLINE BUTTON CLICK 
+  const declineClicked = () => {
+    backToHand(currentClicked)
+    setCurrentClicked(-1)
+    setinMenu(false);
+  }
 
   return (
     <>
@@ -166,6 +171,8 @@ const CardsComponent = ({ numberOfCards }) => {
         <Card
           index={key}
           key={key}
+          selectedCard={selectedCard}
+          inMenu = {inMenu}
           cardsRef={cardsRef}
           currentHovered={currentHovered}
           disableHover={disableHover}
@@ -178,10 +185,10 @@ const CardsComponent = ({ numberOfCards }) => {
         />
       ))}
 
-      {currentClicked !== -1 && (
+      {currentClicked !== -1 && selectedCard === -1 && (
       <>
-    <AcceptButton ref={acceptButtonRef} />
-    <DeclineButton ref={declineButtonRef} />
+    <ActionButton ref={acceptButtonRef} onClick={acceptClicked} dimensions={[-1.7,1.5,3]} color={"lightgreen"} text={"accept"}/>
+    <ActionButton ref={declineButtonRef} onClick={declineClicked} dimensions={[1.7,1.5,3]} color={"red"} text={"decline"}/>
       </>
       )}
 
