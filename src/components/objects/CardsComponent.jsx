@@ -41,12 +41,14 @@ const CardsComponent = ({ numberOfCards }) => {
     fetchPhotos();
   }, [numberOfCards]);
 
-  const cardsLayout = useRef(
-    Array.from({ length: numberOfCards }, (_, i) => ({
+  const cardsRef = useRef([]);
+
+  const calculateCardsLayout = () => {
+    return Array.from({ length: numberOfCards }, (_, i) => ({
       position: [
-        (i - 2) / 2 + 0.2 + cardsPosition[0],
-        0.75 + cardsPosition[1],
-        3 + i * 0.01 + cardsPosition[2],
+        (i - 2) / 2 + cardsPosition[0],
+        cardsPosition[1],
+        i * 0.01 + cardsPosition[2],
       ],
       rotation: [
         -Math.PI / 8 + cardsRotation[0],
@@ -60,9 +62,9 @@ const CardsComponent = ({ numberOfCards }) => {
     if (cardsRef.current[index]?.current) {
       setDisableHover(true);
       gsap.to(cardsRef.current[index].current.position, {
-        x: 0.2,
-        y: 0.5,
-        z: 0.3,
+        x: 0,
+        y: 0.6,
+        z: 3 * playerPosition === 0 ? 1 : -1, // temporary, for 2 players
         duration: 0.5,
         ease: "power2.out",
       });
@@ -103,16 +105,16 @@ const CardsComponent = ({ numberOfCards }) => {
     if (cardsRef.current[index]?.current) {
       setDisableHover(true);
       gsap.to(cardsRef.current[index].current.position, {
-        x: (index - 2) / 2 + 0.2 + cardsPosition[0],
-        y: 0.75 + cardsPosition[1],
-        z: 3 + index * 0.01 + cardsPosition[2],
+        x: (index - 2) / 2 + cardsPosition[0],
+        y: cardsPosition[1],
+        z: index * 0.01 + cardsPosition[2],
         duration: 0.5,
         ease: "power2.out",
       });
       gsap.to(cardsRef.current[index].current.rotation, {
-        x: -Math.PI / 8,
-        y: 0,
-        z: Math.PI / 16,
+        x: cardsRotation[0],
+        y: cardsRotation[1],
+        z: cardsRotation[2],
         duration: 0.5,
         ease: "power2.out",
       });
@@ -167,7 +169,7 @@ const CardsComponent = ({ numberOfCards }) => {
 
   return (
     <>
-      {cardsLayout.current.map((item, key) => (
+      {cardsLayout.map((item, key) => (
         <Card
           index={key}
           key={key}
@@ -182,6 +184,8 @@ const CardsComponent = ({ numberOfCards }) => {
           position={item.position}
           rotation={item.rotation}
           imageUrl={photoUrls[key]}
+          zOffset={cardsPosition[2]}
+          playerPosition={playerPosition}
         />
       ))}
 

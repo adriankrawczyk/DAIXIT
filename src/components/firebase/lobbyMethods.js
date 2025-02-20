@@ -53,7 +53,7 @@ async function joinToGame(gameId) {
     }
 
     const { name } = playerData;
-    const players = await getPlayersInGame(gameId);
+    const players = await getActivePlayersInGame(gameId);
     const playersArray = players ? Object.values(players) : [];
 
     const currentGameData = {
@@ -64,10 +64,13 @@ async function joinToGame(gameId) {
       database,
       `games/${gameId}/players/${playerUid}`
     );
+    const playerInGameRefSnapshot = await get(playerInGameRef);
+    const playerInGameData = playerInGameRefSnapshot.val();
+    if (!playerInGameData) await update(playerInGameRef, { currentGameData });
+
     await update(playerInGameRef, {
       name,
       inGame: true,
-      currentGameData,
     });
 
     onDisconnect(playerInGameRef).update({ inGame: false });
