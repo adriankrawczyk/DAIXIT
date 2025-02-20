@@ -63,6 +63,20 @@ async function setHandInDatabase(hand) {
   }
 }
 
+async function getOtherPlayersData() {
+  const playerId = localStorage.getItem("playerUid");
+  if (!playerId) return [];
+  const gameId = window.location.href.split("/").pop();
+
+  const playersRef = ref(database, `games/${gameId}/players`);
+  const snapshot = await get(playersRef);
+  const hands = [];
+  for (const [key, value] of Object.entries(snapshot.val())) {
+    if (key !== playerId) hands.push(value.currentGameData);
+  }
+  return hands;
+}
+
 function getRandomCard(allPhotos) {
   const randomIndex = Math.floor(Math.random() * allPhotos.length);
   return allPhotos[randomIndex];
@@ -114,4 +128,5 @@ export {
   getRandomCard,
   fetchAllPhotos,
   getHandFromDatabase,
+  getOtherPlayersData,
 };

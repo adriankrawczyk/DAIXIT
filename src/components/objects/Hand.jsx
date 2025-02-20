@@ -9,7 +9,7 @@ import {
   fetchAllPhotos,
 } from "../firebase/gameMethods";
 
-const CardsComponent = ({ numberOfCards }) => {
+const Hand = ({ numberOfCards }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
   const [currentClicked, setCurrentClicked] = useState(-1);
   const [disableHover, setDisableHover] = useState(false);
@@ -138,4 +138,4 @@ const CardsComponent = ({ numberOfCards }) => {
   );
 };
 
-export default CardsComponent;
+export default Hand;
