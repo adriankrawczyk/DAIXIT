@@ -10,13 +10,17 @@ const MIN_X = -1;
 const MAX_X = 1;
 
 const CameraControls = () => {
-  const { cameraLookAt, cameraLookAtMultiplier } = useSetup();
+  const { cameraLookAt, cameraLookAtMultiplier, direction } = useSetup();
   useFrame(({ camera, mouse }) => {
     camera.lookAt(
       new Vector3(
-        (mouse.x + cameraLookAt[0]) * cameraLookAtMultiplier[0],
+        (direction === "Bottom" || direction === "Top"
+          ? mouse.x
+          : 0 + cameraLookAt[0]) * cameraLookAtMultiplier[0],
         (mouse.y + cameraLookAt[1]) * cameraLookAtMultiplier[1],
-        cameraLookAt[2] * cameraLookAtMultiplier[2]
+        (direction === "Left" || direction === "Right"
+          ? mouse.x
+          : 0 + cameraLookAt[2]) * cameraLookAtMultiplier[2]
       )
     );
   });

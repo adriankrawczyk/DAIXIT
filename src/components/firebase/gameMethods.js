@@ -34,11 +34,11 @@ async function getSetupData(n) {
       return {
         playerPosition: 2,
         position: [4.4, 2, 0],
-        lookAt: [5, 0, 0],
-        multiplier: [-1, 1, 1],
+        lookAt: [-5, 0, 0],
+        multiplier: [1, 1, -1],
         directionalLightPosition: [2.4, 2, 0],
         cardsPosition: [3, 0.75, 0],
-        cardsRotation: [Math.PI / 16, Math.PI / 2, Math.PI / 8],
+        cardsRotation: [Math.PI / 32, Math.PI / 2, Math.PI / 8],
         direction: "Left",
       };
     }
@@ -50,7 +50,7 @@ async function getSetupData(n) {
         multiplier: [-1, 1, 1],
         directionalLightPosition: [-2.4, 2, 0],
         cardsPosition: [-3, 0.75, 0],
-        cardsRotation: [Math.PI / 16, -Math.PI / 2, Math.PI / 8],
+        cardsRotation: [-Math.PI / 32, -Math.PI / 2, Math.PI / 8],
         direction: "Right",
       };
     }
