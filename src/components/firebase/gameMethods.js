@@ -71,6 +71,9 @@ async function getOtherPlayersData() {
   const playersRef = ref(database, `games/${gameId}/players`);
   const snapshot = await get(playersRef);
   const hands = [];
+
+  if (!snapshot.val()) return [];
+
   for (const [key, value] of Object.entries(snapshot.val())) {
     if (key !== playerId) hands.push(value.currentGameData);
   }
@@ -85,7 +88,9 @@ function getRandomCard(allPhotos) {
 async function getHandFromDatabase() {
   const playerCurrentGameDataRef = await getPlayersCurrentGameDataRef();
   const snapshot = await get(playerCurrentGameDataRef);
-  const hand = snapshot.val().hand;
+  const val = snapshot.val();
+  if (!val) return [];
+  const hand = val.hand;
   if (!hand) return [];
   return Object.values(hand);
 }
@@ -129,4 +134,5 @@ export {
   fetchAllPhotos,
   getHandFromDatabase,
   getOtherPlayersData,
+  getSetupData,
 };
