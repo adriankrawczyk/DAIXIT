@@ -12,6 +12,7 @@ async function getSetupData(n) {
     directionalLightPosition: [0, 2, 2.4],
     cardsPosition: [0, 0.75, 3],
     cardsRotation: [-Math.PI / 8, 0, Math.PI / 16],
+    direction: "Bottom",
   };
   switch (n) {
     case 0: {
@@ -26,6 +27,31 @@ async function getSetupData(n) {
         directionalLightPosition: [0, 2, -2.4],
         cardsPosition: [0, 0.75, -3],
         cardsRotation: [Math.PI / 8, Math.PI, Math.PI / 16],
+        direction: "Top",
+      };
+    }
+    case 2: {
+      return {
+        playerPosition: 2,
+        position: [4.4, 2, 0],
+        lookAt: [5, 0, 0],
+        multiplier: [-1, 1, 1],
+        directionalLightPosition: [2.4, 2, 0],
+        cardsPosition: [3, 0.75, 0],
+        cardsRotation: [Math.PI / 16, Math.PI / 2, Math.PI / 8],
+        direction: "Left",
+      };
+    }
+    case 3: {
+      return {
+        playerPosition: 3,
+        position: [-4.4, 2, 0],
+        lookAt: [-5, 0, 0],
+        multiplier: [-1, 1, 1],
+        directionalLightPosition: [-2.4, 2, 0],
+        cardsPosition: [-3, 0.75, 0],
+        cardsRotation: [Math.PI / 16, -Math.PI / 2, Math.PI / 8],
+        direction: "Right",
       };
     }
     default: {
@@ -133,18 +159,28 @@ async function getPlayers(gameId) {
 const calculateCardsLayout = (playerSetup, numberOfCards) => {
   if (!playerSetup) return [];
 
-  const { cardsPosition, cardsRotation } = playerSetup;
+  const { cardsPosition, cardsRotation, direction } = playerSetup;
 
   return Array.from({ length: numberOfCards }, (_, i) => ({
-    position: [
-      (i - 2) / 2 + cardsPosition[0],
-      cardsPosition[1],
-      i * 0.01 + cardsPosition[2],
-    ],
+    position: getCardsPosition(cardsPosition, i, direction),
     rotation: cardsRotation,
   }));
 };
-
+function getCardsPosition(cardsPosition, i, direction) {
+  if (direction === "Bottom" || direction === "Top")
+    return [
+      (i - 2) / 2 + cardsPosition[0],
+      cardsPosition[1],
+      i * 0.01 + cardsPosition[2],
+    ];
+  else {
+    return [
+      i * 0.01 + cardsPosition[0],
+      cardsPosition[1],
+      (i - 2) / 2 + cardsPosition[2],
+    ];
+  }
+}
 export {
   getPosition,
   setHandInDatabase,
@@ -154,4 +190,5 @@ export {
   getOtherPlayersData,
   getSetupData,
   calculateCardsLayout,
+  getCardsPosition,
 };

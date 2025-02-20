@@ -14,8 +14,9 @@ const Card = ({
   setCurrentClicked,
   imageUrl,
   index,
-  zOffset,
+  cardsPosition,
   playerPosition,
+  direction,
 }) => {
   const defaultTexture = useLoader(
     TextureLoader,
@@ -37,19 +38,33 @@ const Card = ({
   cardsRef.current[index] = currentCardRef;
 
   const hoverAnimation = () => {
-    gsap.to(currentCardRef.current.position, {
-      z: (playerPosition === 0 ? 0.03 : -0.12) + index * 0.03 + zOffset, // temporary, only for 2 players
-      duration: 0.2,
-      ease: "power2.in",
-    });
+    let hoverObject = { duration: 0.2, ease: "power2.in" };
+    switch (direction) {
+      case "Bottom": {
+        hoverObject.z = 0.03 + index * 0.03 + cardsPosition[2];
+        break;
+      }
+      case "Top": {
+        hoverObject.z = -0.12 + index * 0.03 + cardsPosition[2];
+        break;
+      }
+      case "Left": {
+        hoverObject.x = 0.03 + index * 0.03 + cardsPosition[0];
+        break;
+      }
+      case "Right": {
+        hoverObject.x = -0.12 + index * 0.03 + cardsPosition[0];
+      }
+    }
+    gsap.to(currentCardRef.current.position, hoverObject);
   };
 
   const unhoverAnimation = () => {
-    gsap.to(currentCardRef.current.position, {
-      z: index * 0.01 + zOffset,
-      duration: 0.2,
-      ease: "power2.out",
-    });
+    let hoverObject = { duration: 0.2, ease: "power2.out" };
+    if (direction === "Bottom" || direction === "Top")
+      hoverObject.z = index * 0.01 + cardsPosition[2];
+    else hoverObject.x = index * 0.01 + cardsPosition[0];
+    gsap.to(currentCardRef.current.position, hoverObject);
   };
 
   return (

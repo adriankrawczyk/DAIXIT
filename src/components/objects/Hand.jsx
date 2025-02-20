@@ -7,6 +7,7 @@ import {
   getHandFromDatabase,
   getRandomCard,
   fetchAllPhotos,
+  getCardsPosition,
 } from "../firebase/gameMethods";
 import { calculateCardsLayout } from "../firebase/gameMethods";
 
@@ -17,7 +18,8 @@ const Hand = ({ numberOfCards }) => {
   const [photoUrls, setPhotoUrls] = useState([]);
   const [allPhotos, setAllPhotos] = useState([]);
   const previouslyClickedRef = useRef(-1);
-  const { cardsPosition, cardsRotation, playerPosition } = useSetup();
+  const { cardsPosition, cardsRotation, playerPosition, direction } =
+    useSetup();
 
   useEffect(() => {
     async function start() {
@@ -43,25 +45,52 @@ const Hand = ({ numberOfCards }) => {
   const cardsRef = useRef([]);
 
   const [cardsLayout, setCardsLayout] = useState(
-    calculateCardsLayout({ cardsPosition, cardsRotation }, numberOfCards)
+    calculateCardsLayout(
+      { cardsPosition, cardsRotation, direction },
+      numberOfCards
+    )
   );
 
   useEffect(() => {
     setCardsLayout(
-      calculateCardsLayout({ cardsPosition, cardsRotation }, numberOfCards)
+      calculateCardsLayout(
+        { cardsPosition, cardsRotation, direction },
+        numberOfCards
+      )
     );
   }, [cardsPosition, cardsRotation]);
 
   const addCardOnTable = (index) => {
     if (cardsRef.current[index]?.current) {
       setDisableHover(true);
-      gsap.to(cardsRef.current[index].current.position, {
-        x: 0,
+      let hoverObject = {
         y: 0.6,
-        z: 3 * playerPosition === 0 ? 1 : -1, // temporary, for 2 players
         duration: 0.5,
         ease: "power2.out",
-      });
+      };
+      switch (direction) {
+        case "Bottom": {
+          hoverObject.z = 1;
+          hoverObject.x = 0;
+          break;
+        }
+        case "Top": {
+          hoverObject.z = -1;
+          hoverObject.x = 0;
+          break;
+        }
+        case "Left": {
+          hoverObject.x = 1;
+          hoverObject.z = 0;
+          break;
+        }
+        case "Right": {
+          hoverObject.x = -1;
+          hoverObject.z = 0;
+          break;
+        }
+      }
+      gsap.to(cardsRef.current[index].current.position, hoverObject);
       gsap.to(cardsRef.current[index].current.rotation, {
         x: Math.PI / 2,
         y: 0,
@@ -75,11 +104,16 @@ const Hand = ({ numberOfCards }) => {
 
   const backToHand = (index) => {
     if (cardsRef.current[index]?.current) {
+      const cardsAnimationPosition = getCardsPosition(
+        cardsPosition,
+        index,
+        direction
+      );
       setDisableHover(true);
       gsap.to(cardsRef.current[index].current.position, {
-        x: (index - 2) / 2 + cardsPosition[0],
-        y: cardsPosition[1],
-        z: index * 0.01 + cardsPosition[2],
+        x: cardsAnimationPosition[0],
+        y: cardsAnimationPosition[1],
+        z: cardsAnimationPosition[2],
         duration: 0.5,
         ease: "power2.out",
       });
@@ -124,7 +158,8 @@ const Hand = ({ numberOfCards }) => {
           position={item.position}
           rotation={item.rotation}
           imageUrl={photoUrls[key]}
-          zOffset={cardsPosition[2]}
+          cardsPosition={cardsPosition}
+          direction={direction}
           playerPosition={playerPosition}
         />
       ))}
