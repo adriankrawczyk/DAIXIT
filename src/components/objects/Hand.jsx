@@ -7,17 +7,24 @@ import {
   getHandFromDatabase,
   getRandomCard,
   fetchAllPhotos,
+  getCardsPosition,
 } from "../firebase/gameMethods";
 import { calculateCardsLayout } from "../firebase/gameMethods";
+import { addAnimationToOtherPlayers } from "../firebase/playerMethods";
+import { addToTable, backToHand } from "../firebase/animations";
 
 const Hand = ({ numberOfCards }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
   const [currentClicked, setCurrentClicked] = useState(-1);
+<<<<<<< HEAD
 
   const [selectedCard, setSelectedCard] = useState(-1);
   const [inMenu, setinMenu] = useState(false);
 
   const [disableHover, setDisableHover] = useState(false);
+=======
+  const [disableHover, setDisableHover] = useState(true);
+>>>>>>> adb40da6e3590872a55f25833e4fc55c1014beca
   const [photoUrls, setPhotoUrls] = useState([]);
 
 
@@ -28,7 +35,10 @@ const Hand = ({ numberOfCards }) => {
 
   const [allPhotos, setAllPhotos] = useState([]);
   const previouslyClickedRef = useRef(-1);
-  const { cardsPosition, cardsRotation, playerPosition } = useSetup();
+  const { cardsPosition, cardsRotation, playerPosition, direction } =
+    useSetup();
+  const cardsRef = useRef({});
+  const cardsLoadedCount = useRef(0);
 
   useEffect(() => {
     async function start() {
@@ -49,6 +59,7 @@ const Hand = ({ numberOfCards }) => {
       }
     }
     start();
+<<<<<<< HEAD
   }, []);
   const calculateCardsLayout = (numberOfCards) => {
     return Array.from({ length: numberOfCards }, (_, i) => ({
@@ -82,18 +93,48 @@ const Hand = ({ numberOfCards }) => {
         z: (playerPosition === 0 ? -1 : 1), // temporary, for 2 players
         duration: 0.5,
         ease: "power2.out",
+=======
+  }, [numberOfCards]);
+
+  useEffect(() => {
+    if (
+      photoUrls.length > 0 &&
+      Object.keys(cardsRef.current).length === photoUrls.length
+    ) {
+      setTimeout(() => setDisableHover(false), 300);
+    }
+  }, [photoUrls, cardsLoadedCount.current]);
+
+  const [cardsLayout, setCardsLayout] = useState(
+    calculateCardsLayout(
+      { cardsPosition, cardsRotation, direction },
+      numberOfCards
+    )
+  );
+
+  useEffect(() => {
+    setCardsLayout(
+      calculateCardsLayout(
+        { cardsPosition, cardsRotation, direction },
+        numberOfCards
+      )
+    );
+  }, [cardsPosition, cardsRotation, direction, numberOfCards]);
+
+  const handleAddCardOnTable = async (index) => {
+    if (cardsRef.current[index]) {
+      addToTable(cardsRef.current[index], direction, setDisableHover);
+      await addAnimationToOtherPlayers({
+        type: "addOnTable",
+        playerPosition,
+        index,
+        direction,
+>>>>>>> adb40da6e3590872a55f25833e4fc55c1014beca
       });
-      gsap.to(cardsRef.current[index].current.rotation, {
-        x: Math.PI / 2,
-        y: 0,
-        z: -Math.PI / 2,
-        duration: 0.5,
-        ease: "power2.out",
-      });
-      gsap.delayedCall(0.5, () => setDisableHover(false));
     }
   };
 
+<<<<<<< HEAD
   const showCardCloser = (index) => {
     if (cardsRef.current[index]?.current) {
 
@@ -125,18 +166,30 @@ const Hand = ({ numberOfCards }) => {
         z: index * 0.01 + cardsPosition[2],
         duration: 0.5,
         ease: "power2.out",
+=======
+  const handleBackToHand = async (index) => {
+    if (cardsRef.current[index]) {
+      await addAnimationToOtherPlayers({
+        type: "backToHand",
+        playerPosition,
+        index,
+>>>>>>> adb40da6e3590872a55f25833e4fc55c1014beca
       });
-      gsap.to(cardsRef.current[index].current.rotation, {
-        x: cardsRotation[0],
-        y: cardsRotation[1],
-        z: cardsRotation[2],
-        duration: 0.5,
-        ease: "power2.out",
-      });
-      gsap.delayedCall(0.5, () => setDisableHover(false));
+      const cardsAnimationPosition = getCardsPosition(
+        cardsPosition,
+        index,
+        direction
+      );
+      backToHand(
+        cardsRef.current[index],
+        cardsAnimationPosition,
+        cardsRotation,
+        setDisableHover
+      );
     }
   };
 
+<<<<<<< HEAD
   const pickingCardsButtonsTransition = () => {
     gsap.to(acceptButtonRef.current.scale, {
       x: 1,
@@ -181,6 +234,30 @@ const Hand = ({ numberOfCards }) => {
     setCurrentClicked(-1)
     setinMenu(false);
   }
+=======
+  useEffect(() => {
+    if (previouslyClickedRef.current !== -1) {
+      handleBackToHand(previouslyClickedRef.current);
+    }
+
+    if (currentClicked !== -1) {
+      handleAddCardOnTable(currentClicked);
+      previouslyClickedRef.current = currentClicked;
+    } else {
+      previouslyClickedRef.current = -1;
+    }
+  }, [currentClicked]);
+
+  const assignRef = (el, key) => {
+    if (el) {
+      cardsRef.current[key] = el;
+      cardsLoadedCount.current++;
+    } else if (cardsRef.current[key]) {
+      delete cardsRef.current[key];
+      cardsLoadedCount.current--;
+    }
+  };
+>>>>>>> adb40da6e3590872a55f25833e4fc55c1014beca
 
   return (
     <>
@@ -188,9 +265,12 @@ const Hand = ({ numberOfCards }) => {
         <Card
           index={key}
           key={key}
+<<<<<<< HEAD
           selectedCard={selectedCard}
           inMenu = {inMenu}
           cardsRef={cardsRef}
+=======
+>>>>>>> adb40da6e3590872a55f25833e4fc55c1014beca
           currentHovered={currentHovered}
           disableHover={disableHover}
           setCurrentHovered={setCurrentHovered}
@@ -199,8 +279,10 @@ const Hand = ({ numberOfCards }) => {
           position={item.position}
           rotation={item.rotation}
           imageUrl={photoUrls[key]}
-          zOffset={cardsPosition[2]}
+          cardsPosition={cardsPosition}
+          direction={direction}
           playerPosition={playerPosition}
+          ref={(el) => assignRef(el, key)}
         />
       ))}
 

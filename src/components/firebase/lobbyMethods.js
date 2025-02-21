@@ -69,6 +69,7 @@ async function joinToGame(gameId) {
     if (!playerInGameData) await update(playerInGameRef, { currentGameData });
 
     await update(playerInGameRef, {
+      playerUid,
       name,
       inGame: true,
     });

@@ -24,6 +24,7 @@ const Scene = () => {
     setCardsPosition,
     setCardsRotation,
     setPlayerPosition,
+    setDirection,
   } = useSetup();
   const setup = async (gameId) => {
     const {
@@ -34,6 +35,7 @@ const Scene = () => {
       directionalLightPosition,
       cardsPosition,
       cardsRotation,
+      direction,
     } = await getPosition();
 
     setCameraPosition(position);
@@ -43,6 +45,7 @@ const Scene = () => {
     setCardsPosition(cardsPosition);
     setCardsRotation(cardsRotation);
     setPlayerPosition(playerPosition);
+    setDirection(direction);
   };
 
   useEffect(() => {
@@ -50,8 +53,8 @@ const Scene = () => {
       const gameId = window.location.href.split("/").pop();
       if (!localStorage.getItem("name")) await FirebaseLogger();
       await joinToGame(gameId);
-      setJoined(true);
       await setup(gameId);
+      setJoined(true);
     };
     join();
   }, []);
