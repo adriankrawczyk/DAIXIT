@@ -59,4 +59,60 @@ async function getUserCount() {
   }
 }
 
-export { setPlayerData, setPlayerName, getUserCount, fetchPlayerData };
+async function addAnimationToOtherPlayers(animation) {
+  const gameId = window.location.href.split("/").pop();
+  const gameRef = ref(database, `games/${gameId}/players`);
+  const currentPlayerUid = localStorage.getItem("playerUid");
+  try {
+    const snapshot = await get(gameRef);
+    if (!snapshot.exists()) return;
+    const players = snapshot.val();
+    const updates = {};
+    Object.entries(players).forEach(([uid, playerData]) => {
+      if (uid !== currentPlayerUid) {
+        const currentAnimations = playerData?.animations || [];
+        updates[`games/${gameId}/players/${uid}/animations`] = [
+          animation,
+          ...currentAnimations,
+        ];
+      }
+    });
+    await update(ref(database), updates);
+  } catch (error) {
+    console.error("Error updating animations for players:", error);
+  }
+}
+
+async function getAnimations() {
+  const gameId = window.location.href.split("/").pop();
+  const playerUid = localStorage.getItem("playerUid");
+
+  if (!playerUid) {
+    console.error("No playerUid found in localStorage");
+    return;
+  }
+
+  const playerRef = ref(database, `games/${gameId}/players/${playerUid}`);
+
+  try {
+    const snapshot = await get(playerRef);
+    if (!snapshot.exists()) return [];
+
+    const animations = snapshot.val()?.animations || [];
+    await update(playerRef, { animations: [] });
+
+    return animations;
+  } catch (error) {
+    console.error("Error retrieving animations:", error);
+    return [];
+  }
+}
+
+export {
+  setPlayerData,
+  setPlayerName,
+  getUserCount,
+  fetchPlayerData,
+  addAnimationToOtherPlayers,
+  getAnimations,
+};

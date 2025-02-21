@@ -10,16 +10,32 @@ import {
   getCardsPosition,
 } from "../firebase/gameMethods";
 import { calculateCardsLayout } from "../firebase/gameMethods";
+import { addAnimationToOtherPlayers } from "../firebase/playerMethods";
 
 const Hand = ({ numberOfCards }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
   const [currentClicked, setCurrentClicked] = useState(-1);
-  const [disableHover, setDisableHover] = useState(false);
+  const [disableHover, setDisableHover] = useState(true);
   const [photoUrls, setPhotoUrls] = useState([]);
   const [allPhotos, setAllPhotos] = useState([]);
   const previouslyClickedRef = useRef(-1);
   const { cardsPosition, cardsRotation, playerPosition, direction } =
     useSetup();
+  const cardsRef = useRef({});
+  const cardsLoadedCount = useRef(0);
+
+  useEffect(() => {
+    const checkAllRefsReady = () => {
+      const expectedCardCount = photoUrls.length;
+      const actualCardCount = Object.keys(cardsRef.current).length;
+      if (actualCardCount === expectedCardCount && expectedCardCount > 0) {
+        setDisableHover(false);
+      }
+    };
+    if (photoUrls.length > 0) {
+      checkAllRefsReady();
+    }
+  }, [photoUrls]);
 
   useEffect(() => {
     async function start() {
@@ -40,9 +56,7 @@ const Hand = ({ numberOfCards }) => {
       }
     }
     start();
-  }, []);
-
-  const cardsRef = useRef([]);
+  }, [numberOfCards]);
 
   const [cardsLayout, setCardsLayout] = useState(
     calculateCardsLayout(
@@ -58,11 +72,17 @@ const Hand = ({ numberOfCards }) => {
         numberOfCards
       )
     );
-  }, [cardsPosition, cardsRotation]);
+  }, [cardsPosition, cardsRotation, direction, numberOfCards]);
 
   const addCardOnTable = (index) => {
-    if (cardsRef.current[index]?.current) {
+    if (cardsRef.current[index]) {
       setDisableHover(true);
+      addAnimationToOtherPlayers({
+        playerPosition,
+        index,
+        type: "addOnTable",
+        direction,
+      });
       let hoverObject = {
         y: 0.6,
         duration: 0.5,
@@ -89,9 +109,11 @@ const Hand = ({ numberOfCards }) => {
           hoverObject.z = 0;
           break;
         }
+        default:
+          break;
       }
-      gsap.to(cardsRef.current[index].current.position, hoverObject);
-      gsap.to(cardsRef.current[index].current.rotation, {
+      gsap.to(cardsRef.current[index].position, hoverObject);
+      gsap.to(cardsRef.current[index].rotation, {
         x: Math.PI / 2,
         y: 0,
         z: -Math.PI / 2,
@@ -103,21 +125,22 @@ const Hand = ({ numberOfCards }) => {
   };
 
   const backToHand = (index) => {
-    if (cardsRef.current[index]?.current) {
+    if (cardsRef.current[index]) {
+      addAnimationToOtherPlayers({ playerPosition, index, type: "backToHand" });
       const cardsAnimationPosition = getCardsPosition(
         cardsPosition,
         index,
         direction
       );
       setDisableHover(true);
-      gsap.to(cardsRef.current[index].current.position, {
+      gsap.to(cardsRef.current[index].position, {
         x: cardsAnimationPosition[0],
         y: cardsAnimationPosition[1],
         z: cardsAnimationPosition[2],
         duration: 0.5,
         ease: "power2.out",
       });
-      gsap.to(cardsRef.current[index].current.rotation, {
+      gsap.to(cardsRef.current[index].rotation, {
         x: cardsRotation[0],
         y: cardsRotation[1],
         z: cardsRotation[2],
@@ -135,13 +158,24 @@ const Hand = ({ numberOfCards }) => {
 
     if (currentClicked !== -1) {
       addCardOnTable(currentClicked);
-      backToHand(previouslyClickedRef.current);
       previouslyClickedRef.current = currentClicked;
     } else {
-      backToHand(currentClicked);
       previouslyClickedRef.current = -1;
     }
   }, [currentClicked]);
+
+  const assignRef = (el, key) => {
+    if (el) {
+      cardsRef.current[key] = el;
+      cardsLoadedCount.current++;
+      if (cardsLoadedCount.current === photoUrls.length) {
+        gsap.delayedCall(0.2, () => setDisableHover(false));
+      }
+    } else if (cardsRef.current[key]) {
+      delete cardsRef.current[key];
+      cardsLoadedCount.current--;
+    }
+  };
 
   return (
     <>
@@ -149,7 +183,6 @@ const Hand = ({ numberOfCards }) => {
         <Card
           index={key}
           key={key}
-          cardsRef={cardsRef}
           currentHovered={currentHovered}
           disableHover={disableHover}
           setCurrentHovered={setCurrentHovered}
@@ -161,6 +194,7 @@ const Hand = ({ numberOfCards }) => {
           cardsPosition={cardsPosition}
           direction={direction}
           playerPosition={playerPosition}
+          ref={(el) => assignRef(el, key)}
         />
       ))}
     </>
