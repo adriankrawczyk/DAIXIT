@@ -32,10 +32,8 @@ const Card = React.forwardRef(
     );
     const reverse = useLoader(TextureLoader, "/card.png");
     const [cardImage, setCardImage] = useState(defaultTexture);
-    // Create an internal ref to track the mesh
     const internalRef = React.useRef();
 
-    // Expose the internal ref to the parent component
     useImperativeHandle(ref, () => internalRef.current);
 
     useEffect(() => {

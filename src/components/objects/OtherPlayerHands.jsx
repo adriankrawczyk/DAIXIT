@@ -10,9 +10,7 @@ import { getAnimations } from "../firebase/playerMethods";
 import { addToTable, backToHand } from "../firebase/animations";
 
 const OtherPlayerHand = ({ numberOfCards = 5 }) => {
-  const [otherPlayersData, setOtherPlayersData] = useState([]);
   const [otherPlayerHandsData, setOtherPlayerHandsData] = useState([]);
-  const [processedAnimations, setProcessedAnimations] = useState(new Set());
   const cardsRef = useRef({});
 
   const handleAnimation = (animation, cardRef) => {
@@ -40,7 +38,6 @@ const OtherPlayerHand = ({ numberOfCards = 5 }) => {
   useEffect(() => {
     const fetchData = async () => {
       const players = await getOtherPlayersData();
-      setOtherPlayersData(players);
       setOtherPlayerHandsData(
         await Promise.all(
           players.map((player) => getSetupData(player.position))
