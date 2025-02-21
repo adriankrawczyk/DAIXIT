@@ -7,6 +7,7 @@ import {
   calculateCardsLayout,
 } from "../firebase/gameMethods";
 import { getAnimations } from "../firebase/playerMethods";
+import { addToTable, backToHand } from "../firebase/animations";
 
 const OtherPlayerHand = ({ numberOfCards = 5 }) => {
   const [otherPlayersData, setOtherPlayersData] = useState([]);
@@ -14,71 +15,25 @@ const OtherPlayerHand = ({ numberOfCards = 5 }) => {
   const [processedAnimations, setProcessedAnimations] = useState(new Set());
   const cardsRef = useRef({});
 
-  const animationPresets = {
-    addOnTable: (direction) => {
-      const positions = {
-        Bottom: { x: 0, z: 1 },
-        Top: { x: 0, z: -1 },
-        Left: { x: 1, z: 0 },
-        Right: { x: -1, z: 0 },
-      };
-      return {
-        position: {
-          ...positions[direction],
-          y: 0.6,
-          duration: 0.5,
-          ease: "power2.out",
-        },
-        rotation: {
-          x: Math.PI / 2,
-          y: 0,
-          z: -Math.PI / 2,
-          duration: 0.5,
-          ease: "power2.out",
-        },
-      };
-    },
-    backToHand: (originalPosition, originalRotation) => ({
-      position: {
-        x: originalPosition[0],
-        y: originalPosition[1],
-        z: originalPosition[2],
-        duration: 0.5,
-        ease: "power2.out",
-      },
-      rotation: {
-        x: originalRotation[0],
-        y: originalRotation[1],
-        z: originalRotation[2],
-        duration: 0.5,
-        ease: "power2.out",
-      },
-    }),
-  };
-
   const handleAnimation = (animation, cardRef) => {
     if (!cardRef?.current) return;
 
     const { type, direction, playerPosition, index } = animation;
-    let animationData;
 
     if (type === "addOnTable") {
-      animationData = animationPresets.addOnTable(direction);
+      addToTable(cardRef.current, direction);
     } else if (type === "backToHand") {
       const playerHand = otherPlayerHandsData.find(
         (hand) => hand.playerPosition === playerPosition
       );
       if (!playerHand) return;
+
       const { position, rotation } = calculateCardsLayout(
         playerHand,
         numberOfCards
       )[index];
-      animationData = animationPresets.backToHand(position, rotation);
-    }
 
-    if (animationData) {
-      gsap.to(cardRef.current.position, animationData.position);
-      gsap.to(cardRef.current.rotation, animationData.rotation);
+      backToHand(cardRef.current, position, rotation);
     }
   };
 

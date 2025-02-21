@@ -11,6 +11,7 @@ import {
 } from "../firebase/gameMethods";
 import { calculateCardsLayout } from "../firebase/gameMethods";
 import { addAnimationToOtherPlayers } from "../firebase/playerMethods";
+import { addToTable, backToHand } from "../firebase/animations";
 
 const Hand = ({ numberOfCards }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
@@ -74,57 +75,19 @@ const Hand = ({ numberOfCards }) => {
     );
   }, [cardsPosition, cardsRotation, direction, numberOfCards]);
 
-  const addCardOnTable = (index) => {
+  const handleAddCardOnTable = (index) => {
     if (cardsRef.current[index]) {
-      setDisableHover(true);
       addAnimationToOtherPlayers({
         playerPosition,
         index,
         type: "addOnTable",
         direction,
       });
-      let hoverObject = {
-        y: 0.6,
-        duration: 0.5,
-        ease: "power2.out",
-      };
-      switch (direction) {
-        case "Bottom": {
-          hoverObject.z = 1;
-          hoverObject.x = 0;
-          break;
-        }
-        case "Top": {
-          hoverObject.z = -1;
-          hoverObject.x = 0;
-          break;
-        }
-        case "Left": {
-          hoverObject.x = 1;
-          hoverObject.z = 0;
-          break;
-        }
-        case "Right": {
-          hoverObject.x = -1;
-          hoverObject.z = 0;
-          break;
-        }
-        default:
-          break;
-      }
-      gsap.to(cardsRef.current[index].position, hoverObject);
-      gsap.to(cardsRef.current[index].rotation, {
-        x: Math.PI / 2,
-        y: 0,
-        z: -Math.PI / 2,
-        duration: 0.5,
-        ease: "power2.out",
-      });
-      gsap.delayedCall(0.5, () => setDisableHover(false));
+      addToTable(cardsRef.current[index], direction, setDisableHover);
     }
   };
 
-  const backToHand = (index) => {
+  const handleBackToHand = (index) => {
     if (cardsRef.current[index]) {
       addAnimationToOtherPlayers({ playerPosition, index, type: "backToHand" });
       const cardsAnimationPosition = getCardsPosition(
@@ -132,32 +95,22 @@ const Hand = ({ numberOfCards }) => {
         index,
         direction
       );
-      setDisableHover(true);
-      gsap.to(cardsRef.current[index].position, {
-        x: cardsAnimationPosition[0],
-        y: cardsAnimationPosition[1],
-        z: cardsAnimationPosition[2],
-        duration: 0.5,
-        ease: "power2.out",
-      });
-      gsap.to(cardsRef.current[index].rotation, {
-        x: cardsRotation[0],
-        y: cardsRotation[1],
-        z: cardsRotation[2],
-        duration: 0.5,
-        ease: "power2.out",
-      });
-      gsap.delayedCall(0.5, () => setDisableHover(false));
+      backToHand(
+        cardsRef.current[index],
+        cardsAnimationPosition,
+        cardsRotation,
+        setDisableHover
+      );
     }
   };
 
   useEffect(() => {
     if (previouslyClickedRef.current !== -1) {
-      backToHand(previouslyClickedRef.current);
+      handleBackToHand(previouslyClickedRef.current);
     }
 
     if (currentClicked !== -1) {
-      addCardOnTable(currentClicked);
+      handleAddCardOnTable(currentClicked);
       previouslyClickedRef.current = currentClicked;
     } else {
       previouslyClickedRef.current = -1;
