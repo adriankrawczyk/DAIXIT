@@ -1,5 +1,45 @@
 import gsap from "gsap";
 
+export const showCardCloser = (cardRef) => {
+  if (!cardRef) return;
+
+  gsap.to(cardRef.position, {
+    x: 0,
+    y: 1.9,
+    z: 3.8,
+    duration: 0.5,
+    ease: "power2.in",
+  });
+
+  gsap.to(cardRef.rotation, {
+    x: -Math.PI / 15,
+    y: 0,
+    z: 0,
+    duration: 0.5,
+    ease: "power2.out",
+  });
+};
+
+export const animateActionButtons = (acceptButtonRef, declineButtonRef) => {
+  if (!acceptButtonRef || !declineButtonRef) return;
+
+  gsap.to(acceptButtonRef.scale, {
+    x: 1,
+    y: 1,
+    z: 1,
+    duration: 0.5,
+    ease: "power2.inOut",
+  });
+
+  gsap.to(declineButtonRef.scale, {
+    x: 1,
+    y: 1,
+    z: 1,
+    duration: 0.5,
+    ease: "power2.inOut",
+  });
+};
+
 export const addToTable = (cardRef, direction, setDisableHover = null) => {
   if (!cardRef) return;
 

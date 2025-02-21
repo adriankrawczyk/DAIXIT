@@ -55,7 +55,6 @@ const OtherPlayerHand = ({ numberOfCards = 5 }) => {
     const fetchAnimations = async () => {
       const animations = await getAnimations();
 
-      // Sort animations by timestamp (oldest first)
       const sortedAnimations = animations.sort((a, b) => {
         return (a.timestamp || 0) - (b.timestamp || 0);
       });
