@@ -1,7 +1,7 @@
-import React, { useRef } from 'react'
-import Star from './Star';
-import Planets from './Planets';
-import GalaxyInstances from './GalaxyInstances';
+import React, { useRef } from "react";
+import Star from "./Star";
+import Planets from "./Planets";
+import GalaxyInstances from "./GalaxyInstances";
 
 const STAR_NUMBER = 50;
 
@@ -10,7 +10,6 @@ const MAX_Y_SPEED = 0.3;
 
 const MIN_VALUE = -20;
 const SPREAD = 40;
-
 
 const Galaxy = () => {
     /// STARS
@@ -94,7 +93,7 @@ const Galaxy = () => {
     }
     <GalaxyInstances/>
     </>
-  )
-}
+  );
+};
 
-export default Galaxy
+export default Galaxy;

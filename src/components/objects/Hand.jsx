@@ -2,9 +2,15 @@ import React, { useEffect, useRef, useState } from "react";
 import Card from "./Card";
 import gsap from "gsap";
 import { useSetup } from "../context/SetupContext";
-import ActionButton from "./ActionButton";
+import {
+  setHandInDatabase,
+  getHandFromDatabase,
+  getRandomCard,
+  fetchAllPhotos,
+} from "../firebase/gameMethods";
+import { calculateCardsLayout } from "../firebase/gameMethods";
 
-const CardsComponent = ({ numberOfCards }) => {
+const Hand = ({ numberOfCards }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
   const [currentClicked, setCurrentClicked] = useState(-1);
 
@@ -20,29 +26,31 @@ const CardsComponent = ({ numberOfCards }) => {
   const cardsRef = useRef([]);
 
 
+  const [allPhotos, setAllPhotos] = useState([]);
+  const previouslyClickedRef = useRef(-1);
   const { cardsPosition, cardsRotation, playerPosition } = useSetup();
 
   useEffect(() => {
-    const fetchPhotos = async () => {
-      const url = "https://storage.googleapis.com/storage/v1/b/daixit_photos/o";
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-        const urls = data.items.map(
-          (item) => `https://storage.googleapis.com/daixit_photos/${item.name}`
+    async function start() {
+      const handFromDatabase = await getHandFromDatabase();
+      if (handFromDatabase.length === 0) setStartingHand();
+      else setPhotoUrls(handFromDatabase);
+    }
+    async function setStartingHand() {
+      const fetchedPhotos = await fetchAllPhotos();
+      setAllPhotos(fetchedPhotos);
+
+      if (fetchedPhotos.length > 0) {
+        const newPhotoUrls = Array.from({ length: numberOfCards }, () =>
+          getRandomCard(fetchedPhotos)
         );
-        const shuffled = urls.sort(() => 0.5 - Math.random());
-        setPhotoUrls(shuffled.slice(0, numberOfCards));
-      } catch (error) {
-        console.error("Error fetching photos:", error);
+        setPhotoUrls(newPhotoUrls);
+        await setHandInDatabase(newPhotoUrls);
       }
-    };
-
-    fetchPhotos();
-  }, [numberOfCards]);
-
-
-  const cardsLayout = () => {
+    }
+    start();
+  }, []);
+  const calculateCardsLayout = (numberOfCards) => {
     return Array.from({ length: numberOfCards }, (_, i) => ({
       position: [
         (i - 2) / 2 + cardsPosition[0],
@@ -54,7 +62,16 @@ const CardsComponent = ({ numberOfCards }) => {
         cardsRotation[1],
         Math.PI / 16 + cardsRotation[2],
       ],
-    }))};
+    }));
+  };
+
+  const [cardsLayout, setCardsLayout] = useState(() =>
+    calculateCardsLayout(numberOfCards)
+  );
+
+  useEffect(() => {
+    setCardsLayout(calculateCardsLayout(numberOfCards));
+  }, [cardsPosition, cardsRotation, numberOfCards]);
 
   const addCardOnTable = (index) => {
     if (cardsRef.current[index]?.current) {
@@ -167,7 +184,7 @@ const CardsComponent = ({ numberOfCards }) => {
 
   return (
     <>
-      {cardsLayout().map((item, key) => (
+      {cardsLayout.map((item, key) => (
         <Card
           index={key}
           key={key}
@@ -199,4 +216,4 @@ const CardsComponent = ({ numberOfCards }) => {
   );
 };
 
-export default CardsComponent;
+export default Hand;

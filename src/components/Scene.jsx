@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import AllLights from "./lights/AllLights";
 import CameraControls from "./camera/CameraControls";
 import Table from "./objects/Table";
-import CardsComponent from "./objects/CardsComponent";
+import Hand from "./objects/Hand";
 import { OrbitControls } from "@react-three/drei";
 import FullBackground from "./background/FullBackground";
 import Paddle_Boat from "../../public/Paddle_Boat";
@@ -11,8 +11,11 @@ import { getActivePlayersInGame, joinToGame } from "./firebase/lobbyMethods";
 import { useSetup } from "./context/SetupContext";
 import { getPosition } from "./firebase/gameMethods";
 import FirebaseLogger from "./lobby/firebase/firebaseLogger";
+import OtherPlayerCards from "./objects/OtherPlayerHands";
+import SpinningWheel from "./objects/SpinningWheel";
 
 const Scene = () => {
+  const [joined, setJoined] = useState(false);
   const {
     setCameraPosition,
     setCameraLookAt,
@@ -47,6 +50,7 @@ const Scene = () => {
       const gameId = window.location.href.split("/").pop();
       if (!localStorage.getItem("name")) await FirebaseLogger();
       await joinToGame(gameId);
+      setJoined(true);
       await setup(gameId);
     };
     join();
@@ -55,12 +59,16 @@ const Scene = () => {
     <>
       <AllLights />
       <CameraControls />
-      <CardsComponent numberOfCards={5} />
-      {/* <Table /> */}
-      <OrbitControls />
-      {/* <Paddle_Boat/> */}
-      <Cone />
-      <FullBackground />
+      {joined ? (
+        <>
+          <Hand numberOfCards={5} />
+          <OtherPlayerCards />
+          <Cone />
+          <FullBackground />
+        </>
+      ) : (
+        <SpinningWheel />
+      )}
     </>
   );
 };
