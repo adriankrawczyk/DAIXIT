@@ -47,7 +47,6 @@ const Card = React.forwardRef(
 
     const hoverAnimation = useCallback(() => {
       if (!internalRef.current) return;
-
       let hoverObject = { duration: 0.2, ease: "power2.in" };
       switch (direction) {
         case "Bottom": {

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import Card from "./Card";
-import gsap from "gsap";
 import {
   getOtherPlayersData,
   getSetupData,
@@ -19,7 +18,6 @@ const OtherPlayerHand = ({ numberOfCards = 5 }) => {
     if (!cardRef?.current) return;
 
     const { type, direction, playerPosition, index } = animation;
-
     if (type === "addOnTable") {
       addToTable(cardRef.current, direction);
     } else if (type === "backToHand") {
@@ -56,10 +54,20 @@ const OtherPlayerHand = ({ numberOfCards = 5 }) => {
   useEffect(() => {
     const fetchAnimations = async () => {
       const animations = await getAnimations();
+
+      // Sort animations by timestamp (oldest first)
+      const sortedAnimations = animations.sort((a, b) => {
+        return (a.timestamp || 0) - (b.timestamp || 0);
+      });
+
       setProcessedAnimations((prev) => {
         const newProcessed = new Set(prev);
-        animations.forEach((animation) => {
-          const animationKey = `${animation.playerPosition}-${animation.index}-${animation.type}`;
+        sortedAnimations.forEach((animation) => {
+          // Create a unique key that includes timestamp for more reliable tracking
+          const animationKey = `${animation.playerPosition}-${
+            animation.index
+          }-${animation.type}-${animation.timestamp || 0}`;
+
           if (!newProcessed.has(animationKey)) {
             const cardRef =
               cardsRef.current[
@@ -71,6 +79,13 @@ const OtherPlayerHand = ({ numberOfCards = 5 }) => {
             }
           }
         });
+
+        // Prevent the Set from growing too large - keep only recent animations
+        if (newProcessed.size > 100) {
+          const newProcessedArray = [...newProcessed];
+          return new Set(newProcessedArray.slice(-100));
+        }
+
         return newProcessed;
       });
     };

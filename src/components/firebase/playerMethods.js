@@ -68,13 +68,12 @@ async function addAnimationToOtherPlayers(animation) {
     if (!snapshot.exists()) return;
     const players = snapshot.val();
     const updates = {};
+    const timestamp = Date.now();
+    animation.timestamp = timestamp;
     Object.entries(players).forEach(([uid, playerData]) => {
       if (uid !== currentPlayerUid) {
-        const currentAnimations = playerData?.animations || [];
-        updates[`games/${gameId}/players/${uid}/animations`] = [
-          animation,
-          ...currentAnimations,
-        ];
+        updates[`games/${gameId}/players/${uid}/animations/${timestamp}`] =
+          animation;
       }
     });
     await update(ref(database), updates);
@@ -89,19 +88,25 @@ async function getAnimations() {
 
   if (!playerUid) {
     console.error("No playerUid found in localStorage");
-    return;
+    return [];
   }
 
   const playerRef = ref(database, `games/${gameId}/players/${playerUid}`);
+  const animationsRef = ref(
+    database,
+    `games/${gameId}/players/${playerUid}/animations`
+  );
 
   try {
-    const snapshot = await get(playerRef);
+    const snapshot = await get(animationsRef);
     if (!snapshot.exists()) return [];
 
-    const animations = snapshot.val()?.animations || [];
-    await update(playerRef, { animations: [] });
+    const animationsObj = snapshot.val();
+    const animationsArray = Object.values(animationsObj);
 
-    return animations;
+    await set(animationsRef, null);
+
+    return animationsArray;
   } catch (error) {
     console.error("Error retrieving animations:", error);
     return [];

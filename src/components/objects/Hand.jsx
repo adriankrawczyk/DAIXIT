@@ -26,19 +26,6 @@ const Hand = ({ numberOfCards }) => {
   const cardsLoadedCount = useRef(0);
 
   useEffect(() => {
-    const checkAllRefsReady = () => {
-      const expectedCardCount = photoUrls.length;
-      const actualCardCount = Object.keys(cardsRef.current).length;
-      if (actualCardCount === expectedCardCount && expectedCardCount > 0) {
-        setDisableHover(false);
-      }
-    };
-    if (photoUrls.length > 0) {
-      checkAllRefsReady();
-    }
-  }, [photoUrls]);
-
-  useEffect(() => {
     async function start() {
       const handFromDatabase = await getHandFromDatabase();
       if (handFromDatabase.length === 0) setStartingHand();
@@ -59,6 +46,15 @@ const Hand = ({ numberOfCards }) => {
     start();
   }, [numberOfCards]);
 
+  useEffect(() => {
+    if (
+      photoUrls.length > 0 &&
+      Object.keys(cardsRef.current).length === photoUrls.length
+    ) {
+      setTimeout(() => setDisableHover(false), 300);
+    }
+  }, [photoUrls, cardsLoadedCount.current]);
+
   const [cardsLayout, setCardsLayout] = useState(
     calculateCardsLayout(
       { cardsPosition, cardsRotation, direction },
@@ -75,21 +71,25 @@ const Hand = ({ numberOfCards }) => {
     );
   }, [cardsPosition, cardsRotation, direction, numberOfCards]);
 
-  const handleAddCardOnTable = (index) => {
+  const handleAddCardOnTable = async (index) => {
     if (cardsRef.current[index]) {
-      addAnimationToOtherPlayers({
+      addToTable(cardsRef.current[index], direction, setDisableHover);
+      await addAnimationToOtherPlayers({
+        type: "addOnTable",
         playerPosition,
         index,
-        type: "addOnTable",
         direction,
       });
-      addToTable(cardsRef.current[index], direction, setDisableHover);
     }
   };
 
-  const handleBackToHand = (index) => {
+  const handleBackToHand = async (index) => {
     if (cardsRef.current[index]) {
-      addAnimationToOtherPlayers({ playerPosition, index, type: "backToHand" });
+      await addAnimationToOtherPlayers({
+        type: "backToHand",
+        playerPosition,
+        index,
+      });
       const cardsAnimationPosition = getCardsPosition(
         cardsPosition,
         index,
@@ -121,9 +121,6 @@ const Hand = ({ numberOfCards }) => {
     if (el) {
       cardsRef.current[key] = el;
       cardsLoadedCount.current++;
-      if (cardsLoadedCount.current === photoUrls.length) {
-        gsap.delayedCall(0.2, () => setDisableHover(false));
-      }
     } else if (cardsRef.current[key]) {
       delete cardsRef.current[key];
       cardsLoadedCount.current--;
