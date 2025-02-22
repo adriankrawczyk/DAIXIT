@@ -1,23 +1,36 @@
 import gsap from "gsap";
 
-export const showCardCloser = (cardRef) => {
+export const showCardCloser = (cardRef, direction) => {
   if (!cardRef) return;
 
-  gsap.to(cardRef.position, {
-    x: 0,
-    y: 1.9,
-    z: 3.8,
-    duration: 0.5,
-    ease: "power2.in",
-  });
+  let positionObject = { duration: 0.5, ease: "power2.in" };
+  let rotationObject = { duration: 0.5, ease: "power2.out" };
 
-  gsap.to(cardRef.rotation, {
-    x: -Math.PI / 15,
-    y: 0,
-    z: 0,
-    duration: 0.5,
-    ease: "power2.out",
-  });
+  switch (direction) {
+    case "Bottom": {
+      Object.assign(positionObject, { x: 0, y: 1.9, z: 3.8 });
+      Object.assign(rotationObject, { x: -Math.PI / 15, y: 0, z: 0 });
+      break;
+    }
+    case "Top": {
+      Object.assign(positionObject, { x: 0, y: 1.9, z: -3.8 });
+      Object.assign(rotationObject, { x: Math.PI / 15, y: Math.PI, z: 0 });
+      break;
+    }
+    case "Left": {
+      Object.assign(positionObject, { x: 3.8, y: 1.9, z: 0 });
+      Object.assign(rotationObject, { x: 0, y: Math.PI / 2, z: 0 });
+      break;
+    }
+    case "Right": {
+      Object.assign(positionObject, { x: -3.8, y: 1.9, z: 0 });
+      Object.assign(rotationObject, { x: 0, y: -Math.PI / 2, z: 0 });
+      break;
+    }
+  }
+
+  gsap.to(cardRef.position, positionObject);
+  gsap.to(cardRef.rotation, rotationObject);
 };
 
 export const animateActionButtons = (acceptButtonRef, declineButtonRef) => {

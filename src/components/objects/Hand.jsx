@@ -17,6 +17,10 @@ import {
   animateActionButtons,
 } from "../firebase/animations";
 import ActionButton from "./ActionButton";
+import {
+  getAcceptPositionSetupData,
+  getDeclinePositionSetupData,
+} from "../firebase/uiMethods";
 
 const Hand = ({ numberOfCards }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
@@ -30,6 +34,8 @@ const Hand = ({ numberOfCards }) => {
   const cardsRef = useRef({});
   const { cardsPosition, cardsRotation, playerPosition, direction } =
     useSetup();
+  const acceptButtonSetupData = getAcceptPositionSetupData(direction);
+  const declineButtonSetupData = getDeclinePositionSetupData(direction);
   const [cardsLayout, setCardsLayout] = useState(
     calculateCardsLayout(
       { cardsPosition, cardsRotation, direction },
@@ -50,6 +56,7 @@ const Hand = ({ numberOfCards }) => {
     async function setStartingHand() {
       // Get 5 starting cards and set them in database
       const fetchedPhotos = await fetchAllPhotos();
+      console.log(fetchedPhotos.length);
       if (fetchedPhotos.length > 0) {
         const newPhotoUrls = Array.from({ length: numberOfCards }, () =>
           getRandomCard(fetchedPhotos)
@@ -113,7 +120,7 @@ const Hand = ({ numberOfCards }) => {
   useEffect(() => {
     // Handle showing card closer on click
     if (currentClicked !== -1 && selectedCard === -1) {
-      showCardCloser(cardsRef.current[currentClicked]);
+      showCardCloser(cardsRef.current[currentClicked], direction);
       animateActionButtons(acceptButtonRef.current, declineButtonRef.current);
       setInMenu(true);
     }
@@ -199,14 +206,14 @@ const Hand = ({ numberOfCards }) => {
           <ActionButton
             ref={acceptButtonRef}
             onClick={acceptClicked}
-            dimensions={[-1.7, 1.5, 3]}
+            buttonSetupData={acceptButtonSetupData}
             color="lightgreen"
             text="accept"
           />
           <ActionButton
             ref={declineButtonRef}
             onClick={declineClicked}
-            dimensions={[1.7, 1.5, 3]}
+            buttonSetupData={declineButtonSetupData}
             color="red"
             text="decline"
           />

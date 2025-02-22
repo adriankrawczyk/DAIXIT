@@ -48,12 +48,13 @@ async function joinToGame(gameId) {
     }
 
     const playerData = await fetchPlayerData(playerUid);
+    localStorage.setItem("currentGame", gameId);
     if (!playerData || !playerData.uid) {
       throw new Error("Invalid player data");
     }
 
     const { name } = playerData;
-    const players = await getActivePlayersInGame(gameId);
+    const players = await getPlayersInGame(gameId);
     const playersArray = players ? Object.values(players) : [];
 
     const currentGameData = {

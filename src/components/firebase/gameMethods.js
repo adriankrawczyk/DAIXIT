@@ -38,7 +38,7 @@ async function getSetupData(n) {
         multiplier: [1, 1, -1],
         directionalLightPosition: [2.4, 2, 0],
         cardsPosition: [3, 0.75, 0],
-        cardsRotation: [Math.PI / 32, Math.PI / 2, Math.PI / 8],
+        cardsRotation: [-Math.PI / 16, Math.PI / 2, Math.PI / 8],
         direction: "Left",
       };
     }
@@ -50,7 +50,7 @@ async function getSetupData(n) {
         multiplier: [-1, 1, 1],
         directionalLightPosition: [-2.4, 2, 0],
         cardsPosition: [-3, 0.75, 0],
-        cardsRotation: [-Math.PI / 32, -Math.PI / 2, Math.PI / 8],
+        cardsRotation: [Math.PI / 16, -Math.PI / 2, Math.PI / 8],
         direction: "Right",
       };
     }
@@ -66,7 +66,6 @@ async function getPosition() {
   try {
     const gameDataSnapshot = await get(playerCurrentGameDataRef);
     const gameData = gameDataSnapshot.val();
-
     if (!gameData || typeof gameData.position === "undefined") {
       console.error("Invalid game data or position not found");
       return null;

@@ -19,7 +19,7 @@ async function fetchPlayerData(chosenUid) {
 async function setPlayerData(newUID) {
   localStorage.setItem("playerUid", newUID);
   const playerRef = ref(database, `players/${newUID}`);
-  set(playerRef, {
+  await set(playerRef, {
     uid: newUID,
     joinedAt: new Date().toISOString(),
     name: localStorage.getItem("name"),
