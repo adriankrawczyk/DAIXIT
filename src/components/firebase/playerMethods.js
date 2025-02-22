@@ -1,4 +1,4 @@
-import { ref, set, update, get, onDisconnect } from "firebase/database";
+import { ref, set, update, get, onDisconnect, remove } from "firebase/database";
 import { database } from "./firebaseConfig";
 
 async function fetchPlayerData(chosenUid) {
@@ -36,6 +36,12 @@ function setPlayerName(newPlayerName) {
   update(playerRef, { name: newPlayerName }).catch((error) =>
     console.error("Error updating player name:", error)
   );
+}
+
+async function removePlayerFromGame(playerUid) {
+  const gameId = window.location.href.split("/").pop();
+  const playerRef = ref(database, `games/${gameId}/players/${playerUid}`);
+  await remove(playerRef);
 }
 
 async function getUserCount() {
@@ -120,4 +126,5 @@ export {
   fetchPlayerData,
   addAnimationToOtherPlayers,
   getAnimations,
+  removePlayerFromGame,
 };

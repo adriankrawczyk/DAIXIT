@@ -18,6 +18,7 @@ import FirebaseLogger from "./lobby/firebase/firebaseLogger";
 import OtherPlayerCards from "./objects/OtherPlayerHands";
 import SpinningWheel from "./objects/SpinningWheel";
 import StartGameUI from "./objects/startGameUI";
+import { removePlayerFromGame } from "./firebase/playerMethods";
 
 const Scene = () => {
   const [joined, setJoined] = useState(false);
@@ -72,7 +73,11 @@ const Scene = () => {
       const gameData = await fetchGameData();
       const { started, hostUid } = gameData;
       setIsThisPlayerHost(hostUid === localStorage.getItem("playerUid"));
-      setNumberOfPlayers(Object.entries(gameData.players).length);
+      const players = Object.values(gameData.players);
+      players.forEach(async (player) => {
+        if (!player.inGame) await removePlayerFromGame(player.playerUid);
+      });
+      setNumberOfPlayers(players.length);
       setGameStarted(started);
     };
 
