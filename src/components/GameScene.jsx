@@ -3,6 +3,7 @@ import Hand from "./objects/Hand";
 import OtherPlayerCards from "./objects/OtherPlayerHands";
 import StartGameUI from "./objects/startGameUI";
 import Input from "./lobby/util/Input";
+import SpinningWheel from "./objects/SpinningWheel";
 import { fetchGameData, joinToGame } from "./firebase/lobbyMethods";
 import { getPosition } from "./firebase/gameMethods";
 import FirebaseLogger from "./lobby/firebase/firebaseLogger";
@@ -10,7 +11,7 @@ import { removePlayerFromGame } from "./firebase/playerMethods";
 import { fetchAllPhotos } from "./firebase/gameMethods";
 import { getCenteredButtonData } from "./firebase/uiMethods";
 
-const GameScene = ({ setupContext, children }) => {
+const GameScene = ({ setupContext }) => {
   const {
     setCameraPosition,
     setCameraLookAt,
@@ -20,9 +21,10 @@ const GameScene = ({ setupContext, children }) => {
     setCardsRotation,
     setPlayerPosition,
     setDirection,
+    joined,
+    setJoined,
   } = setupContext;
 
-  const [joined, setJoined] = useState(false);
   const [gameData, setGameData] = useState([]);
   const [gameStarted, setGameStarted] = useState(false);
   const [numberOfPlayers, setNumberOfPlayers] = useState(1);
@@ -95,39 +97,34 @@ const GameScene = ({ setupContext, children }) => {
     return () => clearInterval(interval);
   }, []);
 
-  return (
+  if (!joined) {
+    return <SpinningWheel />;
+  }
+
+  return gameStarted ? (
     <>
-      {children(joined)}
-      {joined && (
-        <>
-          {gameStarted ? (
-            <>
-              {isThisPlayerWordMaker && (
-                <Input
-                  position={[
-                    inputData.position[0],
-                    inputData.position[1] + 0.5,
-                    inputData.position[2],
-                  ]}
-                  dimensions={[2, 0.5, 0.01]}
-                  defaultText={""}
-                  set={setWordMakerText}
-                />
-              )}
-              <Hand numberOfCards={5} fetchedPhotos={fetchedPhotos} />
-              <OtherPlayerCards />
-            </>
-          ) : (
-            <StartGameUI
-              numberOfPlayers={numberOfPlayers}
-              isThisPlayerHost={isThisPlayerHost}
-              gameData={gameData}
-              setIsThisPlayerWordMaker={setIsThisPlayerWordMaker}
-            />
-          )}
-        </>
+      {isThisPlayerWordMaker && (
+        <Input
+          position={[
+            inputData.position[0],
+            inputData.position[1] + 0.5,
+            inputData.position[2],
+          ]}
+          dimensions={[2, 0.5, 0.01]}
+          defaultText={""}
+          set={setWordMakerText}
+        />
       )}
+      <Hand numberOfCards={5} fetchedPhotos={fetchedPhotos} />
+      <OtherPlayerCards />
     </>
+  ) : (
+    <StartGameUI
+      numberOfPlayers={numberOfPlayers}
+      isThisPlayerHost={isThisPlayerHost}
+      gameData={gameData}
+      setIsThisPlayerWordMaker={setIsThisPlayerWordMaker}
+    />
   );
 };
 

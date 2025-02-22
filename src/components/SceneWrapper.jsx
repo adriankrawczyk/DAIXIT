@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import AllLights from "./lights/AllLights";
 import CameraControls from "./camera/CameraControls";
 import Cone from "./objects/Cone";
@@ -7,27 +7,25 @@ import SpinningWheel from "./objects/SpinningWheel";
 import GameScene from "./GameScene";
 import { useSetup } from "./context/SetupContext";
 
+const StaticSceneElements = memo(() => (
+  <>
+    <AllLights />
+    <CameraControls />
+    <Cone />
+    <FullBackground />
+  </>
+));
+
+const LoadingSpinner = memo(() => <SpinningWheel />);
+
 const SceneWrapper = () => {
   const setupContext = useSetup();
+  const { joined } = setupContext;
 
   return (
     <>
-      <AllLights />
-      <CameraControls />
-      <GameScene setupContext={setupContext}>
-        {(joined) => (
-          <>
-            {joined ? (
-              <>
-                <Cone />
-                <FullBackground />
-              </>
-            ) : (
-              <SpinningWheel />
-            )}
-          </>
-        )}
-      </GameScene>
+      {joined ? <StaticSceneElements /> : <LoadingSpinner />}
+      <GameScene setupContext={setupContext} />
     </>
   );
 };

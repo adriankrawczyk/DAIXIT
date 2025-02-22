@@ -15,6 +15,7 @@ export const SetupProvider = ({ children }) => {
   const [cardsRotation, setCardsRotation] = useState([0, 0, 0]);
   const [playerPosition, setPlayerPosition] = useState(0);
   const [direction, setDirection] = useState("Bottom");
+  const [joined, setJoined] = useState(false);
   return (
     <SetupContext.Provider
       value={{
@@ -34,6 +35,8 @@ export const SetupProvider = ({ children }) => {
         setPlayerPosition,
         direction,
         setDirection,
+        joined,
+        setJoined,
       }}
     >
       {children}
