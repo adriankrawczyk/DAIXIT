@@ -19,12 +19,14 @@ import OtherPlayerCards from "./objects/OtherPlayerHands";
 import SpinningWheel from "./objects/SpinningWheel";
 import StartGameUI from "./objects/startGameUI";
 import { removePlayerFromGame } from "./firebase/playerMethods";
+import { fetchAllPhotos } from "./firebase/gameMethods";
 
 const Scene = () => {
   const [joined, setJoined] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [numberOfPlayers, setNumberOfPlayers] = useState(1);
   const [isThisPlayerHost, setIsThisPlayerHost] = useState(false);
+  const [fetchedPhotos, setFetchedPhotos] = useState([]);
   const {
     setCameraPosition,
     setCameraLookAt,
@@ -64,6 +66,8 @@ const Scene = () => {
       await joinToGame(gameId);
       await setup(gameId);
       setJoined(true);
+      const allPhotos = await fetchAllPhotos();
+      setFetchedPhotos(allPhotos);
     };
     join();
   }, []);
@@ -74,9 +78,10 @@ const Scene = () => {
       const { started, hostUid } = gameData;
       setIsThisPlayerHost(hostUid === localStorage.getItem("playerUid"));
       const players = Object.values(gameData.players);
-      players.forEach(async (player) => {
-        if (!player.inGame) await removePlayerFromGame(player.playerUid);
-      });
+      if (!gameStarted)
+        players.forEach(async (player) => {
+          if (!player.inGame) await removePlayerFromGame(player.playerUid);
+        });
       setNumberOfPlayers(players.length);
       setGameStarted(started);
     };
@@ -96,7 +101,7 @@ const Scene = () => {
         <>
           {gameStarted ? (
             <>
-              <Hand numberOfCards={5} />
+              <Hand numberOfCards={5} fetchedPhotos={fetchedPhotos} />
               <OtherPlayerCards />
             </>
           ) : (

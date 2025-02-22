@@ -22,7 +22,7 @@ import {
   getDeclinePositionSetupData,
 } from "../firebase/uiMethods";
 
-const Hand = ({ numberOfCards }) => {
+const Hand = ({ numberOfCards, fetchedPhotos }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
   const [currentClicked, setCurrentClicked] = useState(-1);
   const [selectedCard, setSelectedCard] = useState(-1);
@@ -55,8 +55,6 @@ const Hand = ({ numberOfCards }) => {
 
     async function setStartingHand() {
       // Get 5 starting cards and set them in database
-      const fetchedPhotos = await fetchAllPhotos();
-      console.log(fetchedPhotos.length);
       if (fetchedPhotos.length > 0) {
         const newPhotoUrls = Array.from({ length: numberOfCards }, () =>
           getRandomCard(fetchedPhotos)

@@ -129,29 +129,42 @@ async function getPlayersCurrentGameDataRef() {
   return ref(database, `games/${gameId}/players/${playerId}/currentGameData`);
 }
 
-async function fetchAllPhotos() {
-  const baseUrl = "https://storage.googleapis.com/storage/v1/b/daixit_photos/o";
-  let allPhotos = [];
-  let nextPageToken = null;
-  try {
-    do {
-      const url = nextPageToken
-        ? `${baseUrl}?pageToken=${nextPageToken}`
-        : baseUrl;
-      const response = await fetch(url);
-      const data = await response.json();
-      if (data.items) {
-        allPhotos.push(
-          ...data.items.map(
-            (item) =>
-              `https://storage.googleapis.com/daixit_photos/${item.name}`
-          )
-        );
-      }
-      nextPageToken = data.nextPageToken || null;
-    } while (nextPageToken);
+// async function fetchAllPhotos() {
+//   const baseUrl = "https://storage.googleapis.com/storage/v1/b/daixit_photos/o";
+//   let allPhotos = [];
+//   let nextPageToken = null;
+//   try {
+//     do {
+//       const url = nextPageToken
+//         ? `${baseUrl}?pageToken=${nextPageToken}`
+//         : baseUrl;
+//       const response = await fetch(url);
+//       const data = await response.json();
+//       if (data.items) {
+//         allPhotos.push(
+//           ...data.items.map(
+//             (item) =>
+//               `https://storage.googleapis.com/daixit_photos/${item.name}`
+//           )
+//         );
+//       }
+//       nextPageToken = data.nextPageToken || null;
+//     } while (nextPageToken);
 
-    return allPhotos;
+//     return allPhotos;
+//   } catch (error) {
+//     console.error("Error fetching photos:", error);
+//     return [];
+//   }
+// }
+async function fetchAllPhotos() {
+  const url = "https://storage.googleapis.com/storage/v1/b/daixit_photos/o";
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data.items.map(
+      (item) => `https://storage.googleapis.com/daixit_photos/${item.name}`
+    );
   } catch (error) {
     console.error("Error fetching photos:", error);
     return [];

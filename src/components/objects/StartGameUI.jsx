@@ -11,7 +11,7 @@ const StartGameUI = ({ numberOfPlayers, isThisPlayerHost }) => {
   const startButtonSetupData = getStartButtonData(direction);
   const fontSize = 0.25;
   const handleStartClick = async () => {
-    if (numberOfPlayers < 3) return;
+    // if (numberOfPlayers < 3) return;
     await updateGameWithData({ started: true });
   };
   return (
