@@ -130,13 +130,28 @@ async function getPlayersCurrentGameDataRef() {
 }
 
 async function fetchAllPhotos() {
-  const url = "https://storage.googleapis.com/storage/v1/b/daixit_photos/o";
+  const baseUrl = "https://storage.googleapis.com/storage/v1/b/daixit_photos/o";
+  let allPhotos = [];
+  let nextPageToken = null;
   try {
-    const response = await fetch(url);
-    const data = await response.json();
-    return data.items.map(
-      (item) => `https://storage.googleapis.com/daixit_photos/${item.name}`
-    );
+    do {
+      const url = nextPageToken
+        ? `${baseUrl}?pageToken=${nextPageToken}`
+        : baseUrl;
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.items) {
+        allPhotos.push(
+          ...data.items.map(
+            (item) =>
+              `https://storage.googleapis.com/daixit_photos/${item.name}`
+          )
+        );
+      }
+      nextPageToken = data.nextPageToken || null;
+    } while (nextPageToken);
+
+    return allPhotos;
   } catch (error) {
     console.error("Error fetching photos:", error);
     return [];
