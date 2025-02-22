@@ -195,6 +195,13 @@ function getCardsPosition(cardsPosition, i, direction) {
     ];
   }
 }
+
+async function updateGameWithData(updateObj) {
+  const gameId = window.location.href.split("/").pop();
+  const gameRef = ref(database, `games/${gameId}`);
+  await update(gameRef, updateObj);
+}
+
 export {
   getPosition,
   setHandInDatabase,
@@ -205,4 +212,5 @@ export {
   getSetupData,
   calculateCardsLayout,
   getCardsPosition,
+  updateGameWithData,
 };

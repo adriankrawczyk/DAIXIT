@@ -3,13 +3,17 @@ import { getStartButtonData } from "../firebase/uiMethods";
 import { useRef } from "react";
 import ActionButton from "./ActionButton";
 import { Text } from "@react-three/drei";
+import { updateGameWithData } from "../firebase/gameMethods";
 
 const StartGameUI = ({ numberOfPlayers, isThisPlayerHost }) => {
   const { direction } = useSetup();
   const startButtonRef = useRef();
   const startButtonSetupData = getStartButtonData(direction);
   const fontSize = 0.25;
-
+  const handleStartClick = async () => {
+    if (numberOfPlayers < 3) return;
+    await updateGameWithData({ started: true });
+  };
   return (
     <>
       <Text
@@ -33,7 +37,7 @@ const StartGameUI = ({ numberOfPlayers, isThisPlayerHost }) => {
         <ActionButton
           defaultScale={1}
           ref={startButtonRef}
-          onClick={() => {}}
+          onClick={handleStartClick}
           buttonSetupData={startButtonSetupData}
           color={numberOfPlayers >= 3 ? "green" : "red"}
           text="start"
