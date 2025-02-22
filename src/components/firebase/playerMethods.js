@@ -30,12 +30,18 @@ async function setPlayerData(newUID) {
   onDisconnectRef.update({ loggedIn: false });
 }
 
-function setPlayerName(newPlayerName) {
+async function setPlayerName(newPlayerName) {
   const playerUid = localStorage.getItem("playerUid");
   const playerRef = ref(database, `players/${playerUid}`);
-  update(playerRef, { name: newPlayerName }).catch((error) =>
+  await update(playerRef, { name: newPlayerName }).catch((error) =>
     console.error("Error updating player name:", error)
   );
+}
+
+async function updatePlayerInGame(playerUid, updateObj) {
+  const gameId = window.location.href.split("/").pop();
+  const playerRef = ref(database, `games/${gameId}/players/${playerUid}`);
+  await update(playerRef, updateObj);
 }
 
 async function removePlayerFromGame(playerUid) {
@@ -127,4 +133,5 @@ export {
   addAnimationToOtherPlayers,
   getAnimations,
   removePlayerFromGame,
+  updatePlayerInGame,
 };

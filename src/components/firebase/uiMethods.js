@@ -52,7 +52,7 @@ function getDeclinePositionSetupData(direction) {
   }
 }
 
-function getStartButtonData(direction) {
+function getCenteredButtonData(direction) {
   switch (direction) {
     case "Bottom":
       return { ...bottomDefaultObject, position: [0, 1.5, 3] };
@@ -70,5 +70,5 @@ function getStartButtonData(direction) {
 export {
   getAcceptPositionSetupData,
   getDeclinePositionSetupData,
-  getStartButtonData,
+  getCenteredButtonData,
 };

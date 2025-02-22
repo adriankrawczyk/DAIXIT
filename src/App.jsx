@@ -1,6 +1,6 @@
 import "./App.css";
 import { Canvas } from "@react-three/fiber";
-import Scene from "./components/Scene";
+import SceneWrapper from "./components/SceneWrapper";
 import Lobby from "./components/lobby/Lobby";
 import {
   BrowserRouter as Router,
@@ -39,7 +39,7 @@ const AppContent = () => {
       <CameraUpdater />
       <Routes location={location}>
         <Route path="/" element={<Lobby />} />
-        <Route path="/game/:gameId" element={<Scene />} />
+        <Route path="/game/:gameId" element={<SceneWrapper />} />
       </Routes>
     </Canvas>
   );

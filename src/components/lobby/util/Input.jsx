@@ -3,17 +3,14 @@ import { useFrame } from "@react-three/fiber";
 import TextLabel from "./TextLabel";
 import { setPlayerName } from "../../firebase/playerMethods";
 
-const Input = ({ position, dimensions, set }) => {
+const Input = ({ position, dimensions, set, defaultText }) => {
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const ref = useRef();
 
   useEffect(() => {
-    const prevName = localStorage.getItem("name");
-    if (prevName) {
-      setText(prevName);
-    }
-  }, []);
+    setText(defaultText);
+  }, [defaultText]);
 
   useEffect(() => {
     if (!isFocused) return;

@@ -1,11 +1,16 @@
 import TextLabel from "../util/TextLabel";
 import Button from "../util/Button";
 import Input from "../util/Input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { setPlayerName } from "../../firebase/playerMethods";
 
 const NamePage = ({ setPlayClicked }) => {
   const [name, setName] = useState("");
+  const [defaultText, setDefaultText] = useState("");
+  useEffect(() => {
+    const prevName = localStorage.getItem("name");
+    if (prevName) setDefaultText(prevName);
+  }, []);
 
   const handleClick = (e) => {
     e.stopPropagation();
@@ -20,6 +25,7 @@ const NamePage = ({ setPlayClicked }) => {
         position={[0, 0.15, 0.1]}
         dimensions={[1, 0.15, 0.01]}
         set={setName}
+        defaultText={defaultText}
       />
       <Button
         position={[0.7, -0.45, 0.1]}

@@ -1,17 +1,35 @@
 import { useSetup } from "../context/SetupContext";
-import { getStartButtonData } from "../firebase/uiMethods";
+import { getCenteredButtonData } from "../firebase/uiMethods";
 import { useRef } from "react";
 import ActionButton from "./ActionButton";
 import { Text } from "@react-three/drei";
 import { updateGameWithData } from "../firebase/gameMethods";
+import { updatePlayerInGame } from "../firebase/playerMethods";
 
-const StartGameUI = ({ numberOfPlayers, isThisPlayerHost }) => {
+const StartGameUI = ({
+  numberOfPlayers,
+  isThisPlayerHost,
+  gameData,
+  setIsThisPlayerWordMaker,
+}) => {
   const { direction } = useSetup();
   const startButtonRef = useRef();
-  const startButtonSetupData = getStartButtonData(direction);
+  const startButtonSetupData = getCenteredButtonData(direction);
   const fontSize = 0.25;
   const handleStartClick = async () => {
     // if (numberOfPlayers < 3) return;
+    const players = Object.values(gameData.players);
+    const playerUid = localStorage.getItem("playerUid");
+    if (
+      isThisPlayerHost &&
+      !players.some((player) => player.wordMaker === true)
+    ) {
+      // Set random word maker if there is none
+      const randomIndex = Math.floor(Math.random() * players.length);
+      const selectedPlayerUid = players[randomIndex].playerUid;
+      if (selectedPlayerUid === playerUid) setIsThisPlayerWordMaker(true);
+      await updatePlayerInGame(selectedPlayerUid, { wordMaker: true });
+    }
     await updateGameWithData({ started: true });
   };
   return (
