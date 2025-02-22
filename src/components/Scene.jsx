@@ -7,15 +7,23 @@ import { OrbitControls } from "@react-three/drei";
 import FullBackground from "./background/FullBackground";
 import Paddle_Boat from "../../public/Paddle_Boat";
 import Cone from "./objects/Cone";
-import { getActivePlayersInGame, joinToGame } from "./firebase/lobbyMethods";
+import {
+  fetchGameData,
+  getActivePlayersInGame,
+  joinToGame,
+} from "./firebase/lobbyMethods";
 import { useSetup } from "./context/SetupContext";
 import { getPosition } from "./firebase/gameMethods";
 import FirebaseLogger from "./lobby/firebase/firebaseLogger";
 import OtherPlayerCards from "./objects/OtherPlayerHands";
 import SpinningWheel from "./objects/SpinningWheel";
+import StartGameUI from "./objects/startGameUI";
 
 const Scene = () => {
   const [joined, setJoined] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [numberOfPlayers, setNumberOfPlayers] = useState(1);
+  const [isThisPlayerHost, setIsThisPlayerHost] = useState(false);
   const {
     setCameraPosition,
     setCameraLookAt,
@@ -58,14 +66,40 @@ const Scene = () => {
     };
     join();
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const gameData = await fetchGameData();
+      const { started, hostUid } = gameData;
+      setIsThisPlayerHost(hostUid === localStorage.getItem("playerUid"));
+      setNumberOfPlayers(Object.entries(gameData.players).length);
+      setGameStarted(started);
+    };
+
+    const interval = setInterval(() => {
+      fetchData();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
       <AllLights />
       <CameraControls />
       {joined ? (
         <>
-          <Hand numberOfCards={5} />
-          <OtherPlayerCards />
+          {gameStarted ? (
+            <>
+              <Hand numberOfCards={5} />
+              <OtherPlayerCards />
+            </>
+          ) : (
+            <StartGameUI
+              numberOfPlayers={numberOfPlayers}
+              isThisPlayerHost={isThisPlayerHost}
+            />
+          )}
           <Cone />
           <FullBackground />
         </>

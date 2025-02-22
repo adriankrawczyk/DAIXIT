@@ -30,6 +30,7 @@ async function newGame() {
       host: playerData.name,
       hostUid: playerData.uid,
       gameId: newGameRef.key,
+      started: false,
       players: {},
     });
     setupDisconnectHandlers(newGameRef.key, playerData.uid);
@@ -101,7 +102,7 @@ async function getGames() {
         Object.values(players).every((player) => player.inGame === false);
 
       if (allPlayersInactive) {
-        await remove(ref(database, `games/${gameId}`));
+        await remove(ref(database, `games/${gameId}`)); // temporary fix
       } else {
         gamesArray.push({ ...gameData });
       }
@@ -112,6 +113,13 @@ async function getGames() {
     console.error("Error fetching games:", error);
     return [];
   }
+}
+
+async function fetchGameData() {
+  const gameId = window.location.href.split("/").pop();
+  const gameRef = ref(database, `games/${gameId}`);
+  const gameSnapshot = await get(gameRef);
+  return gameSnapshot.val() || {};
 }
 
 async function getPlayersInGame(gameId) {
@@ -157,4 +165,11 @@ function setupDisconnectHandlers(gameId, playerId) {
   };
 }
 
-export { newGame, getGames, joinToGame, leaveGame, getActivePlayersInGame };
+export {
+  newGame,
+  getGames,
+  joinToGame,
+  leaveGame,
+  getActivePlayersInGame,
+  fetchGameData,
+};

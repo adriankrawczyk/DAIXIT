@@ -52,4 +52,23 @@ function getDeclinePositionSetupData(direction) {
   }
 }
 
-export { getAcceptPositionSetupData, getDeclinePositionSetupData };
+function getStartButtonData(direction) {
+  switch (direction) {
+    case "Bottom":
+      return { ...bottomDefaultObject, position: [0, 1.5, 3] };
+    case "Top":
+      return { ...topDefaultObject, position: [0, 1.5, -3] };
+    case "Left":
+      return { ...leftDefaultObject, position: [3, 1.5, 0] };
+    case "Right":
+      return { ...rightDefaultObject, position: [-3, 1.5, 0] };
+    default:
+      return bottomDefaultObject;
+  }
+}
+
+export {
+  getAcceptPositionSetupData,
+  getDeclinePositionSetupData,
+  getStartButtonData,
+};
