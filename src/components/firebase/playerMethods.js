@@ -44,6 +44,11 @@ async function updatePlayerInGame(playerUid, updateObj) {
   await update(playerRef, updateObj);
 }
 
+async function updateThisPlayerInGame(updateObj) {
+  const playerUid = localStorage.getItem("playerUid");
+  await updatePlayerInGame(playerUid, updateObj);
+}
+
 async function removePlayerFromGame(playerUid) {
   const gameId = window.location.href.split("/").pop();
   const playerRef = ref(database, `games/${gameId}/players/${playerUid}`);
@@ -134,4 +139,5 @@ export {
   getAnimations,
   removePlayerFromGame,
   updatePlayerInGame,
+  updateThisPlayerInGame,
 };

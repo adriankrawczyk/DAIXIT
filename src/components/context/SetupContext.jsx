@@ -17,6 +17,7 @@ export const SetupProvider = ({ children }) => {
   const [direction, setDirection] = useState("Bottom");
   const [joined, setJoined] = useState(false);
   const [chosenWord, setChosenWord] = useState("");
+  const [chosenCard, setChosenCard] = useState({});
   return (
     <SetupContext.Provider
       value={{
@@ -40,6 +41,8 @@ export const SetupProvider = ({ children }) => {
         setJoined,
         chosenWord,
         setChosenWord,
+        chosenCard,
+        setChosenCard,
       }}
     >
       {children}

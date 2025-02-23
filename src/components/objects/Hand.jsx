@@ -9,7 +9,10 @@ import {
   getCardsPosition,
 } from "../firebase/gameMethods";
 import { calculateCardsLayout } from "../firebase/gameMethods";
-import { addAnimationToOtherPlayers } from "../firebase/playerMethods";
+import {
+  addAnimationToOtherPlayers,
+  updateThisPlayerInGame,
+} from "../firebase/playerMethods";
 import {
   addToTable,
   backToHand,
@@ -45,6 +48,7 @@ const Hand = ({
     direction,
     chosenWord,
     setChosenWord,
+    setChosenCard,
   } = useSetup();
   const acceptButtonSetupData = getAcceptPositionSetupData(direction);
   const declineButtonSetupData = getDeclinePositionSetupData(direction);
@@ -168,9 +172,15 @@ const Hand = ({
     }
   };
 
-  const acceptClicked = () => {
+  const acceptClicked = async () => {
     setSelectedCard(currentClicked);
     handleAddCardOnTable(currentClicked);
+    const chosenCardObj = {
+      index: currentClicked,
+      url: photoUrls[currentClicked],
+    };
+    await updateThisPlayerInGame({ chosenCard: chosenCardObj });
+    setChosenCard(chosenCardObj);
     setCurrentClicked(-1);
     setInMenu(false);
   };
@@ -227,7 +237,7 @@ const Hand = ({
               onClick={declineClicked}
               buttonSetupData={declineButtonSetupData}
               color="red"
-              text="decline"
+              text="cancel"
             />
           </>
         )}

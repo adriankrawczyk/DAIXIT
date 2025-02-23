@@ -76,6 +76,7 @@ async function joinToGame(gameId) {
       name,
       inGame: true,
       wordMaker: false,
+      chosenCard: {},
     });
 
     onDisconnect(playerInGameRef).update({ inGame: false });
