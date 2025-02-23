@@ -78,8 +78,7 @@ const GameScene = ({ setupContext }) => {
       setGameData(fetchedGameData);
       const { started, hostUid, chosenWord } = fetchedGameData;
       const playerUid = localStorage.getItem("playerUid");
-      setIsThisPlayerHost(hostUid === playerUid);
-      setChosenWord(chosenWord);
+      const isHost = hostUid === playerUid;
       const players = Object.values(fetchedGameData.players);
       let everyPlayerAcceptedCard = true;
       for (const player of players) {
@@ -91,22 +90,17 @@ const GameScene = ({ setupContext }) => {
         if (!player.chosenCard || !Object.values(player.chosenCard).length)
           everyPlayerAcceptedCard = false;
       }
-      if (
-        isThisPlayerHost &&
-        gameStarted &&
-        chosenWord.length &&
-        !everyPlayerAcceptedCard
-      ) {
+      if (isHost && started && chosenWord.length && everyPlayerAcceptedCard) {
         alert(1);
       }
 
+      setIsThisPlayerHost(isHost);
+      setChosenWord(chosenWord);
       setNumberOfPlayers(players.length);
       setGameStarted(started);
     };
 
-    const interval = setInterval(() => {
-      fetchDataAndHostTheGame();
-    }, 1000);
+    const interval = setInterval(fetchDataAndHostTheGame, 1000);
 
     return () => clearInterval(interval);
   }, []);
