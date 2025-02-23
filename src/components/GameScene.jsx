@@ -23,6 +23,7 @@ const GameScene = ({ setupContext }) => {
     setDirection,
     joined,
     setJoined,
+    setChosenWord,
   } = setupContext;
 
   const [gameData, setGameData] = useState([]);
@@ -74,9 +75,10 @@ const GameScene = ({ setupContext }) => {
     const fetchDataAndHostTheGame = async () => {
       const fetchedGameData = await fetchGameData();
       setGameData(fetchedGameData);
-      const { started, hostUid } = fetchedGameData;
+      const { started, hostUid, chosenWord } = fetchedGameData;
       const playerUid = localStorage.getItem("playerUid");
       setIsThisPlayerHost(hostUid === playerUid);
+      setChosenWord(chosenWord);
       const players = Object.values(fetchedGameData.players);
       for (const player of players) {
         if (player.playerUid === playerUid && player.wordMaker)
@@ -116,7 +118,11 @@ const GameScene = ({ setupContext }) => {
           fontSize={12}
         />
       )}
-      <Hand numberOfCards={5} fetchedPhotos={fetchedPhotos} />
+      <Hand
+        numberOfCards={5}
+        fetchedPhotos={fetchedPhotos}
+        isThisPlayerHost={isThisPlayerHost}
+      />
       <OtherPlayerCards />
     </>
   ) : (

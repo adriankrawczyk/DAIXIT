@@ -22,7 +22,7 @@ import {
   getDeclinePositionSetupData,
 } from "../firebase/uiMethods";
 
-const Hand = ({ numberOfCards, fetchedPhotos }) => {
+const Hand = ({ numberOfCards, fetchedPhotos, isThisPlayerHost }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
   const [currentClicked, setCurrentClicked] = useState(-1);
   const [selectedCard, setSelectedCard] = useState(-1);
@@ -32,8 +32,13 @@ const Hand = ({ numberOfCards, fetchedPhotos }) => {
   const acceptButtonRef = useRef();
   const declineButtonRef = useRef();
   const cardsRef = useRef({});
-  const { cardsPosition, cardsRotation, playerPosition, direction } =
-    useSetup();
+  const {
+    cardsPosition,
+    cardsRotation,
+    playerPosition,
+    direction,
+    chosenWord,
+  } = useSetup();
   const acceptButtonSetupData = getAcceptPositionSetupData(direction);
   const declineButtonSetupData = getDeclinePositionSetupData(direction);
   const [cardsLayout, setCardsLayout] = useState(
@@ -199,24 +204,26 @@ const Hand = ({ numberOfCards, fetchedPhotos }) => {
         />
       ))}
 
-      {currentClicked !== -1 && selectedCard === -1 && (
-        <>
-          <ActionButton
-            ref={acceptButtonRef}
-            onClick={acceptClicked}
-            buttonSetupData={acceptButtonSetupData}
-            color="lightgreen"
-            text="accept"
-          />
-          <ActionButton
-            ref={declineButtonRef}
-            onClick={declineClicked}
-            buttonSetupData={declineButtonSetupData}
-            color="red"
-            text="decline"
-          />
-        </>
-      )}
+      {currentClicked !== -1 &&
+        selectedCard === -1 &&
+        (chosenWord.length || isThisPlayerHost) && (
+          <>
+            <ActionButton
+              ref={acceptButtonRef}
+              onClick={acceptClicked}
+              buttonSetupData={acceptButtonSetupData}
+              color="lightgreen"
+              text="accept"
+            />
+            <ActionButton
+              ref={declineButtonRef}
+              onClick={declineClicked}
+              buttonSetupData={declineButtonSetupData}
+              color="red"
+              text="decline"
+            />
+          </>
+        )}
     </>
   );
 };
