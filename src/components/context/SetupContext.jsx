@@ -16,6 +16,7 @@ export const SetupProvider = ({ children }) => {
   const [playerPosition, setPlayerPosition] = useState(0);
   const [direction, setDirection] = useState("Bottom");
   const [joined, setJoined] = useState(false);
+  const [wordMade, setWordMade] = useState(false);
   return (
     <SetupContext.Provider
       value={{

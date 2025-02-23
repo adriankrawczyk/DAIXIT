@@ -3,7 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import TextLabel from "./TextLabel";
 import { setPlayerName } from "../../firebase/playerMethods";
 
-const Input = ({ position, dimensions, set, defaultText }) => {
+const Input = ({ position, dimensions, set, defaultText, fontSize }) => {
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const ref = useRef();
@@ -43,7 +43,7 @@ const Input = ({ position, dimensions, set, defaultText }) => {
     >
       <TextLabel
         position={[0, 0, 0.01]}
-        fontSize={6}
+        fontSize={fontSize}
         text={text}
         anchorX="center"
         anchorY="middle"

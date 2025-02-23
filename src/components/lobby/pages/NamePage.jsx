@@ -26,11 +26,13 @@ const NamePage = ({ setPlayClicked }) => {
         dimensions={[1, 0.15, 0.01]}
         set={setName}
         defaultText={defaultText}
+        fontSize={6}
       />
       <Button
         position={[0.7, -0.45, 0.1]}
         dimensions={[0.2, 0.1, 0.01]}
         text="Play!"
+        disabled={name.length === 0}
         handleClick={handleClick}
       />
     </>
