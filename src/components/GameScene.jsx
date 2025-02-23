@@ -5,7 +5,7 @@ import StartGameUI from "./objects/startGameUI";
 import Input from "./lobby/util/Input";
 import SpinningWheel from "./objects/SpinningWheel";
 import { fetchGameData, joinToGame } from "./firebase/lobbyMethods";
-import { getPosition } from "./firebase/gameMethods";
+import { getPosition, updateGameWithData } from "./firebase/gameMethods";
 import FirebaseLogger from "./lobby/firebase/firebaseLogger";
 import { removePlayerFromGame } from "./firebase/playerMethods";
 import { fetchAllPhotos } from "./firebase/gameMethods";
@@ -25,6 +25,7 @@ const GameScene = ({ setupContext }) => {
     setJoined,
     setChosenWord,
     chosenWord,
+    setVotingPhase,
   } = setupContext;
 
   const [gameData, setGameData] = useState([]);
@@ -76,7 +77,7 @@ const GameScene = ({ setupContext }) => {
     const fetchDataAndHostTheGame = async () => {
       const fetchedGameData = await fetchGameData();
       setGameData(fetchedGameData);
-      const { started, hostUid, chosenWord } = fetchedGameData;
+      const { started, hostUid, chosenWord, votingPhase } = fetchedGameData;
       const playerUid = localStorage.getItem("playerUid");
       const isHost = hostUid === playerUid;
       const players = Object.values(fetchedGameData.players);
@@ -91,9 +92,9 @@ const GameScene = ({ setupContext }) => {
           everyPlayerAcceptedCard = false;
       }
       if (isHost && started && chosenWord.length && everyPlayerAcceptedCard) {
-        alert(1);
+        await updateGameWithData({ votingPhase: true });
       }
-
+      setVotingPhase(votingPhase);
       setIsThisPlayerHost(isHost);
       setChosenWord(chosenWord);
       setNumberOfPlayers(players.length);

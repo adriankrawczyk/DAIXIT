@@ -221,11 +221,6 @@ const Hand = ({
           ref={(el) => assignRef(el, key)}
         />
       ))}
-      {console.log(
-        !isThisPlayerWordMaker,
-        chosenWord.length,
-        Object.values(chosenCard).length === 0
-      )}
       {currentClicked !== -1 &&
         selectedCard !== currentClicked &&
         ((!isThisPlayerWordMaker &&

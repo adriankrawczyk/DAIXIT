@@ -14,12 +14,13 @@ import { SetupProvider, useSetup } from "./components/context/SetupContext";
 
 const CameraUpdater = () => {
   const { camera } = useThree();
-  const { cameraPosition } = useSetup();
+  const { cameraPosition, votingPhase } = useSetup();
 
   useEffect(() => {
-    camera.position.set(...cameraPosition);
+    camera.position.set(...(votingPhase ? [0, 4.5, 0] : cameraPosition));
+
     camera.updateProjectionMatrix();
-  }, [cameraPosition, camera]);
+  }, [cameraPosition, camera, votingPhase]);
 
   return null;
 };

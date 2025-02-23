@@ -15,7 +15,7 @@ const Board = () => {
   const [playClicked, setPlayClicked] = useState(false); // to change
 
   return (
-    <mesh position={[0, 1.9, 3.5]} rotation={[-Math.PI / 16, 0, 0]}>
+    <mesh position={[0, 1.8, 3.5]} rotation={[-Math.PI / 16, 0, 0]}>
       <BoardBackground />
       {playClicked ? (
         <LobbyPage setPlayClicked={setPlayClicked} />

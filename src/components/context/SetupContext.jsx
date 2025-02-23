@@ -18,6 +18,8 @@ export const SetupProvider = ({ children }) => {
   const [joined, setJoined] = useState(false);
   const [chosenWord, setChosenWord] = useState("");
   const [chosenCard, setChosenCard] = useState({});
+  const [votingPhase, setVotingPhase] = useState(false);
+
   return (
     <SetupContext.Provider
       value={{
@@ -43,6 +45,8 @@ export const SetupProvider = ({ children }) => {
         setChosenWord,
         chosenCard,
         setChosenCard,
+        votingPhase,
+        setVotingPhase,
       }}
     >
       {children}
