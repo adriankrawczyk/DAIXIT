@@ -3,7 +3,15 @@ import { useFrame } from "@react-three/fiber";
 import TextLabel from "./TextLabel";
 import { setPlayerName } from "../../firebase/playerMethods";
 
-const Input = ({ position, dimensions, set, defaultText, fontSize }) => {
+const Input = ({
+  position,
+  dimensions,
+  set,
+  defaultText,
+  fontSize,
+  textPosition,
+  textScale,
+}) => {
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const ref = useRef();
@@ -42,11 +50,12 @@ const Input = ({ position, dimensions, set, defaultText, fontSize }) => {
       onPointerMissed={() => setIsFocused(false)}
     >
       <TextLabel
-        position={[0, 0, 0.01]}
+        position={textPosition}
         fontSize={fontSize}
         text={text}
         anchorX="center"
         anchorY="middle"
+        textScale={textScale}
       />
       <boxGeometry args={dimensions} />
       <meshBasicMaterial color={isFocused ? "lightgray" : "white"} />

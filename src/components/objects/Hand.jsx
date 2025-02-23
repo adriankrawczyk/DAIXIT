@@ -30,6 +30,7 @@ const Hand = ({
   numberOfCards,
   fetchedPhotos,
   isThisPlayerHost,
+  isThisPlayerWordMaker,
   wordMakerText,
 }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
@@ -49,6 +50,7 @@ const Hand = ({
     chosenWord,
     setChosenWord,
     setChosenCard,
+    chosenCard,
   } = useSetup();
   const acceptButtonSetupData = getAcceptPositionSetupData(direction);
   const declineButtonSetupData = getDeclinePositionSetupData(direction);
@@ -137,7 +139,7 @@ const Hand = ({
 
   const handleAddCardOnTable = async (index) => {
     if (cardsRef.current[index]) {
-      if (isThisPlayerHost && !chosenWord.length) {
+      if (isThisPlayerWordMaker && !chosenWord.length) {
         await updateGameWithData({ chosenWord: wordMakerText });
         setChosenWord(wordMakerText);
       }
@@ -219,11 +221,14 @@ const Hand = ({
           ref={(el) => assignRef(el, key)}
         />
       ))}
-
       {currentClicked !== -1 &&
         selectedCard !== currentClicked &&
-        ((!isThisPlayerHost && chosenWord.length) ||
-          (isThisPlayerHost && wordMakerText.length && !chosenWord.length)) && (
+        ((!isThisPlayerWordMaker &&
+          chosenWord.length &&
+          Object.values(chosenCard).length === 0) ||
+          (isThisPlayerWordMaker &&
+            wordMakerText.length &&
+            !chosenWord.length)) && (
           <>
             <ActionButton
               ref={acceptButtonRef}

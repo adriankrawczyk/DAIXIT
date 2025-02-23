@@ -27,6 +27,8 @@ const NamePage = ({ setPlayClicked }) => {
         set={setName}
         defaultText={defaultText}
         fontSize={6}
+        textPosition={[0, 0, 0.01]}
+        textScale={[1, 1, 1]}
       />
       <Button
         position={[0.7, -0.45, 0.1]}

@@ -81,12 +81,23 @@ const GameScene = ({ setupContext }) => {
       setIsThisPlayerHost(hostUid === playerUid);
       setChosenWord(chosenWord);
       const players = Object.values(fetchedGameData.players);
+      let everyPlayerAcceptedCard = true;
       for (const player of players) {
         if (player.playerUid === playerUid && player.wordMaker)
           setIsThisPlayerWordMaker(true);
         if (!gameStarted && !player.inGame && player.playerUid !== playerUid) {
           await removePlayerFromGame(player.playerUid);
         }
+        if (!player.chosenCard || !Object.values(player.chosenCard).length)
+          everyPlayerAcceptedCard = false;
+      }
+      if (
+        isThisPlayerHost &&
+        gameStarted &&
+        chosenWord.length &&
+        !everyPlayerAcceptedCard
+      ) {
+        alert(1);
       }
 
       setNumberOfPlayers(players.length);
@@ -117,12 +128,15 @@ const GameScene = ({ setupContext }) => {
           defaultText={""}
           set={setWordMakerText}
           fontSize={18}
+          textPosition={inputData.textPosition}
+          textScale={inputData.textScaleMultiplier}
         />
       )}
       <Hand
         numberOfCards={5}
         fetchedPhotos={fetchedPhotos}
         isThisPlayerHost={isThisPlayerHost}
+        isThisPlayerWordMaker={isThisPlayerWordMaker}
         wordMakerText={wordMakerText}
       />
       <OtherPlayerCards />
