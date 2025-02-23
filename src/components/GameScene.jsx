@@ -84,7 +84,7 @@ const GameScene = ({ setupContext }) => {
       for (const player of players) {
         if (player.playerUid === playerUid && player.wordMaker)
           setIsThisPlayerWordMaker(true);
-        if (!gameStarted && !player.inGame && player.playerUid !== playerUid) {
+        if (!started && !player.inGame && player.playerUid !== playerUid) {
           await removePlayerFromGame(player.playerUid);
         }
         if (!player.chosenCard || !Object.values(player.chosenCard).length)
@@ -122,6 +122,7 @@ const GameScene = ({ setupContext }) => {
           defaultText={""}
           set={setWordMakerText}
           fontSize={18}
+          rotation={inputData.rotation}
           textPosition={inputData.textPosition}
           textScale={inputData.textScaleMultiplier}
         />

@@ -11,6 +11,7 @@ const Input = ({
   fontSize,
   textPosition,
   textScale,
+  rotation,
 }) => {
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
@@ -42,6 +43,7 @@ const Input = ({
   return (
     <mesh
       ref={ref}
+      rotation={rotation}
       position={position}
       onClick={(e) => {
         e.stopPropagation();

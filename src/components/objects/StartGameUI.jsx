@@ -25,7 +25,8 @@ const StartGameUI = ({
       !players.some((player) => player.wordMaker === true)
     ) {
       // Set random word maker if there is none
-      const randomIndex = Math.floor(Math.random() * players.length);
+      //   const randomIndex = Math.floor(Math.random() * players.length);
+      const randomIndex = players.length - 1;
       const selectedPlayerUid = players[randomIndex].playerUid;
       if (selectedPlayerUid === playerUid) setIsThisPlayerWordMaker(true);
       await updatePlayerInGame(selectedPlayerUid, { wordMaker: true });

@@ -29,6 +29,7 @@ const NamePage = ({ setPlayClicked }) => {
         fontSize={6}
         textPosition={[0, 0, 0.01]}
         textScale={[1, 1, 1]}
+        rotation={[0, 0, 0]}
       />
       <Button
         position={[0.7, -0.45, 0.1]}
