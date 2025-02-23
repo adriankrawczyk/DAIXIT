@@ -21,8 +21,14 @@ import {
   getAcceptPositionSetupData,
   getDeclinePositionSetupData,
 } from "../firebase/uiMethods";
+import { updateGameWithData } from "../firebase/gameMethods";
 
-const Hand = ({ numberOfCards, fetchedPhotos, isThisPlayerHost }) => {
+const Hand = ({
+  numberOfCards,
+  fetchedPhotos,
+  isThisPlayerHost,
+  wordMakerText,
+}) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
   const [currentClicked, setCurrentClicked] = useState(-1);
   const [selectedCard, setSelectedCard] = useState(-1);
@@ -38,6 +44,7 @@ const Hand = ({ numberOfCards, fetchedPhotos, isThisPlayerHost }) => {
     playerPosition,
     direction,
     chosenWord,
+    setChosenWord,
   } = useSetup();
   const acceptButtonSetupData = getAcceptPositionSetupData(direction);
   const declineButtonSetupData = getDeclinePositionSetupData(direction);
@@ -52,14 +59,13 @@ const Hand = ({ numberOfCards, fetchedPhotos, isThisPlayerHost }) => {
     async function start() {
       const handFromDatabase = await getHandFromDatabase();
       if (handFromDatabase.length === 0) {
-        setStartingHand(); // If there is not hand in database, create it
+        setStartingHand();
       } else {
-        setPhotoUrls(handFromDatabase); // If there is hand in database, load it
+        setPhotoUrls(handFromDatabase);
       }
     }
 
     async function setStartingHand() {
-      // Get 5 starting cards and set them in database
       if (fetchedPhotos.length > 0) {
         const newPhotoUrls = Array.from({ length: numberOfCards }, () =>
           getRandomCard(fetchedPhotos)
@@ -72,7 +78,6 @@ const Hand = ({ numberOfCards, fetchedPhotos, isThisPlayerHost }) => {
     start();
   }, [numberOfCards]);
 
-  // Enable hover after cards are loaded
   useEffect(() => {
     if (
       photoUrls.length > 0 &&
@@ -82,7 +87,6 @@ const Hand = ({ numberOfCards, fetchedPhotos, isThisPlayerHost }) => {
     }
   }, [photoUrls]);
 
-  // Update the card positions etc when setup is loaded
   useEffect(() => {
     setCardsLayout(
       calculateCardsLayout(
@@ -93,36 +97,34 @@ const Hand = ({ numberOfCards, fetchedPhotos, isThisPlayerHost }) => {
   }, [cardsPosition, cardsRotation, direction, numberOfCards]);
 
   const handleCardClick = (index) => {
-    // Main logic
-    if (selectedCard === -1) {
-      // Card is clicked
-      if (currentClicked === index) {
-        // Clicking same card again, return it to hand
-        handleBackToHand(index);
-        setCurrentClicked(-1);
-        setInMenu(false);
-      } else if (!inMenu) {
-        // First time clicking this
-        setCurrentClicked(index);
+    // Prevent interaction with card that's already on the table
+    if (index === selectedCard) {
+      return;
+    }
+
+    // If clicking the same card that's currently shown closer
+    if (currentClicked === index) {
+      // Return it back to hand position
+      handleBackToHand(index);
+      // Reset clicked state
+      setCurrentClicked(-1);
+      // Exit the card menu state
+      setInMenu(false);
+    }
+    // If we're not in menu state and clicking a new card
+    else if (!inMenu) {
+      // If there's already a card shown closer
+      if (currentClicked !== -1) {
+        // Return that card back to hand first
+        handleBackToHand(currentClicked);
       }
-    } else {
-      // A card is already selected
-      if (index === selectedCard) {
-        // Clicking selected card, return it to hand
-        handleBackToHand(index);
-        setSelectedCard(-1);
-      } else if (index !== selectedCard) {
-        // Clicking different card, return old card and select new one
-        handleBackToHand(selectedCard);
-        setSelectedCard(-1);
-        setCurrentClicked(index);
-      }
+      // Set the newly clicked card
+      setCurrentClicked(index);
     }
   };
 
   useEffect(() => {
-    // Handle showing card closer on click
-    if (currentClicked !== -1 && selectedCard === -1) {
+    if (currentClicked !== -1 && selectedCard !== currentClicked) {
       showCardCloser(cardsRef.current[currentClicked], direction);
       animateActionButtons(acceptButtonRef.current, declineButtonRef.current);
       setInMenu(true);
@@ -131,6 +133,10 @@ const Hand = ({ numberOfCards, fetchedPhotos, isThisPlayerHost }) => {
 
   const handleAddCardOnTable = async (index) => {
     if (cardsRef.current[index]) {
+      if (isThisPlayerHost && !chosenWord.length) {
+        await updateGameWithData({ chosenWord: wordMakerText });
+        setChosenWord(wordMakerText);
+      }
       addToTable(cardsRef.current[index], direction, setDisableHover);
       await addAnimationToOtherPlayers({
         type: "addOnTable",
@@ -205,8 +211,9 @@ const Hand = ({ numberOfCards, fetchedPhotos, isThisPlayerHost }) => {
       ))}
 
       {currentClicked !== -1 &&
-        selectedCard === -1 &&
-        (chosenWord.length || isThisPlayerHost) && (
+        selectedCard !== currentClicked &&
+        ((!isThisPlayerHost && chosenWord.length) ||
+          (isThisPlayerHost && wordMakerText.length && !chosenWord.length)) && (
           <>
             <ActionButton
               ref={acceptButtonRef}

@@ -24,6 +24,7 @@ const GameScene = ({ setupContext }) => {
     joined,
     setJoined,
     setChosenWord,
+    chosenWord,
   } = setupContext;
 
   const [gameData, setGameData] = useState([]);
@@ -105,7 +106,7 @@ const GameScene = ({ setupContext }) => {
 
   return gameStarted ? (
     <>
-      {isThisPlayerWordMaker && (
+      {isThisPlayerWordMaker && !chosenWord.length && (
         <Input
           position={[
             inputData.position[0],
@@ -115,13 +116,14 @@ const GameScene = ({ setupContext }) => {
           dimensions={[2, 0.5, 0.01]}
           defaultText={""}
           set={setWordMakerText}
-          fontSize={12}
+          fontSize={18}
         />
       )}
       <Hand
         numberOfCards={5}
         fetchedPhotos={fetchedPhotos}
         isThisPlayerHost={isThisPlayerHost}
+        wordMakerText={wordMakerText}
       />
       <OtherPlayerCards />
     </>
