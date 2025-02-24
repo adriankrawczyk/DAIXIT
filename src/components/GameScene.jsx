@@ -46,164 +46,111 @@ const GameScene = ({ setupContext }) => {
   const [votingSelectedCardPosition, setVotingSelectedCardPosition] = useState(
     {}
   );
-  const [localDirection, setLocalDirection] = useState(null);
 
   const chosenWordLabelRef = useRef();
 
   const setup = async () => {
-    try {
-      const pos = await getPosition();
-      const {
-        playerPosition,
-        position,
-        lookAt,
-        multiplier,
-        directionalLightPosition,
-        cardsPosition,
-        cardsRotation,
-        direction: fetchedDirection,
-      } = pos;
-      setLocalDirection(fetchedDirection);
-      setDirection(fetchedDirection);
-      setCameraPosition(position);
-      setCameraLookAt(lookAt);
-      setCameraLookAtMultiplier(multiplier);
-      setDirectionalLightPosition(directionalLightPosition);
-      setCardsPosition(cardsPosition);
-      setCardsRotation(cardsRotation);
-      setPlayerPosition(playerPosition);
-      setInputData(getCenteredButtonData(fetchedDirection));
-    } catch (error) {
-      console.error("Error during setup:", error);
-    }
+    const pos = await getPosition();
+    const {
+      playerPosition,
+      position,
+      lookAt,
+      multiplier,
+      directionalLightPosition,
+      cardsPosition,
+      cardsRotation,
+    } = pos;
+    const dir = pos.direction;
+    setCameraPosition(position);
+    setCameraLookAt(lookAt);
+    setCameraLookAtMultiplier(multiplier);
+    setDirectionalLightPosition(directionalLightPosition);
+    setCardsPosition(cardsPosition);
+    setCardsRotation(cardsRotation);
+    setPlayerPosition(playerPosition);
+    setDirection(dir);
+    setInputData(getCenteredButtonData(dir));
   };
 
   useEffect(() => {
     const join = async () => {
-      try {
-        const gameId = window.location.href.split("/").pop();
-        if (!localStorage.getItem("name")) await FirebaseLogger();
-        await joinToGame(gameId);
-        await setup();
-        setJoined(true);
-        const allPhotos = await fetchAllPhotos();
-        setFetchedPhotos(allPhotos);
-      } catch (error) {
-        console.error("Error joining game:", error);
-      }
+      const gameId = window.location.href.split("/").pop();
+      if (!localStorage.getItem("name")) await FirebaseLogger();
+      await joinToGame(gameId);
+      await setup();
+      setJoined(true);
+      const allPhotos = await fetchAllPhotos();
+      setFetchedPhotos(allPhotos);
     };
     join();
   }, []);
 
   useEffect(() => {
-    if (direction && gameData.votingPhase !== undefined) {
-      setChosenWordLabelData(
-        getLeftTopButtonData(direction, gameData.votingPhase)
-      );
-      setInputData(getCenteredButtonData(direction));
-    }
-  }, [direction, gameData.votingPhase]);
-
-  useEffect(() => {
     const fetchDataAndHostTheGame = async () => {
-      try {
-        const fetchedGameData = await fetchGameData();
-        setGameData(fetchedGameData);
-
-        const { started, hostUid, chosenWord, votingPhase } = fetchedGameData;
-        const playerUid = localStorage.getItem("playerUid");
-        const isHost = hostUid === playerUid;
-
-        const players = Object.values(fetchedGameData.players || {});
-        let everyPlayerAcceptedCard = true;
-
-        for (const player of players) {
-          if (player.playerUid === playerUid && player.wordMaker) {
-            setIsThisPlayerWordMaker(true);
-          }
-
-          if (!started && !player.inGame && player.playerUid !== playerUid) {
-            await removePlayerFromGame(player.playerUid);
-          }
-
-          if (
-            !player.chosenCard ||
-            !Object.values(player.chosenCard || {}).length
-          ) {
-            everyPlayerAcceptedCard = false;
-          }
+      const fetchedGameData = await fetchGameData();
+      setGameData(fetchedGameData);
+      const { started, hostUid, chosenWord, votingPhase } = fetchedGameData;
+      const playerUid = localStorage.getItem("playerUid");
+      const isHost = hostUid === playerUid;
+      const players = Object.values(fetchedGameData.players);
+      let everyPlayerAcceptedCard = true;
+      for (const player of players) {
+        if (player.playerUid === playerUid && player.wordMaker)
+          setIsThisPlayerWordMaker(true);
+        if (!started && !player.inGame && player.playerUid !== playerUid) {
+          await removePlayerFromGame(player.playerUid);
         }
-
-        if (
-          isHost &&
-          started &&
-          chosenWord &&
-          chosenWord.length &&
-          everyPlayerAcceptedCard
-        ) {
-          await updateGameWithData({ votingPhase: true });
-        }
-        const currentDirection = localDirection || direction;
-        if (currentDirection) {
-          setChosenWordLabelData(
-            getLeftTopButtonData(currentDirection, votingPhase)
-          );
-        }
-
-        setVotingPhase(votingPhase);
-        setIsThisPlayerHost(isHost);
-        setChosenWord(chosenWord || "");
-        setNumberOfPlayers(players.length);
-        setGameStarted(started || false);
-      } catch (error) {
-        console.error("Error fetching game data:", error);
+        if (!player.chosenCard || !Object.values(player.chosenCard).length)
+          everyPlayerAcceptedCard = false;
       }
+      if (isHost && started && chosenWord.length && everyPlayerAcceptedCard) {
+        await updateGameWithData({ votingPhase: true });
+      }
+      console.log(direction);
+      setChosenWordLabelData(getLeftTopButtonData(direction, votingPhase));
+      setVotingPhase(votingPhase);
+      setIsThisPlayerHost(isHost);
+      setChosenWord(chosenWord);
+      setNumberOfPlayers(players.length);
+      setGameStarted(started);
     };
 
     const interval = setInterval(fetchDataAndHostTheGame, 1000);
     return () => clearInterval(interval);
-  }, [localDirection, direction]);
-
+  }, [direction]);
   if (!joined) {
     return <SpinningWheel />;
   }
 
   return gameStarted ? (
     <>
-      {isThisPlayerWordMaker &&
-        (!chosenWord || !chosenWord.length) &&
-        inputData.position && (
-          <Input
-            position={[
-              inputData.position[0],
-              inputData.position[1] + 0.5,
-              inputData.position[2],
-            ]}
-            dimensions={[2, 0.5, 0.01]}
-            defaultText={""}
-            set={setWordMakerText}
-            fontSize={18}
-            rotation={inputData.rotation}
-            textPosition={inputData.textPosition}
-            textScale={inputData.textScaleMultiplier}
-          />
-        )}
-      {(!isThisPlayerHost || (chosenWord && chosenWord.length)) &&
-        chosenWordLabelData.position && (
-          <ActionButton
-            ref={chosenWordLabelRef}
-            onClick={() => {}}
-            buttonSetupData={chosenWordLabelData}
-            color="lightgray"
-            text={
-              chosenWord && chosenWord.length
-                ? chosenWord
-                : "waiting for wordmaker..."
-            }
-            defaultScale={1}
-            fontSize={0.125}
-          />
-        )}
+      {isThisPlayerWordMaker && !chosenWord.length && (
+        <Input
+          position={[
+            inputData.position[0],
+            inputData.position[1] + 0.5,
+            inputData.position[2],
+          ]}
+          dimensions={[2, 0.5, 0.01]}
+          defaultText={""}
+          set={setWordMakerText}
+          fontSize={18}
+          rotation={inputData.rotation}
+          textPosition={inputData.textPosition}
+          textScale={inputData.textScaleMultiplier}
+        />
+      )}
+      {(!isThisPlayerHost || chosenWord.length) && (
+        <ActionButton
+          ref={chosenWordLabelRef}
+          onClick={() => {}}
+          buttonSetupData={chosenWordLabelData}
+          color="lightgray"
+          text={chosenWord.length ? chosenWord : "waiting for wordmaker..."}
+          defaultScale={1}
+          fontSize={0.125}
+        />
+      )}
       <Hand
         numberOfCards={5}
         fetchedPhotos={fetchedPhotos}
@@ -214,14 +161,14 @@ const GameScene = ({ setupContext }) => {
         setVotingSelectedCardRef={setVotingSelectedCardRef}
         votingSelectedCardRef={votingSelectedCardRef}
         votingSelectedCardPosition={votingSelectedCardPosition}
-        direction={localDirection || direction}
+        direction={direction}
       />
       <OtherPlayerCards
         setVotingSelectedCardPosition={setVotingSelectedCardPosition}
         setVotingSelectedCardRef={setVotingSelectedCardRef}
         votingSelectedCardRef={votingSelectedCardRef}
         votingSelectedCardPosition={votingSelectedCardPosition}
-        direction={localDirection || direction}
+        direction={direction}
       />
     </>
   ) : (
@@ -230,7 +177,7 @@ const GameScene = ({ setupContext }) => {
       isThisPlayerHost={isThisPlayerHost}
       gameData={gameData}
       setIsThisPlayerWordMaker={setIsThisPlayerWordMaker}
-      direction={localDirection || direction}
+      direction={direction}
     />
   );
 };
