@@ -127,7 +127,10 @@ const Hand = ({
         });
         showCardCloserOnVotingPhase(currentCard);
         setVotingSelectedCardRef(currentCard);
-      } else if (index === selectedCard && votingSelectedCardRef) {
+      } else if (
+        index === selectedCard &&
+        votingSelectedCardRef === currentCard
+      ) {
         animateToPosition(currentCard, votingSelectedCardPosition);
         setVotingSelectedCardPosition({});
         setVotingSelectedCardRef(null);

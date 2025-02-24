@@ -9,6 +9,10 @@ import {
 import { getAnimations } from "../firebase/playerMethods";
 import { addToTable, backToHand, rotateOnTable } from "../firebase/animations";
 import { useSetup } from "../context/SetupContext";
+import {
+  showCardCloserOnVotingPhase,
+  animateToPosition,
+} from "../firebase/animations";
 
 const OtherPlayerHand = ({
   numberOfCards = 5,
@@ -122,8 +126,21 @@ const OtherPlayerHand = ({
     return () => clearInterval(animationInterval);
   }, [otherPlayerHandsData]);
 
-  const handleCardClick = async () => {
-    alert(1);
+  const handleCardClick = async (cardKey) => {
+    const currentCard = cardsRef.current[cardKey].current;
+    if (!votingSelectedCardRef) {
+      setVotingSelectedCardPosition({
+        x: currentCard.position.x,
+        y: currentCard.position.y,
+        z: currentCard.position.z,
+      });
+      showCardCloserOnVotingPhase(currentCard);
+      setVotingSelectedCardRef(currentCard);
+    } else if (votingSelectedCardRef === currentCard) {
+      animateToPosition(currentCard, votingSelectedCardPosition);
+      setVotingSelectedCardPosition({});
+      setVotingSelectedCardRef(null);
+    }
   };
 
   return (
@@ -146,7 +163,9 @@ const OtherPlayerHand = ({
                   disableHover={true}
                   setCurrentHovered={() => {}}
                   currentClicked={-1}
-                  onCardClick={handleCardClick}
+                  onCardClick={() => {
+                    handleCardClick(cardKey);
+                  }}
                   setCurrentClicked={() => {}}
                   position={cardLayout.position}
                   rotation={cardLayout.rotation}

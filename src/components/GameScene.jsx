@@ -70,6 +70,7 @@ const GameScene = ({ setupContext }) => {
     setPlayerPosition(playerPosition);
     setDirection(dir);
     setInputData(getCenteredButtonData(dir));
+    setChosenWordLabelData(getLeftTopButtonData(dir, false));
   };
 
   useEffect(() => {
@@ -106,7 +107,6 @@ const GameScene = ({ setupContext }) => {
       if (isHost && started && chosenWord.length && everyPlayerAcceptedCard) {
         await updateGameWithData({ votingPhase: true });
       }
-      console.log(direction);
       setChosenWordLabelData(getLeftTopButtonData(direction, votingPhase));
       setVotingPhase(votingPhase);
       setIsThisPlayerHost(isHost);
@@ -140,7 +140,7 @@ const GameScene = ({ setupContext }) => {
           textScale={inputData.textScaleMultiplier}
         />
       )}
-      {(!isThisPlayerHost || chosenWord.length) && (
+      {(!isThisPlayerWordMaker || chosenWord.length) && (
         <ActionButton
           ref={chosenWordLabelRef}
           onClick={() => {}}
