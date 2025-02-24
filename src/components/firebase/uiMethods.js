@@ -66,9 +66,24 @@ function getCenteredButtonData(direction) {
       return bottomDefaultObject;
   }
 }
+function getLeftTopButtonData(direction) {
+  switch (direction) {
+    case "Bottom":
+      return { ...bottomDefaultObject, position: [-1.6, 2.3, 3] };
+    case "Top":
+      return { ...topDefaultObject, position: [1.6, 2.3, -3] };
+    case "Left":
+      return { ...leftDefaultObject, position: [3, 2.3, -1.6] };
+    case "Right":
+      return { ...rightDefaultObject, position: [-3, 2.3, 1.6] };
+    default:
+      return bottomDefaultObject;
+  }
+}
 
 export {
   getAcceptPositionSetupData,
   getDeclinePositionSetupData,
   getCenteredButtonData,
+  getLeftTopButtonData,
 };

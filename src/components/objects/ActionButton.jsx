@@ -3,8 +3,17 @@ import TextLabel from "../lobby/util/TextLabel";
 import { Text } from "@react-three/drei";
 
 const ActionButton = forwardRef(
-  ({ buttonSetupData, color, text, onClick, defaultScale = 0 }, ref) => {
-    const fontSize = 0.25;
+  (
+    {
+      buttonSetupData,
+      color,
+      text,
+      onClick,
+      defaultScale = 0,
+      fontSize = 0.25,
+    },
+    ref
+  ) => {
     return (
       <mesh
         ref={ref}
@@ -23,6 +32,7 @@ const ActionButton = forwardRef(
             buttonSetupData.textScaleMultiplier[2] * fontSize,
           ]}
           position={buttonSetupData.textPosition}
+          maxWidth={1}
         >
           {text}
         </Text>

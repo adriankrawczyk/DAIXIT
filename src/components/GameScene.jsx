@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Hand from "./objects/Hand";
 import OtherPlayerCards from "./objects/OtherPlayerHands";
 import StartGameUI from "./objects/startGameUI";
@@ -9,7 +9,11 @@ import { getPosition, updateGameWithData } from "./firebase/gameMethods";
 import FirebaseLogger from "./lobby/firebase/firebaseLogger";
 import { removePlayerFromGame } from "./firebase/playerMethods";
 import { fetchAllPhotos } from "./firebase/gameMethods";
-import { getCenteredButtonData } from "./firebase/uiMethods";
+import {
+  getCenteredButtonData,
+  getLeftTopButtonData,
+} from "./firebase/uiMethods";
+import ActionButton from "./objects/ActionButton";
 
 const GameScene = ({ setupContext }) => {
   const {
@@ -36,6 +40,9 @@ const GameScene = ({ setupContext }) => {
   const [inputData, setInputData] = useState({});
   const [fetchedPhotos, setFetchedPhotos] = useState([]);
   const [wordMakerText, setWordMakerText] = useState("");
+  const [chosenWordLabelData, setChosenWordLabelData] = useState({});
+
+  const chosenWordLabelRef = useRef();
 
   const setup = async (gameId) => {
     const {
@@ -58,6 +65,7 @@ const GameScene = ({ setupContext }) => {
     setPlayerPosition(playerPosition);
     setDirection(direction);
     setInputData(getCenteredButtonData(direction));
+    setChosenWordLabelData(getLeftTopButtonData(direction));
   };
 
   useEffect(() => {
@@ -126,6 +134,17 @@ const GameScene = ({ setupContext }) => {
           rotation={inputData.rotation}
           textPosition={inputData.textPosition}
           textScale={inputData.textScaleMultiplier}
+        />
+      )}
+      {(!isThisPlayerHost || chosenWord.length) && (
+        <ActionButton
+          ref={chosenWordLabelRef}
+          onClick={() => {}}
+          buttonSetupData={chosenWordLabelData}
+          color="lightgray"
+          text={chosenWord.length ? chosenWord : "waiting for wordmaker..."}
+          defaultScale={1}
+          fontSize={0.125}
         />
       )}
       <Hand
