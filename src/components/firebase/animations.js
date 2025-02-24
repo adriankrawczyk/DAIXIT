@@ -86,6 +86,17 @@ export const addToTable = (cardRef, direction, setDisableHover = null) => {
   }
 };
 
+export const rotateOnTable = (cardRef) => {
+  if (!cardRef) return;
+  gsap.to(cardRef.rotation, {
+    x: -Math.PI / 2,
+    y: 0,
+    z: Math.PI / 2,
+    duration: 0.5,
+    ease: "power2.out",
+  });
+};
+
 export const backToHand = (
   cardRef,
   position,

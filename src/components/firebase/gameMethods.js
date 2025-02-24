@@ -171,7 +171,8 @@ async function fetchAllPhotos() {
   }
 }
 
-async function getPlayers(gameId) {
+async function getPlayers() {
+  const gameId = window.location.href.split("/").pop();
   const playersRef = ref(database, `games/${gameId}/players`);
   const snapshot = await get(playersRef);
   const playersObject = snapshot.val();
@@ -212,7 +213,26 @@ function getCardsPosition(cardsPosition, i, direction) {
 async function updateGameWithData(updateObj) {
   const gameId = window.location.href.split("/").pop();
   const gameRef = ref(database, `games/${gameId}`);
+  const snapshot = await get(gameRef);
+  if (!snapshot.val()) return;
   await update(gameRef, updateObj);
+}
+
+async function getOtherPlayerSelectedCards() {
+  const playerUid = localStorage.getItem("playerUid");
+  const playersData = await getPlayers();
+  const selectedCards = [];
+
+  playersData.forEach((playerData) => {
+    if (
+      String(playerData.playerUid) !== String(playerUid) &&
+      playerData.chosenCard &&
+      Object.values(playerData.chosenCard).length
+    ) {
+      selectedCards.push(playerData.chosenCard);
+    }
+  });
+  return selectedCards;
 }
 
 export {
@@ -226,4 +246,5 @@ export {
   calculateCardsLayout,
   getCardsPosition,
   updateGameWithData,
+  getOtherPlayerSelectedCards,
 };

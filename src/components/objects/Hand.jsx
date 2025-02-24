@@ -18,6 +18,7 @@ import {
   backToHand,
   showCardCloser,
   animateActionButtons,
+  rotateOnTable,
 } from "../firebase/animations";
 import ActionButton from "./ActionButton";
 import {
@@ -51,6 +52,7 @@ const Hand = ({
     setChosenWord,
     setChosenCard,
     chosenCard,
+    votingPhase,
   } = useSetup();
   const acceptButtonSetupData = getAcceptPositionSetupData(direction);
   const declineButtonSetupData = getDeclinePositionSetupData(direction);
@@ -92,6 +94,12 @@ const Hand = ({
       setDisableHover(false);
     }
   }, [photoUrls]);
+
+  useEffect(() => {
+    if (votingPhase) {
+      rotateOnTable(cardsRef.current[selectedCard]);
+    }
+  }, [votingPhase]);
 
   useEffect(() => {
     setCardsLayout(

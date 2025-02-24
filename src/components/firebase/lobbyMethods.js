@@ -103,7 +103,7 @@ async function getGames() {
 
       const allPlayersInactive =
         Object.values(players).length > 0 &&
-        Object.values(players).every((player) => player.inGame === false);
+        Object.values(players).every((player) => !player.inGame);
 
       if (allPlayersInactive) {
         await remove(ref(database, `games/${gameId}`)); // temporary fix
