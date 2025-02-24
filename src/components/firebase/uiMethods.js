@@ -22,7 +22,14 @@ const rightDefaultObject = {
   textScaleMultiplier: [-1, 1, 1],
 };
 
-function getAcceptPositionSetupData(direction) {
+function getAcceptPositionSetupData(direction, votingPhase = false) {
+  if (votingPhase) {
+    return {
+      ...bottomDefaultObject,
+      rotation: [-Math.PI / 2, 0, Math.PI / 2],
+      position: [0, 3, 1.5],
+    };
+  }
   switch (direction) {
     case "Bottom":
       return { ...bottomDefaultObject, position: [-1.7, 1.5, 3] };
@@ -37,7 +44,14 @@ function getAcceptPositionSetupData(direction) {
   }
 }
 
-function getDeclinePositionSetupData(direction) {
+function getDeclinePositionSetupData(direction, votingPhase = false) {
+  if (votingPhase) {
+    return {
+      ...bottomDefaultObject,
+      rotation: [-Math.PI / 2, 0, Math.PI / 2],
+      position: [0, 3, -1.5],
+    };
+  }
   switch (direction) {
     case "Bottom":
       return { ...bottomDefaultObject, position: [1.7, 1.5, 3] };
@@ -66,7 +80,7 @@ function getCenteredButtonData(direction) {
       return bottomDefaultObject;
   }
 }
-function getLeftTopButtonData(direction, votingPhase) {
+function getLeftTopButtonData(direction, votingPhase = false) {
   if (votingPhase) {
     return {
       ...bottomDefaultObject,

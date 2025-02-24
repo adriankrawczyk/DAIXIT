@@ -12,6 +12,8 @@ import { fetchAllPhotos } from "./firebase/gameMethods";
 import {
   getCenteredButtonData,
   getLeftTopButtonData,
+  getAcceptPositionSetupData,
+  getDeclinePositionSetupData,
 } from "./firebase/uiMethods";
 import ActionButton from "./objects/ActionButton";
 
@@ -31,6 +33,7 @@ const GameScene = ({ setupContext }) => {
     chosenWord,
     setVotingPhase,
     direction,
+    votingPhase,
   } = setupContext;
 
   const [gameData, setGameData] = useState([]);
@@ -46,9 +49,14 @@ const GameScene = ({ setupContext }) => {
   const [votingSelectedCardPosition, setVotingSelectedCardPosition] = useState(
     {}
   );
+  const [isVotingSelectedCardThisPlayers, setIsVotingSelectedCardThisPlayers] =
+    useState(false);
+  const acceptButtonRef = useRef();
+  const declineButtonRef = useRef();
 
   const chosenWordLabelRef = useRef();
-
+  const [acceptButtonSetupData, setAcceptButtonSetupData] = useState(null);
+  const [declineButtonSetupData, setDeclineButtonSetupData] = useState(null);
   const setup = async () => {
     const pos = await getPosition();
     const {
@@ -70,7 +78,7 @@ const GameScene = ({ setupContext }) => {
     setPlayerPosition(playerPosition);
     setDirection(dir);
     setInputData(getCenteredButtonData(dir));
-    setChosenWordLabelData(getLeftTopButtonData(dir, false));
+    setChosenWordLabelData(getLeftTopButtonData(direction, votingPhase));
   };
 
   useEffect(() => {
@@ -90,7 +98,8 @@ const GameScene = ({ setupContext }) => {
     const fetchDataAndHostTheGame = async () => {
       const fetchedGameData = await fetchGameData();
       setGameData(fetchedGameData);
-      const { started, hostUid, chosenWord, votingPhase } = fetchedGameData;
+      const { started, hostUid, chosenWord } = fetchedGameData;
+      const votPhase = fetchedGameData.votingPhase;
       const playerUid = localStorage.getItem("playerUid");
       const isHost = hostUid === playerUid;
       const players = Object.values(fetchedGameData.players);
@@ -107,8 +116,12 @@ const GameScene = ({ setupContext }) => {
       if (isHost && started && chosenWord.length && everyPlayerAcceptedCard) {
         await updateGameWithData({ votingPhase: true });
       }
-      setChosenWordLabelData(getLeftTopButtonData(direction, votingPhase));
-      setVotingPhase(votingPhase);
+      setChosenWordLabelData(getLeftTopButtonData(direction, votPhase));
+      setAcceptButtonSetupData(getAcceptPositionSetupData(direction, votPhase));
+      setDeclineButtonSetupData(
+        getDeclinePositionSetupData(direction, votPhase)
+      );
+      setVotingPhase(votPhase);
       setIsThisPlayerHost(isHost);
       setChosenWord(chosenWord);
       setNumberOfPlayers(players.length);
@@ -151,6 +164,28 @@ const GameScene = ({ setupContext }) => {
           fontSize={0.125}
         />
       )}
+      {votingPhase &&
+        votingSelectedCardRef &&
+        !isVotingSelectedCardThisPlayers && (
+          <>
+            <ActionButton
+              ref={acceptButtonRef}
+              onClick={() => {}}
+              buttonSetupData={acceptButtonSetupData}
+              color="lightgreen"
+              text="accept"
+              defaultScale={1}
+            />
+            <ActionButton
+              ref={declineButtonRef}
+              onClick={() => {}}
+              buttonSetupData={declineButtonSetupData}
+              color="red"
+              text="cancel"
+              defaultScale={1}
+            />
+          </>
+        )}
       <Hand
         numberOfCards={5}
         fetchedPhotos={fetchedPhotos}
@@ -161,6 +196,7 @@ const GameScene = ({ setupContext }) => {
         setVotingSelectedCardRef={setVotingSelectedCardRef}
         votingSelectedCardRef={votingSelectedCardRef}
         votingSelectedCardPosition={votingSelectedCardPosition}
+        setIsVotingSelectedCardThisPlayers={setIsVotingSelectedCardThisPlayers}
         direction={direction}
       />
       <OtherPlayerCards
@@ -168,6 +204,7 @@ const GameScene = ({ setupContext }) => {
         setVotingSelectedCardRef={setVotingSelectedCardRef}
         votingSelectedCardRef={votingSelectedCardRef}
         votingSelectedCardPosition={votingSelectedCardPosition}
+        setIsVotingSelectedCardThisPlayers={setIsVotingSelectedCardThisPlayers}
         direction={direction}
       />
     </>

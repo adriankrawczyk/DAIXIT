@@ -39,6 +39,7 @@ const Hand = ({
   setVotingSelectedCardRef,
   votingSelectedCardRef,
   votingSelectedCardPosition,
+  setIsVotingSelectedCardThisPlayers,
 }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
   const [currentClicked, setCurrentClicked] = useState(-1);
@@ -127,6 +128,7 @@ const Hand = ({
         });
         showCardCloserOnVotingPhase(currentCard);
         setVotingSelectedCardRef(currentCard);
+        setIsVotingSelectedCardThisPlayers(true);
       } else if (
         index === selectedCard &&
         votingSelectedCardRef === currentCard

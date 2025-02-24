@@ -20,6 +20,7 @@ const OtherPlayerHand = ({
   setVotingSelectedCardRef,
   votingSelectedCardRef,
   votingSelectedCardPosition,
+  setIsVotingSelectedCardThisPlayers,
 }) => {
   const { votingPhase } = useSetup();
   const [otherPlayersData, setOtherPlayersData] = useState([]);
@@ -136,6 +137,7 @@ const OtherPlayerHand = ({
       });
       showCardCloserOnVotingPhase(currentCard);
       setVotingSelectedCardRef(currentCard);
+      setIsVotingSelectedCardThisPlayers(false);
     } else if (votingSelectedCardRef === currentCard) {
       animateToPosition(currentCard, votingSelectedCardPosition);
       setVotingSelectedCardPosition({});
