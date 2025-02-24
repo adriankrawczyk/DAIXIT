@@ -17,9 +17,15 @@ const CameraUpdater = () => {
   const { cameraPosition, votingPhase } = useSetup();
 
   useEffect(() => {
+    const handleResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    };
     camera.position.set(...(votingPhase ? [0, 4.5, 0] : cameraPosition));
 
     camera.updateProjectionMatrix();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [cameraPosition, camera, votingPhase]);
 
   return null;

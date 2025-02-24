@@ -30,6 +30,7 @@ const GameScene = ({ setupContext }) => {
     setChosenWord,
     chosenWord,
     setVotingPhase,
+    direction,
   } = setupContext;
 
   const [gameData, setGameData] = useState([]);
@@ -65,7 +66,6 @@ const GameScene = ({ setupContext }) => {
     setPlayerPosition(playerPosition);
     setDirection(direction);
     setInputData(getCenteredButtonData(direction));
-    setChosenWordLabelData(getLeftTopButtonData(direction));
   };
 
   useEffect(() => {
@@ -102,6 +102,7 @@ const GameScene = ({ setupContext }) => {
       if (isHost && started && chosenWord.length && everyPlayerAcceptedCard) {
         await updateGameWithData({ votingPhase: true });
       }
+      setChosenWordLabelData(getLeftTopButtonData(direction, votingPhase));
       setVotingPhase(votingPhase);
       setIsThisPlayerHost(isHost);
       setChosenWord(chosenWord);

@@ -66,7 +66,14 @@ function getCenteredButtonData(direction) {
       return bottomDefaultObject;
   }
 }
-function getLeftTopButtonData(direction) {
+function getLeftTopButtonData(direction, votingPhase) {
+  if (votingPhase) {
+    return {
+      ...bottomDefaultObject,
+      rotation: [-Math.PI / 2, 0, Math.PI / 2],
+      position: [-3.5, 2, -1.3],
+    };
+  }
   switch (direction) {
     case "Bottom":
       return { ...bottomDefaultObject, position: [-1.6, 2.3, 3] };
