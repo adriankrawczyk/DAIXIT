@@ -71,7 +71,7 @@ function getLeftTopButtonData(direction, votingPhase) {
     return {
       ...bottomDefaultObject,
       rotation: [-Math.PI / 2, 0, Math.PI / 2],
-      position: [-3.5, 2, -1.3],
+      position: [-1.3, 2, 3.3],
     };
   }
   switch (direction) {
