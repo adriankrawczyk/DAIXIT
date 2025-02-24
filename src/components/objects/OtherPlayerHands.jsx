@@ -10,7 +10,13 @@ import { getAnimations } from "../firebase/playerMethods";
 import { addToTable, backToHand, rotateOnTable } from "../firebase/animations";
 import { useSetup } from "../context/SetupContext";
 
-const OtherPlayerHand = ({ numberOfCards = 5 }) => {
+const OtherPlayerHand = ({
+  numberOfCards = 5,
+  setVotingSelectedCardPosition,
+  setVotingSelectedCardRef,
+  votingSelectedCardRef,
+  votingSelectedCardPosition,
+}) => {
   const { votingPhase } = useSetup();
   const [otherPlayersData, setOtherPlayersData] = useState([]);
   const [otherPlayerHandsData, setOtherPlayerHandsData] = useState([]);
@@ -70,7 +76,7 @@ const OtherPlayerHand = ({ numberOfCards = 5 }) => {
         selectedCards.forEach((selectedCard, index) => {
           setTimeout(() => {
             rotateOnTable(selectedCard);
-          }, index * 300);
+          }, (index + 1) * 500);
         });
       }
     };
@@ -151,6 +157,7 @@ const OtherPlayerHand = ({ numberOfCards = 5 }) => {
                   ref={(el) =>
                     el && (cardsRef.current[cardKey] = { current: el })
                   }
+                  votingPhase={votingPhase}
                 />
               );
             }

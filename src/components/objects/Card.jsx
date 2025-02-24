@@ -25,6 +25,7 @@ const Card = React.forwardRef(
       cardsPosition,
       playerPosition,
       direction,
+      votingPhase,
     },
     ref
   ) => {
@@ -99,7 +100,8 @@ const Card = React.forwardRef(
             currentClicked !== index &&
             currentHovered !== index &&
             selectedCard !== index &&
-            internalRef.current
+            internalRef.current &&
+            !votingPhase
           ) {
             hoverAnimation();
             setCurrentHovered(index);

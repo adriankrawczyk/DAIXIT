@@ -19,6 +19,8 @@ import {
   showCardCloser,
   animateActionButtons,
   rotateOnTable,
+  showCardCloserOnVotingPhase,
+  animateToPosition,
 } from "../firebase/animations";
 import ActionButton from "./ActionButton";
 import {
@@ -33,6 +35,10 @@ const Hand = ({
   isThisPlayerHost,
   isThisPlayerWordMaker,
   wordMakerText,
+  setVotingSelectedCardPosition,
+  setVotingSelectedCardRef,
+  votingSelectedCardRef,
+  votingSelectedCardPosition,
 }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
   const [currentClicked, setCurrentClicked] = useState(-1);
@@ -111,6 +117,24 @@ const Hand = ({
   }, [cardsPosition, cardsRotation, direction, numberOfCards]);
 
   const handleCardClick = (index) => {
+    if (votingPhase) {
+      const currentCard = cardsRef.current[index];
+      if (index === selectedCard && !votingSelectedCardRef) {
+        setVotingSelectedCardPosition({
+          x: currentCard.position.x,
+          y: currentCard.position.y,
+          z: currentCard.position.z,
+        });
+        showCardCloserOnVotingPhase(currentCard);
+        setVotingSelectedCardRef(currentCard);
+      } else if (index === selectedCard && votingSelectedCardRef) {
+        animateToPosition(currentCard, votingSelectedCardPosition);
+        setVotingSelectedCardPosition({});
+        setVotingSelectedCardRef(null);
+      }
+      return;
+    }
+
     // Prevent interaction with card that's already on the table
     if (index === selectedCard) {
       return;
@@ -227,6 +251,7 @@ const Hand = ({
           direction={direction}
           playerPosition={playerPosition}
           ref={(el) => assignRef(el, key)}
+          votingPhase={votingPhase}
         />
       ))}
       {currentClicked !== -1 &&

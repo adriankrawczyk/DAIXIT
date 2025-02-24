@@ -42,6 +42,10 @@ const GameScene = ({ setupContext }) => {
   const [fetchedPhotos, setFetchedPhotos] = useState([]);
   const [wordMakerText, setWordMakerText] = useState("");
   const [chosenWordLabelData, setChosenWordLabelData] = useState({});
+  const [votingSelectedCardRef, setVotingSelectedCardRef] = useState(null);
+  const [votingSelectedCardPosition, setVotingSelectedCardPosition] = useState(
+    {}
+  );
 
   const chosenWordLabelRef = useRef();
 
@@ -154,8 +158,17 @@ const GameScene = ({ setupContext }) => {
         isThisPlayerHost={isThisPlayerHost}
         isThisPlayerWordMaker={isThisPlayerWordMaker}
         wordMakerText={wordMakerText}
+        setVotingSelectedCardPosition={setVotingSelectedCardPosition}
+        setVotingSelectedCardRef={setVotingSelectedCardRef}
+        votingSelectedCardRef={votingSelectedCardRef}
+        votingSelectedCardPosition={votingSelectedCardPosition}
       />
-      <OtherPlayerCards />
+      <OtherPlayerCards
+        setVotingSelectedCardPosition={setVotingSelectedCardPosition}
+        setVotingSelectedCardRef={setVotingSelectedCardRef}
+        votingSelectedCardRef={votingSelectedCardRef}
+        votingSelectedCardPosition={votingSelectedCardPosition}
+      />
     </>
   ) : (
     <StartGameUI

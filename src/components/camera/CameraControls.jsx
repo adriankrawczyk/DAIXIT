@@ -26,14 +26,12 @@ const CameraControls = () => {
     );
 
     if (votingPhase) {
-      console.log(camera.rotation);
       camera.rotation.set(
         -Math.PI / 2 + mouse.x / 10,
         mouse.y / 10,
         Math.PI / 2
       );
       camera.updateProjectionMatrix();
-      console.log(camera.rotation);
     } else camera.lookAt(normalGameVector);
   });
 

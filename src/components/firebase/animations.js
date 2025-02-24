@@ -86,6 +86,26 @@ export const addToTable = (cardRef, direction, setDisableHover = null) => {
   }
 };
 
+export const showCardCloserOnVotingPhase = (cardRef) => {
+  gsap.to(cardRef.position, {
+    x: 0,
+    y: 3.85,
+    z: 0,
+    duration: 0.5,
+    ease: "power2.out",
+  });
+};
+
+export const animateToPosition = (cardRef, position) => {
+  gsap.to(cardRef.position, {
+    x: position.x,
+    y: position.y,
+    z: position.z,
+    duration: 0.5,
+    ease: "power2.out",
+  });
+};
+
 export const rotateOnTable = (cardRef) => {
   if (!cardRef) return;
   gsap.to(cardRef.rotation, {
