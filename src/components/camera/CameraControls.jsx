@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { Vector3 } from "three";
+import { Vector3, Quaternion } from "three";
 import inBounds from "../../util/maths/inBounds";
 import { useSetup } from "../context/SetupContext";
 import { useEffect } from "react";
@@ -24,8 +24,13 @@ const CameraControls = () => {
         ? mouse.x
         : 0 + cameraLookAt[2]) * cameraLookAtMultiplier[2]
     );
-    const votingPhaseVector = new Vector3(0, -5, 0);
-    camera.lookAt(votingPhase ? votingPhaseVector : normalGameVector);
+
+    if (votingPhase) {
+      console.log(camera.rotation);
+      camera.rotation.set(-Math.PI / 2, 0, Math.PI / 2);
+      camera.updateProjectionMatrix();
+      console.log(camera.rotation);
+    } else camera.lookAt(normalGameVector);
   });
 
   return null;
