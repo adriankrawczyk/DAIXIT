@@ -122,6 +122,10 @@ const OtherPlayerHand = ({
     return () => clearInterval(animationInterval);
   }, [otherPlayerHandsData]);
 
+  const handleCardClick = async () => {
+    alert(1);
+  };
+
   return (
     <>
       {(() => {
@@ -142,6 +146,7 @@ const OtherPlayerHand = ({
                   disableHover={true}
                   setCurrentHovered={() => {}}
                   currentClicked={-1}
+                  onCardClick={handleCardClick}
                   setCurrentClicked={() => {}}
                   position={cardLayout.position}
                   rotation={cardLayout.rotation}

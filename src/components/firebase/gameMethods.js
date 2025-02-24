@@ -70,7 +70,6 @@ async function getPosition() {
       console.error("Invalid game data or position not found");
       return null;
     }
-
     return getSetupData(gameData.position);
   } catch (error) {
     console.error("Error fetching player position:", error);
