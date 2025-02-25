@@ -154,33 +154,26 @@ async function calculateAndAddPoints() {
   const wordMaker = players.find((player) => player.wordMaker === true);
   const rightCard = wordMaker?.chosenCard;
   const allCards = {};
-  const pointsToUpdate = {}; // Object to store playerUid -> points to add
+  const pointsToUpdate = {};
 
-  // Initialize points for all players
   players.forEach((player) => {
     pointsToUpdate[player.playerUid] = 0;
   });
 
-  // Process right card
-  if (rightCard) {
-    allCards[rightCard.playerUid] = {
-      card: rightCard,
-      isCorrectCard: true,
-      voters: [],
-    };
-  }
+  players.forEach((player) => {
+    if (player.chosenCard) {
+      allCards[player.playerUid] = {
+        card: player.chosenCard,
+        isCorrectCard: player.playerUid === rightCard?.playerUid,
+        voters: [],
+        playerName: player.name,
+      };
+    }
+  });
 
-  // Process all cards and voters
   players.forEach((player) => {
     if (!player.wordMaker && player.votingSelectedCardData) {
       const cardId = player.votingSelectedCardData.playerUid;
-      if (!allCards[cardId]) {
-        allCards[cardId] = {
-          card: player.votingSelectedCardData,
-          isCorrectCard: cardId === rightCard?.playerUid,
-          voters: [],
-        };
-      }
       allCards[cardId].voters.push({
         playerUid: player.playerUid,
         position: player.currentGameData.position,
@@ -189,12 +182,6 @@ async function calculateAndAddPoints() {
     }
   });
 
-  // Log all card data
-  Object.entries(allCards).forEach(([cardId, data]) => {
-    console.log(data);
-  });
-
-  // Calculate right card picks count
   let rightCardPicksCount = 1; // Starting with 1 to account for the wordMaker
   if (rightCard) {
     const rightCardVoters = allCards[rightCard.playerUid]?.voters || [];

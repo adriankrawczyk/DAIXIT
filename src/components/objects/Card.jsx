@@ -30,7 +30,6 @@ const Card = React.forwardRef(
       direction,
       votingPhase,
       afterVoteData,
-      playerUid,
     },
     ref
   ) => {
@@ -42,6 +41,7 @@ const Card = React.forwardRef(
     const [cardImage, setCardImage] = useState(defaultTexture);
     const internalRef = useRef();
     const actionButtonRefs = useRef([]);
+    const ownerButtonRef = useRef();
 
     useImperativeHandle(ref, () => internalRef.current);
 
@@ -110,6 +110,14 @@ const Card = React.forwardRef(
     const cardData = votingPhase ? findCardData() : null;
     const voters = cardData?.voters || [];
     const playerColors = ["blue", "orange", "magenta", "lightgreen"];
+    const isCorrectCard = cardData?.isCorrectCard || false;
+    const ownerName = cardData?.playerName || "Unknown";
+    if (cardData) console.log(cardData);
+    const ownerButtonData = getCardUIData(
+      internalRef.current?.position || position,
+      -1,
+      -1
+    );
 
     return (
       <>
@@ -158,23 +166,34 @@ const Card = React.forwardRef(
           <meshStandardMaterial attach="material-5" map={reverse} />
         </mesh>
 
-        {votingPhase &&
-          cardData &&
-          voters.map((voter, voterIndex) => (
+        {votingPhase && cardData && (
+          <>
             <ActionButton
-              key={`voter-${voterIndex}`}
-              ref={(el) => (actionButtonRefs.current[voterIndex] = el)}
+              ref={ownerButtonRef}
               onClick={() => {}}
-              buttonSetupData={getCardUIData(
-                internalRef.current?.position || position,
-                voterIndex,
-                voters.length
-              )}
-              color={playerColors[voter.position || 0]}
-              text={voter.name || "Voter"}
+              buttonSetupData={ownerButtonData}
+              color={isCorrectCard ? "green" : "red"}
+              text={ownerName}
               defaultScale={0.5}
             />
-          ))}
+
+            {voters.map((voter, voterIndex) => (
+              <ActionButton
+                key={`voter-${voterIndex}`}
+                ref={(el) => (actionButtonRefs.current[voterIndex] = el)}
+                onClick={() => {}}
+                buttonSetupData={getCardUIData(
+                  internalRef.current?.position || position,
+                  voterIndex,
+                  voters.length
+                )}
+                color={playerColors[voter.position || 0]}
+                text={voter.name || "Voter"}
+                defaultScale={0.5}
+              />
+            ))}
+          </>
+        )}
       </>
     );
   }

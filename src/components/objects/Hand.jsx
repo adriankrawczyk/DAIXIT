@@ -260,7 +260,6 @@ const Hand = ({
           ref={(el) => assignRef(el, key)}
           votingPhase={votingPhase}
           afterVoteData={afterVoteData}
-          playerUid={localStorage.getItem("playerUid")}
         />
       ))}
       {currentClicked !== -1 &&

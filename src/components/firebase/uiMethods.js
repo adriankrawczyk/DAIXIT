@@ -199,25 +199,35 @@ function getCardUIData(cardPosition, index, votersLength) {
   };
 
   switch (votersLength) {
+    case -1: // owner
+      result.position = [
+        cardPosition.x - 0.6,
+        cardPosition.y + 0.01,
+        cardPosition.z,
+      ];
+      break;
+    case 0:
+      const width = 0.3 * (votersLength - 1);
+      const startX = cardPosition.x - width / 2;
+      result.position = [
+        startX + 0.3 * index,
+        cardPosition.y + +0.01,
+        cardPosition.z,
+      ];
+      break;
     case 1:
-      result.position = [cardPosition.x, cardPosition.y + 0.1, cardPosition.z];
+      result.position = [
+        cardPosition.x,
+        cardPosition.y + +0.01,
+        cardPosition.z,
+      ];
       break;
 
     case 2:
       const twoVoterOffset = 0.4;
       result.position = [
         cardPosition.x - twoVoterOffset / 2 + twoVoterOffset * index,
-        cardPosition.y + 0.1,
-        cardPosition.z,
-      ];
-      break;
-
-    default:
-      const width = 0.3 * (votersLength - 1);
-      const startX = cardPosition.x - width / 2;
-      result.position = [
-        startX + 0.3 * index,
-        cardPosition.y + 0.1,
+        cardPosition.y + +0.01,
         cardPosition.z,
       ];
       break;
