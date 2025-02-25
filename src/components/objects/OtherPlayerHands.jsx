@@ -21,6 +21,7 @@ const OtherPlayerHand = ({
   votingSelectedCardRef,
   votingSelectedCardPosition,
   setIsVotingSelectedCardThisPlayers,
+  setVotingSelectedCardData,
 }) => {
   const { votingPhase } = useSetup();
   const [otherPlayersData, setOtherPlayersData] = useState([]);
@@ -127,8 +128,39 @@ const OtherPlayerHand = ({
     return () => clearInterval(animationInterval);
   }, [otherPlayerHandsData]);
 
-  const handleCardClick = async (cardKey) => {
+  const handleCardClick = async (cardKey, cardIndex, playerPosition) => {
     const currentCard = cardsRef.current[cardKey].current;
+    const getWhichCardIsItOnTable = () => {
+      let count = -1;
+      for (let i = 0; i < otherPlayerHandsData.length; i++) {
+        const playerHand = otherPlayerHandsData[i];
+        for (let j = 0; j < numberOfCards; j++) {
+          const key = `${playerHand.playerPosition}-${j}`;
+          const isSelected = selectedCards.some(
+            (card) => card === cardsRef.current[key]?.current
+          );
+          if (isSelected) count++;
+          if (key === cardKey && isSelected) {
+            const player = otherPlayersData.find(
+              (p) => p.position === playerHand.playerPosition
+            );
+
+            const cardData = selectedCardsFromDatabase[count];
+            if (cardData && player) {
+              return {
+                ...cardData,
+                playerPosition: player.position,
+              };
+            }
+            return cardData;
+          }
+        }
+      }
+      return null;
+    };
+
+    const cardData = getWhichCardIsItOnTable();
+
     if (!votingSelectedCardRef) {
       setVotingSelectedCardPosition({
         x: currentCard.position.x,
@@ -138,6 +170,9 @@ const OtherPlayerHand = ({
       showCardCloserOnVotingPhase(currentCard);
       setVotingSelectedCardRef(currentCard);
       setIsVotingSelectedCardThisPlayers(false);
+      if (cardData) {
+        setVotingSelectedCardData(cardData);
+      }
     } else if (votingSelectedCardRef === currentCard) {
       animateToPosition(currentCard, votingSelectedCardPosition);
       setVotingSelectedCardPosition({});
@@ -166,7 +201,11 @@ const OtherPlayerHand = ({
                   setCurrentHovered={() => {}}
                   currentClicked={-1}
                   onCardClick={() => {
-                    handleCardClick(cardKey);
+                    handleCardClick(
+                      cardKey,
+                      cardIndex,
+                      playerHand.playerPosition
+                    );
                   }}
                   setCurrentClicked={() => {}}
                   position={cardLayout.position}

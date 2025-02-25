@@ -41,6 +41,8 @@ async function setPlayerName(newPlayerName) {
 async function updatePlayerInGame(playerUid, updateObj) {
   const gameId = window.location.href.split("/").pop();
   const playerRef = ref(database, `games/${gameId}/players/${playerUid}`);
+  const snapshot = await get(playerRef);
+  if (!snapshot.val()) return;
   await update(playerRef, updateObj);
 }
 

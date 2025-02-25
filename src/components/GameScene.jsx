@@ -7,7 +7,10 @@ import SpinningWheel from "./objects/SpinningWheel";
 import { fetchGameData, joinToGame } from "./firebase/lobbyMethods";
 import { getPosition, updateGameWithData } from "./firebase/gameMethods";
 import FirebaseLogger from "./lobby/firebase/firebaseLogger";
-import { removePlayerFromGame } from "./firebase/playerMethods";
+import {
+  removePlayerFromGame,
+  updateThisPlayerInGame,
+} from "./firebase/playerMethods";
 import { fetchAllPhotos } from "./firebase/gameMethods";
 import {
   getCenteredButtonData,
@@ -16,6 +19,7 @@ import {
   getDeclinePositionSetupData,
 } from "./firebase/uiMethods";
 import ActionButton from "./objects/ActionButton";
+import { animateToPosition } from "./firebase/animations";
 
 const GameScene = ({ setupContext }) => {
   const {
@@ -51,6 +55,8 @@ const GameScene = ({ setupContext }) => {
   );
   const [isVotingSelectedCardThisPlayers, setIsVotingSelectedCardThisPlayers] =
     useState(false);
+  const [hasVoted, setHasVoted] = useState(false);
+  const [votingSelectedCardData, setVotingSelectedCardData] = useState({});
   const acceptButtonRef = useRef();
   const declineButtonRef = useRef();
 
@@ -131,6 +137,18 @@ const GameScene = ({ setupContext }) => {
     const interval = setInterval(fetchDataAndHostTheGame, 1000);
     return () => clearInterval(interval);
   }, [direction]);
+
+  const handleAcceptOnVotingPhaseClicked = async () => {
+    setHasVoted(true);
+    await updateThisPlayerInGame({ votingSelectedCardData });
+    handleDeclineOnVotingPhaseClicked();
+  };
+  const handleDeclineOnVotingPhaseClicked = () => {
+    animateToPosition(votingSelectedCardRef, votingSelectedCardPosition);
+    setVotingSelectedCardPosition({});
+    setVotingSelectedCardRef(null);
+  };
+
   if (!joined) {
     return <SpinningWheel />;
   }
@@ -166,11 +184,13 @@ const GameScene = ({ setupContext }) => {
       )}
       {votingPhase &&
         votingSelectedCardRef &&
-        !isVotingSelectedCardThisPlayers && (
+        !isVotingSelectedCardThisPlayers &&
+        !hasVoted &&
+        !isThisPlayerWordMaker && (
           <>
             <ActionButton
               ref={acceptButtonRef}
-              onClick={() => {}}
+              onClick={handleAcceptOnVotingPhaseClicked}
               buttonSetupData={acceptButtonSetupData}
               color="lightgreen"
               text="accept"
@@ -178,7 +198,7 @@ const GameScene = ({ setupContext }) => {
             />
             <ActionButton
               ref={declineButtonRef}
-              onClick={() => {}}
+              onClick={handleDeclineOnVotingPhaseClicked}
               buttonSetupData={declineButtonSetupData}
               color="red"
               text="cancel"
@@ -205,6 +225,7 @@ const GameScene = ({ setupContext }) => {
         votingSelectedCardRef={votingSelectedCardRef}
         votingSelectedCardPosition={votingSelectedCardPosition}
         setIsVotingSelectedCardThisPlayers={setIsVotingSelectedCardThisPlayers}
+        setVotingSelectedCardData={setVotingSelectedCardData}
         direction={direction}
       />
     </>
