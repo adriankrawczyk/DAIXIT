@@ -13,7 +13,14 @@ const PointsDisplayer = ({ players }) => {
           player.currentGameData.position,
           votingPhase
         );
-        return <PointDisplay setupData={setupData} key={index} />;
+        return (
+          <PointDisplay
+            setupData={setupData}
+            playerName={player.name}
+            points={player.points}
+            key={index}
+          />
+        );
       })}
     </>
   );

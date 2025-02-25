@@ -1,24 +1,24 @@
 const bottomDefaultObject = {
   rotation: [-Math.PI / 13, 0, 0],
-  textPosition: [0, 0, 0.02],
+  textPosition: [0, 0, 0.01],
   textScaleMultiplier: [1, 1, 1],
 };
 
 const topDefaultObject = {
   rotation: [Math.PI / 13, 0, 0],
-  textPosition: [0, 0, -0.02],
+  textPosition: [0, 0, -0.01],
   textScaleMultiplier: [-1, 1, 1],
 };
 
 const leftDefaultObject = {
   rotation: [0, -Math.PI / 2, 0],
-  textPosition: [0, 0, -0.02],
+  textPosition: [0, 0, -0.01],
   textScaleMultiplier: [-1, 1, 1],
 };
 
 const rightDefaultObject = {
   rotation: [0, Math.PI / 2, 0],
-  textPosition: [0, 0, -0.02],
+  textPosition: [0, 0, -0.01],
   textScaleMultiplier: [-1, 1, 1],
 };
 
@@ -118,6 +118,9 @@ function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
   let row = Math.floor(playerPosition / 2);
   let col = playerPosition % 2;
 
+  const playerColors = ["blue", "orange", "magenta", "lightgreen"];
+  const color = playerColors[playerPosition];
+
   switch (direction) {
     case "Bottom":
       basePosition = [-2.5, 1, 3];
@@ -129,6 +132,7 @@ function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
           basePosition[2],
         ],
         rotation: [0, 0, 0],
+        color,
       };
 
     case "Top":
@@ -141,6 +145,7 @@ function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
           basePosition[2],
         ],
         rotation: [0, 0, 0],
+        color,
       };
 
     case "Left":
@@ -152,6 +157,7 @@ function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
           basePosition[1] - row * verticalSpacing,
           basePosition[2] - col * horizontalSpacing,
         ],
+        color,
       };
 
     case "Right":
@@ -163,6 +169,7 @@ function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
           basePosition[1] - row * verticalSpacing,
           basePosition[2] + col * horizontalSpacing,
         ],
+        color,
       };
 
     default:
@@ -174,10 +181,10 @@ function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
           basePosition[1] - row * verticalSpacing,
           basePosition[2],
         ],
+        color,
       };
   }
 }
-
 export {
   getAcceptPositionSetupData,
   getDeclinePositionSetupData,
