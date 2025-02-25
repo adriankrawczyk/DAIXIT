@@ -167,7 +167,8 @@ const Card = React.forwardRef(
               onClick={() => {}}
               buttonSetupData={getCardUIData(
                 internalRef.current?.position || position,
-                voterIndex
+                voterIndex,
+                voters.length
               )}
               color={playerColors[voter.position || 0]}
               text={voter.name || "Voter"}
