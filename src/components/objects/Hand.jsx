@@ -40,6 +40,7 @@ const Hand = ({
   votingSelectedCardRef,
   votingSelectedCardPosition,
   setIsVotingSelectedCardThisPlayers,
+  afterVoteData,
 }) => {
   const [currentHovered, setCurrentHovered] = useState(-1);
   const [currentClicked, setCurrentClicked] = useState(-1);
@@ -217,6 +218,7 @@ const Hand = ({
     const chosenCardObj = {
       index: currentClicked,
       url: photoUrls[currentClicked],
+      playerUid: localStorage.getItem("playerUid"),
     };
     await updateThisPlayerInGame({ chosenCard: chosenCardObj });
     setChosenCard(chosenCardObj);
@@ -257,6 +259,8 @@ const Hand = ({
           playerPosition={playerPosition}
           ref={(el) => assignRef(el, key)}
           votingPhase={votingPhase}
+          afterVoteData={afterVoteData}
+          playerUid={localStorage.getItem("playerUid")}
         />
       ))}
       {currentClicked !== -1 &&

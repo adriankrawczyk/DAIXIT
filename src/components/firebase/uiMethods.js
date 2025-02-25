@@ -191,10 +191,23 @@ function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
       };
   }
 }
+
+function getCardUIData(cardPosition, index) {
+  return {
+    ...bottomDefaultObject,
+    rotation: [-Math.PI / 2, 0, Math.PI / 2],
+    position: [
+      cardPosition.x - 0.3 + 0.3 * index,
+      cardPosition.y + 0.1,
+      cardPosition.z,
+    ],
+  };
+}
 export {
   getAcceptPositionSetupData,
   getDeclinePositionSetupData,
   getCenteredButtonData,
   getLeftTopButtonData,
   getPointDisplayerData,
+  getCardUIData,
 };

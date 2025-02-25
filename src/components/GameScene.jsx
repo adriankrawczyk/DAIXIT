@@ -8,6 +8,7 @@ import { fetchGameData, joinToGame } from "./firebase/lobbyMethods";
 import { getPosition, updateGameWithData } from "./firebase/gameMethods";
 import FirebaseLogger from "./lobby/firebase/firebaseLogger";
 import {
+  calculateAndAddPoints,
   removePlayerFromGame,
   updateThisPlayerInGame,
 } from "./firebase/playerMethods";
@@ -65,7 +66,8 @@ const GameScene = ({ setupContext }) => {
   const [acceptButtonSetupData, setAcceptButtonSetupData] = useState(null);
   const [declineButtonSetupData, setDeclineButtonSetupData] = useState(null);
   const [players, setPlayers] = useState([]);
-
+  const [pointsAdded, setPointsAdded] = useState(false);
+  const [afterVoteData, setAfterVoteData] = useState(null);
   const setup = async () => {
     const pos = await getPosition();
     const {
@@ -109,6 +111,7 @@ const GameScene = ({ setupContext }) => {
       setGameData(fetchedGameData);
       const { started, hostUid, chosenWord } = fetchedGameData;
       const votPhase = fetchedGameData.votingPhase;
+      const afterVotData = fetchedGameData.afterVoteData;
       const playerUid = localStorage.getItem("playerUid");
       const isHost = hostUid === playerUid;
       const fetchedPlayers = Object.values(fetchedGameData.players);
@@ -139,14 +142,21 @@ const GameScene = ({ setupContext }) => {
       if (isHost && started && chosenWord.length && everyPlayerAcceptedCard) {
         await updateGameWithData({ votingPhase: true });
       }
-      if (everyPlayerHasVoted) {
-        console.log("a");
+
+      if (everyPlayerHasVoted && isHost && !pointsAdded) {
+        setPointsAdded(true);
+        const calculatedPoints = await calculateAndAddPoints();
+        await updateGameWithData({
+          afterVoteData: calculatedPoints,
+        });
       }
+
       setChosenWordLabelData(getLeftTopButtonData(direction, votPhase));
       setAcceptButtonSetupData(getAcceptPositionSetupData(direction, votPhase));
       setDeclineButtonSetupData(
         getDeclinePositionSetupData(direction, votPhase)
       );
+      setAfterVoteData(afterVotData);
       setVotingPhase(votPhase);
       setIsThisPlayerHost(isHost);
       setChosenWord(chosenWord);
@@ -157,7 +167,7 @@ const GameScene = ({ setupContext }) => {
 
     const interval = setInterval(fetchDataAndHostTheGame, 1000);
     return () => clearInterval(interval);
-  }, [direction]);
+  }, [direction, pointsAdded]);
 
   const handleAcceptOnVotingPhaseClicked = async () => {
     setHasVoted(true);
@@ -244,6 +254,7 @@ const GameScene = ({ setupContext }) => {
               setIsVotingSelectedCardThisPlayers
             }
             direction={direction}
+            afterVoteData={afterVoteData}
           />
           <OtherPlayerCards
             setVotingSelectedCardPosition={setVotingSelectedCardPosition}
@@ -255,6 +266,7 @@ const GameScene = ({ setupContext }) => {
             }
             setVotingSelectedCardData={setVotingSelectedCardData}
             direction={direction}
+            afterVoteData={afterVoteData}
           />
         </>
       ) : (

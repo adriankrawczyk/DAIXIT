@@ -1,5 +1,6 @@
 import { ref, set, update, get, onDisconnect, remove } from "firebase/database";
 import { database } from "./firebaseConfig";
+import _ from "lodash";
 
 async function fetchPlayerData(chosenUid) {
   const playerRef = ref(database, `players/${chosenUid}`);
@@ -55,6 +56,13 @@ async function removePlayerFromGame(playerUid) {
   const gameId = window.location.href.split("/").pop();
   const playerRef = ref(database, `games/${gameId}/players/${playerUid}`);
   await remove(playerRef);
+}
+
+async function getPlayerInGame(playerUid) {
+  const gameId = window.location.href.split("/").pop();
+  const playerRef = ref(database, `games/${gameId}/players/${playerUid}`);
+  const snapshot = await get(playerRef);
+  return snapshot.val();
 }
 
 async function getUserCount() {
@@ -131,6 +139,112 @@ async function getAnimations() {
     return [];
   }
 }
+async function updatePoints(playerUid, amount) {
+  const playerInDatabase = await getPlayerInGame(playerUid);
+  await updatePlayerInGame(playerUid, {
+    points: playerInDatabase.points + amount,
+  });
+}
+async function calculateAndAddPoints() {
+  const gameId = window.location.href.split("/").pop();
+  const playersRef = ref(database, `games/${gameId}/players`);
+  const snapshot = await get(playersRef);
+  const players = Object.values(snapshot.val());
+  const playersCount = players.length;
+  const wordMaker = players.find((player) => player.wordMaker === true);
+  const rightCard = wordMaker?.chosenCard;
+  const allCards = {};
+  const pointsToUpdate = {}; // Object to store playerUid -> points to add
+
+  // Initialize points for all players
+  players.forEach((player) => {
+    pointsToUpdate[player.playerUid] = 0;
+  });
+
+  // Process right card
+  if (rightCard) {
+    allCards[rightCard.playerUid] = {
+      card: rightCard,
+      isCorrectCard: true,
+      voters: [],
+    };
+  }
+
+  // Process all cards and voters
+  players.forEach((player) => {
+    if (!player.wordMaker && player.votingSelectedCardData) {
+      const cardId = player.votingSelectedCardData.playerUid;
+      if (!allCards[cardId]) {
+        allCards[cardId] = {
+          card: player.votingSelectedCardData,
+          isCorrectCard: cardId === rightCard?.playerUid,
+          voters: [],
+        };
+      }
+      allCards[cardId].voters.push({
+        playerUid: player.playerUid,
+        position: player.currentGameData.position,
+        name: player.name,
+      });
+    }
+  });
+
+  // Log all card data
+  Object.entries(allCards).forEach(([cardId, data]) => {
+    console.log(data);
+  });
+
+  // Calculate right card picks count
+  let rightCardPicksCount = 1; // Starting with 1 to account for the wordMaker
+  if (rightCard) {
+    const rightCardVoters = allCards[rightCard.playerUid]?.voters || [];
+    rightCardPicksCount += rightCardVoters.length;
+  }
+
+  // Determine if everyone besides wordMaker gets points
+  const everyoneBesidesWordMakerGetPoints =
+    rightCardPicksCount === playersCount || rightCardPicksCount === 1;
+
+  // Calculate points for each player
+  players.forEach((player) => {
+    // Case 1: Points for non-wordMaker players when everyone or no one guessed correctly
+    if (!player.wordMaker && everyoneBesidesWordMakerGetPoints) {
+      pointsToUpdate[player.playerUid] += 2; // No one or everybody guessed the right card
+    }
+    // Case 2: Points for wordMaker or for players who guessed correctly
+    else if (
+      (player.wordMaker && !everyoneBesidesWordMakerGetPoints) ||
+      (!player.wordMaker &&
+        player.votingSelectedCardData?.playerUid === rightCard?.playerUid)
+    ) {
+      pointsToUpdate[player.playerUid] += 3; // Some people guessed the right card
+    }
+
+    // Case 3: Points for players whose cards were chosen by others
+    if (
+      !player.wordMaker &&
+      player.votingSelectedCardData?.playerUid !== rightCard?.playerUid
+    ) {
+      // Give points to the owner of the wrong card that was selected
+      pointsToUpdate[player.votingSelectedCardData.playerUid] += 1; // Wrong card votes
+    }
+  });
+
+  // Update all points at once
+  const updatePromises = Object.entries(pointsToUpdate).map(
+    ([playerUid, points]) => {
+      if (points > 0) {
+        return updatePoints(playerUid, points);
+      }
+      return Promise.resolve();
+    }
+  );
+
+  // Wait for all updates to complete
+  await Promise.all(updatePromises);
+
+  return Object.values(allCards);
+}
 
 export {
   setPlayerData,
@@ -142,4 +256,5 @@ export {
   removePlayerFromGame,
   updatePlayerInGame,
   updateThisPlayerInGame,
+  calculateAndAddPoints,
 };

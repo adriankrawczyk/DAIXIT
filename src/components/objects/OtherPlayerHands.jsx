@@ -22,6 +22,7 @@ const OtherPlayerHand = ({
   votingSelectedCardPosition,
   setIsVotingSelectedCardThisPlayers,
   setVotingSelectedCardData,
+  afterVoteData,
 }) => {
   const { votingPhase } = useSetup();
   const [otherPlayersData, setOtherPlayersData] = useState([]);
@@ -201,11 +202,12 @@ const OtherPlayerHand = ({
                   setCurrentHovered={() => {}}
                   currentClicked={-1}
                   onCardClick={() => {
-                    handleCardClick(
-                      cardKey,
-                      cardIndex,
-                      playerHand.playerPosition
-                    );
+                    if (isSelected)
+                      handleCardClick(
+                        cardKey,
+                        cardIndex,
+                        playerHand.playerPosition
+                      );
                   }}
                   setCurrentClicked={() => {}}
                   position={cardLayout.position}
@@ -223,6 +225,8 @@ const OtherPlayerHand = ({
                     el && (cardsRef.current[cardKey] = { current: el })
                   }
                   votingPhase={votingPhase}
+                  afterVoteData={afterVoteData}
+                  playerUid={playerHand.playerUid}
                 />
               );
             }

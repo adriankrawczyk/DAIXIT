@@ -34,6 +34,7 @@ async function newGame() {
       chosenWord: "",
       votingPhase: false,
       players: {},
+      afterVoteData: {},
     });
     setupDisconnectHandlers(newGameRef.key, playerData.uid);
     return newGameRef.key;
@@ -108,8 +109,7 @@ async function getGames() {
       const allPlayersInactive =
         Object.values(players).length > 0 &&
         Object.values(players).every((player) => !player.inGame);
-
-      if (allPlayersInactive) {
+      if (allPlayersInactive || Object.values(players).length === 0) {
         await remove(ref(database, `games/${gameId}`)); // temporary fix
       } else {
         gamesArray.push({ ...gameData });
