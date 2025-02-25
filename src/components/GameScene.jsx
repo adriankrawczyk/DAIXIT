@@ -110,7 +110,14 @@ const GameScene = ({ setupContext }) => {
       const isHost = hostUid === playerUid;
       const players = Object.values(fetchedGameData.players);
       let everyPlayerAcceptedCard = true;
+      let everyPlayerHasVoted = votPhase;
       for (const player of players) {
+        if (
+          !player.wordMaker &&
+          typeof player.votingSelectedCardData !== "object"
+        ) {
+          everyPlayerHasVoted = false;
+        }
         if (player.playerUid === playerUid && player.wordMaker)
           setIsThisPlayerWordMaker(true);
         if (!started && !player.inGame && player.playerUid !== playerUid) {
@@ -122,6 +129,7 @@ const GameScene = ({ setupContext }) => {
       if (isHost && started && chosenWord.length && everyPlayerAcceptedCard) {
         await updateGameWithData({ votingPhase: true });
       }
+      if (everyPlayerHasVoted) console.log("a");
       setChosenWordLabelData(getLeftTopButtonData(direction, votPhase));
       setAcceptButtonSetupData(getAcceptPositionSetupData(direction, votPhase));
       setDeclineButtonSetupData(
