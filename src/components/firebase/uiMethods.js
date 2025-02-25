@@ -94,23 +94,15 @@ function getLeftTopButtonData(direction, votingPhase = false) {
     case "Top":
       return { ...topDefaultObject, position: [1.7, 2.3, -3] };
     case "Left":
-      return { ...leftDefaultObject, position: [3, 2.3, -1.7] };
+      return { ...leftDefaultObject, position: [3, 2.3, 1.7] };
     case "Right":
-      return { ...rightDefaultObject, position: [-3, 2.3, 1.7] };
+      return { ...rightDefaultObject, position: [-3, 2.3, -1.7] };
     default:
       return bottomDefaultObject;
   }
 }
 
 function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
-  if (votingPhase) {
-    return {
-      ...bottomDefaultObject,
-      rotation: [-Math.PI / 2, 0, Math.PI / 2],
-      position: [-1.3, -2, 3.3],
-    };
-  }
-
   let basePosition;
   let horizontalSpacing = 0.75;
   let verticalSpacing = 0.5;
@@ -120,6 +112,20 @@ function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
 
   const playerColors = ["blue", "orange", "magenta", "lightgreen"];
   const color = playerColors[playerPosition];
+
+  if (votingPhase) {
+    const basePosition = [1, 2, 3.5];
+    return {
+      ...bottomDefaultObject,
+      rotation: [-Math.PI / 2, 0, Math.PI / 2],
+      position: [
+        basePosition[0] + (col * horizontalSpacing) / 1.5,
+        basePosition[1],
+        basePosition[2] - row * verticalSpacing * 1.5,
+      ],
+      color,
+    };
+  }
 
   switch (direction) {
     case "Bottom":
