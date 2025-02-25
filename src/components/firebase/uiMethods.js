@@ -90,15 +90,91 @@ function getLeftTopButtonData(direction, votingPhase = false) {
   }
   switch (direction) {
     case "Bottom":
-      return { ...bottomDefaultObject, position: [-1.6, 2.3, 3] };
+      return { ...bottomDefaultObject, position: [-1.7, 2.3, 3] };
     case "Top":
-      return { ...topDefaultObject, position: [1.6, 2.3, -3] };
+      return { ...topDefaultObject, position: [1.7, 2.3, -3] };
     case "Left":
-      return { ...leftDefaultObject, position: [3, 2.3, -1.6] };
+      return { ...leftDefaultObject, position: [3, 2.3, -1.7] };
     case "Right":
-      return { ...rightDefaultObject, position: [-3, 2.3, 1.6] };
+      return { ...rightDefaultObject, position: [-3, 2.3, 1.7] };
     default:
       return bottomDefaultObject;
+  }
+}
+
+function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
+  if (votingPhase) {
+    return {
+      ...bottomDefaultObject,
+      rotation: [-Math.PI / 2, 0, Math.PI / 2],
+      position: [-1.3, -2, 3.3],
+    };
+  }
+
+  let basePosition;
+  let horizontalSpacing = 0.75;
+  let verticalSpacing = 0.5;
+
+  let row = Math.floor(playerPosition / 2);
+  let col = playerPosition % 2;
+
+  switch (direction) {
+    case "Bottom":
+      basePosition = [-2.5, 1, 3];
+      return {
+        ...bottomDefaultObject,
+        position: [
+          basePosition[0] + col * horizontalSpacing,
+          basePosition[1] - row * verticalSpacing,
+          basePosition[2],
+        ],
+        rotation: [0, 0, 0],
+      };
+
+    case "Top":
+      basePosition = [2.5, 1, -3];
+      return {
+        ...topDefaultObject,
+        position: [
+          basePosition[0] - col * horizontalSpacing,
+          basePosition[1] - row * verticalSpacing,
+          basePosition[2],
+        ],
+        rotation: [0, 0, 0],
+      };
+
+    case "Left":
+      basePosition = [3, 1, 2.5];
+      return {
+        ...leftDefaultObject,
+        position: [
+          basePosition[0],
+          basePosition[1] - row * verticalSpacing,
+          basePosition[2] - col * horizontalSpacing,
+        ],
+      };
+
+    case "Right":
+      basePosition = [-3, 1, -2.5];
+      return {
+        ...rightDefaultObject,
+        position: [
+          basePosition[0],
+          basePosition[1] - row * verticalSpacing,
+          basePosition[2] + col * horizontalSpacing,
+        ],
+      };
+
+    default:
+      basePosition = [-2.5, 1, 3];
+      return {
+        ...bottomDefaultObject,
+        position: [
+          basePosition[0] + col * horizontalSpacing,
+          basePosition[1] - row * verticalSpacing,
+          basePosition[2],
+        ],
+      };
   }
 }
 
@@ -107,4 +183,5 @@ export {
   getDeclinePositionSetupData,
   getCenteredButtonData,
   getLeftTopButtonData,
+  getPointDisplayerData,
 };

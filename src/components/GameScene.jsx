@@ -20,6 +20,7 @@ import {
 } from "./firebase/uiMethods";
 import ActionButton from "./objects/ActionButton";
 import { animateToPosition } from "./firebase/animations";
+import PointsDisplayer from "./objects/PointsDisplayer";
 
 const GameScene = ({ setupContext }) => {
   const {
@@ -63,6 +64,8 @@ const GameScene = ({ setupContext }) => {
   const chosenWordLabelRef = useRef();
   const [acceptButtonSetupData, setAcceptButtonSetupData] = useState(null);
   const [declineButtonSetupData, setDeclineButtonSetupData] = useState(null);
+  const [players, setPlayers] = useState([]);
+
   const setup = async () => {
     const pos = await getPosition();
     const {
@@ -108,28 +111,37 @@ const GameScene = ({ setupContext }) => {
       const votPhase = fetchedGameData.votingPhase;
       const playerUid = localStorage.getItem("playerUid");
       const isHost = hostUid === playerUid;
-      const players = Object.values(fetchedGameData.players);
+      const fetchedPlayers = Object.values(fetchedGameData.players);
       let everyPlayerAcceptedCard = true;
       let everyPlayerHasVoted = votPhase;
-      for (const player of players) {
+      for (const fetchedPlayer of fetchedPlayers) {
         if (
-          !player.wordMaker &&
-          typeof player.votingSelectedCardData !== "object"
+          !fetchedPlayer.wordMaker &&
+          typeof fetchedPlayer.votingSelectedCardData !== "object"
         ) {
           everyPlayerHasVoted = false;
         }
-        if (player.playerUid === playerUid && player.wordMaker)
+        if (fetchedPlayer.playerUid === playerUid && fetchedPlayer.wordMaker)
           setIsThisPlayerWordMaker(true);
-        if (!started && !player.inGame && player.playerUid !== playerUid) {
-          await removePlayerFromGame(player.playerUid);
+        if (
+          !started &&
+          !fetchedPlayer.inGame &&
+          fetchedPlayer.playerUid !== playerUid
+        ) {
+          await removePlayerFromGame(fetchedPlayer.playerUid);
         }
-        if (!player.chosenCard || !Object.values(player.chosenCard).length)
+        if (
+          !fetchedPlayer.chosenCard ||
+          !Object.values(fetchedPlayer.chosenCard).length
+        )
           everyPlayerAcceptedCard = false;
       }
       if (isHost && started && chosenWord.length && everyPlayerAcceptedCard) {
         await updateGameWithData({ votingPhase: true });
       }
-      if (everyPlayerHasVoted) console.log("a");
+      if (everyPlayerHasVoted) {
+        console.log("a");
+      }
       setChosenWordLabelData(getLeftTopButtonData(direction, votPhase));
       setAcceptButtonSetupData(getAcceptPositionSetupData(direction, votPhase));
       setDeclineButtonSetupData(
@@ -138,8 +150,9 @@ const GameScene = ({ setupContext }) => {
       setVotingPhase(votPhase);
       setIsThisPlayerHost(isHost);
       setChosenWord(chosenWord);
-      setNumberOfPlayers(players.length);
+      setNumberOfPlayers(fetchedPlayers.length);
       setGameStarted(started);
+      setPlayers(fetchedPlayers);
     };
 
     const interval = setInterval(fetchDataAndHostTheGame, 1000);
@@ -161,90 +174,99 @@ const GameScene = ({ setupContext }) => {
     return <SpinningWheel />;
   }
 
-  return gameStarted ? (
+  return (
     <>
-      {isThisPlayerWordMaker && !chosenWord.length && (
-        <Input
-          position={[
-            inputData.position[0],
-            inputData.position[1] + 0.5,
-            inputData.position[2],
-          ]}
-          dimensions={[2, 0.5, 0.01]}
-          defaultText={""}
-          set={setWordMakerText}
-          fontSize={18}
-          rotation={inputData.rotation}
-          textPosition={inputData.textPosition}
-          textScale={inputData.textScaleMultiplier}
+      <PointsDisplayer players={players} />
+      {gameStarted ? (
+        <>
+          {isThisPlayerWordMaker && !chosenWord.length && (
+            <Input
+              position={[
+                inputData.position[0],
+                inputData.position[1] + 0.5,
+                inputData.position[2],
+              ]}
+              dimensions={[2, 0.5, 0.01]}
+              defaultText={""}
+              set={setWordMakerText}
+              fontSize={18}
+              rotation={inputData.rotation}
+              textPosition={inputData.textPosition}
+              textScale={inputData.textScaleMultiplier}
+            />
+          )}
+          {(!isThisPlayerWordMaker || chosenWord.length) && (
+            <ActionButton
+              ref={chosenWordLabelRef}
+              onClick={() => {}}
+              buttonSetupData={chosenWordLabelData}
+              color="lightgray"
+              text={chosenWord.length ? chosenWord : "waiting for wordmaker..."}
+              defaultScale={1}
+              fontSize={0.125}
+            />
+          )}
+          {votingPhase &&
+            votingSelectedCardRef &&
+            !isVotingSelectedCardThisPlayers &&
+            !hasVoted &&
+            !isThisPlayerWordMaker && (
+              <>
+                <ActionButton
+                  ref={acceptButtonRef}
+                  onClick={handleAcceptOnVotingPhaseClicked}
+                  buttonSetupData={acceptButtonSetupData}
+                  color="lightgreen"
+                  text="accept"
+                  defaultScale={1}
+                />
+                <ActionButton
+                  ref={declineButtonRef}
+                  onClick={handleDeclineOnVotingPhaseClicked}
+                  buttonSetupData={declineButtonSetupData}
+                  color="red"
+                  text="cancel"
+                  defaultScale={1}
+                />
+              </>
+            )}
+          <Hand
+            numberOfCards={5}
+            fetchedPhotos={fetchedPhotos}
+            isThisPlayerHost={isThisPlayerHost}
+            isThisPlayerWordMaker={isThisPlayerWordMaker}
+            wordMakerText={wordMakerText}
+            setVotingSelectedCardPosition={setVotingSelectedCardPosition}
+            setVotingSelectedCardRef={setVotingSelectedCardRef}
+            votingSelectedCardRef={votingSelectedCardRef}
+            votingSelectedCardPosition={votingSelectedCardPosition}
+            setIsVotingSelectedCardThisPlayers={
+              setIsVotingSelectedCardThisPlayers
+            }
+            direction={direction}
+          />
+          <OtherPlayerCards
+            setVotingSelectedCardPosition={setVotingSelectedCardPosition}
+            setVotingSelectedCardRef={setVotingSelectedCardRef}
+            votingSelectedCardRef={votingSelectedCardRef}
+            votingSelectedCardPosition={votingSelectedCardPosition}
+            setIsVotingSelectedCardThisPlayers={
+              setIsVotingSelectedCardThisPlayers
+            }
+            setVotingSelectedCardData={setVotingSelectedCardData}
+            direction={direction}
+          />
+        </>
+      ) : (
+        <StartGameUI
+          numberOfPlayers={numberOfPlayers}
+          isThisPlayerHost={isThisPlayerHost}
+          gameData={gameData}
+          setIsThisPlayerWordMaker={setIsThisPlayerWordMaker}
+          direction={direction}
         />
       )}
-      {(!isThisPlayerWordMaker || chosenWord.length) && (
-        <ActionButton
-          ref={chosenWordLabelRef}
-          onClick={() => {}}
-          buttonSetupData={chosenWordLabelData}
-          color="lightgray"
-          text={chosenWord.length ? chosenWord : "waiting for wordmaker..."}
-          defaultScale={1}
-          fontSize={0.125}
-        />
-      )}
-      {votingPhase &&
-        votingSelectedCardRef &&
-        !isVotingSelectedCardThisPlayers &&
-        !hasVoted &&
-        !isThisPlayerWordMaker && (
-          <>
-            <ActionButton
-              ref={acceptButtonRef}
-              onClick={handleAcceptOnVotingPhaseClicked}
-              buttonSetupData={acceptButtonSetupData}
-              color="lightgreen"
-              text="accept"
-              defaultScale={1}
-            />
-            <ActionButton
-              ref={declineButtonRef}
-              onClick={handleDeclineOnVotingPhaseClicked}
-              buttonSetupData={declineButtonSetupData}
-              color="red"
-              text="cancel"
-              defaultScale={1}
-            />
-          </>
-        )}
-      <Hand
-        numberOfCards={5}
-        fetchedPhotos={fetchedPhotos}
-        isThisPlayerHost={isThisPlayerHost}
-        isThisPlayerWordMaker={isThisPlayerWordMaker}
-        wordMakerText={wordMakerText}
-        setVotingSelectedCardPosition={setVotingSelectedCardPosition}
-        setVotingSelectedCardRef={setVotingSelectedCardRef}
-        votingSelectedCardRef={votingSelectedCardRef}
-        votingSelectedCardPosition={votingSelectedCardPosition}
-        setIsVotingSelectedCardThisPlayers={setIsVotingSelectedCardThisPlayers}
-        direction={direction}
-      />
-      <OtherPlayerCards
-        setVotingSelectedCardPosition={setVotingSelectedCardPosition}
-        setVotingSelectedCardRef={setVotingSelectedCardRef}
-        votingSelectedCardRef={votingSelectedCardRef}
-        votingSelectedCardPosition={votingSelectedCardPosition}
-        setIsVotingSelectedCardThisPlayers={setIsVotingSelectedCardThisPlayers}
-        setVotingSelectedCardData={setVotingSelectedCardData}
-        direction={direction}
-      />
     </>
-  ) : (
-    <StartGameUI
-      numberOfPlayers={numberOfPlayers}
-      isThisPlayerHost={isThisPlayerHost}
-      gameData={gameData}
-      setIsThisPlayerWordMaker={setIsThisPlayerWordMaker}
-      direction={direction}
-    />
   );
 };
 
