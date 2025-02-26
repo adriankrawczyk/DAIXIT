@@ -185,7 +185,10 @@ const GameScene = ({ setupContext }) => {
 
   return (
     <>
-      <PointsDisplayer players={players} />
+      <PointsDisplayer
+        players={players}
+        afterVotePhase={typeof afterVoteData === "object"}
+      />
       {gameStarted ? (
         <>
           {isThisPlayerWordMaker && !chosenWord.length && (

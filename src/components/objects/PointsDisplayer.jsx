@@ -3,7 +3,7 @@ import { getPointDisplayerData } from "../firebase/uiMethods";
 import PointDisplay from "./PointDisplay";
 import { useSetup } from "../context/SetupContext";
 
-const PointsDisplayer = ({ players }) => {
+const PointsDisplayer = ({ players, afterVotePhase }) => {
   const { direction, votingPhase } = useSetup();
   return (
     <>
@@ -20,6 +20,7 @@ const PointsDisplayer = ({ players }) => {
             points={player.points}
             pointsInThisRound={player.pointsInThisRound}
             key={index}
+            afterVotePhase={afterVotePhase}
           />
         );
       })}

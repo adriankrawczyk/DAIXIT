@@ -2,7 +2,13 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
 
-const PointDisplay = ({ setupData, playerName, points, pointsInThisRound }) => {
+const PointDisplay = ({
+  setupData,
+  playerName,
+  points,
+  pointsInThisRound,
+  afterVotePhase,
+}) => {
   const ref = useRef();
   const fontSize = 0.08;
   return (
@@ -34,7 +40,7 @@ const PointDisplay = ({ setupData, playerName, points, pointsInThisRound }) => {
           setupData.textPosition[2],
         ]}
       >
-        {`${points - pointsInThisRound} -> ${points}`}
+        {afterVotePhase ? `${points - pointsInThisRound} -> ${points}` : points}
       </Text>
       <boxGeometry args={[0.6, 0.35, 0.01]} />
       <meshStandardMaterial color={setupData.color} />
