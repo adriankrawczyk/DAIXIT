@@ -86,6 +86,7 @@ const Hand = forwardRef(
       setDisableHover,
       backToHand: handleBackToHand,
       setSelectedCard,
+      updateCardUrl,
     }));
 
     useEffect(() => {
@@ -194,7 +195,13 @@ const Hand = forwardRef(
         setInMenu(true);
       }
     }, [currentClicked]);
-
+    const updateCardUrl = (index, newUrl) => {
+      if (index >= 0 && index < photoUrls.length) {
+        const updatedUrls = [...photoUrls];
+        updatedUrls[index] = newUrl;
+        setPhotoUrls(updatedUrls);
+      }
+    };
     const handleAddCardOnTable = async (index) => {
       if (cardsRef.current[index]) {
         if (isThisPlayerWordMaker && !chosenWord.length) {
