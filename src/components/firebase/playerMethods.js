@@ -143,6 +143,7 @@ async function updatePoints(playerUid, amount) {
   const playerInDatabase = await getPlayerInGame(playerUid);
   await updatePlayerInGame(playerUid, {
     points: playerInDatabase.points + amount,
+    pointsInThisRound: amount,
   });
 }
 async function calculateAndAddPoints() {

@@ -18,6 +18,7 @@ const PointsDisplayer = ({ players }) => {
             setupData={setupData}
             playerName={player.name}
             points={player.points}
+            pointsInThisRound={player.pointsInThisRound}
             key={index}
           />
         );

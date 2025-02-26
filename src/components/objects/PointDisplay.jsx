@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
 
-const PointDisplay = ({ setupData, playerName, points }) => {
+const PointDisplay = ({ setupData, playerName, points, pointsInThisRound }) => {
   const ref = useRef();
   const fontSize = 0.08;
   return (
@@ -33,9 +33,8 @@ const PointDisplay = ({ setupData, playerName, points }) => {
           setupData.textPosition[1] - 0.075,
           setupData.textPosition[2],
         ]}
-        maxWidth={1}
       >
-        {points}
+        {`${points - pointsInThisRound} -> ${points}`}
       </Text>
       <boxGeometry args={[0.6, 0.35, 0.01]} />
       <meshStandardMaterial color={setupData.color} />

@@ -77,6 +77,7 @@ async function joinToGame(gameId) {
         chosenCard: {},
         wordMaker: false,
         points: 0,
+        pointsInThisRound: 0,
       });
 
     await update(playerInGameRef, {
