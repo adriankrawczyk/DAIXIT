@@ -23,12 +23,13 @@ const OtherPlayerHand = ({
   setIsVotingSelectedCardThisPlayers,
   setVotingSelectedCardData,
   afterVoteData,
+  selectedCards,
+  setSelectedCards,
 }) => {
   const { votingPhase } = useSetup();
   const [otherPlayersData, setOtherPlayersData] = useState([]);
   const [otherPlayerHandsData, setOtherPlayerHandsData] = useState([]);
   const [processedAnimations, setProcessedAnimations] = useState(new Set());
-  const [selectedCards, setSelectedCards] = useState([]);
   const [selectedCardsFromDatabase, setSelectedCardsFromDatabase] = useState(
     []
   );

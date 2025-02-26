@@ -72,6 +72,7 @@ const GameScene = ({ setupContext }) => {
   const declineButtonRef = useRef();
   // Add ref to access Hand component
   const handRef = useRef();
+  const [selectedCards, setSelectedCards] = useState([]);
 
   const chosenWordLabelRef = useRef();
   const [acceptButtonSetupData, setAcceptButtonSetupData] = useState(null);
@@ -199,7 +200,7 @@ const GameScene = ({ setupContext }) => {
     setIsThisPlayerWordMaker(false);
     setWordMakerText("");
     setChosenWord("");
-
+    setSelectedCards([]);
     setChosenCard({});
     handRef.current.backToHand(handRef.current.selectedCard);
     handRef.current.setSelectedCard(-1);
@@ -333,6 +334,8 @@ const GameScene = ({ setupContext }) => {
             setVotingSelectedCardData={setVotingSelectedCardData}
             direction={direction}
             afterVoteData={afterVoteData}
+            selectedCards={selectedCards}
+            setSelectedCards={setSelectedCards}
           />
         </>
       ) : (
