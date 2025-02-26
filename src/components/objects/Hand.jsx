@@ -86,6 +86,7 @@ const Hand = forwardRef(
       setDisableHover,
       backToHand: handleBackToHand,
       setSelectedCard,
+      selectedCard,
       updateCardUrl,
     }));
 

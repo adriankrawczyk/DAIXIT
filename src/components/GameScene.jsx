@@ -155,7 +155,8 @@ const GameScene = ({ setupContext }) => {
       }
       if (isHost && started && chosenWord.length && everyPlayerAcceptedCard) {
         await updateGameWithData({ votingPhase: true });
-      }
+      } else if (isHost && votPhase)
+        await updateGameWithData({ votingPhase: false });
       if (newRound !== round) {
         handleNewRound(newRound);
       }
@@ -195,80 +196,21 @@ const GameScene = ({ setupContext }) => {
     setVotingSelectedCardPosition(null);
     setIsVotingSelectedCardThisPlayers(false);
     setVotingSelectedCardData({});
+    setIsThisPlayerWordMaker(false);
+    setWordMakerText("");
+    setChosenWord("");
 
-    if (isThisPlayerWordMaker) {
-      setWordMakerText("");
-      setChosenWord("");
-    }
-
-    const currentPlayerUid = localStorage.getItem("playerUid");
-    const playerData = players.find(
-      (player) => player.playerUid === currentPlayerUid
-    );
-
-    // Get the previously played card index
-    const playedCardIndex = playerData?.chosenCard?.index;
-
-    // Reset chosen card state
     setChosenCard({});
-
-    if (handRef.current) {
-      if (handRef.current.setSelectedCard) {
-        handRef.current.setSelectedCard(-1);
-      }
-
-      if (playedCardIndex !== undefined && handRef.current.cardsRef?.current) {
-        const index = playedCardIndex;
-        const cardsRefCurrent = handRef.current.cardsRef.current;
-
-        if (cardsRefCurrent[index]) {
-          const cardsAnimationPosition = getCardsPosition(
-            cardsPosition,
-            index,
-            direction
-          );
-
-          // Return card to hand
-          backToHand(
-            cardsRefCurrent[index],
-            cardsAnimationPosition,
-            cardsRotation,
-            handRef.current.setDisableHover
-          );
-
-          // Replace the card with a new one from fetchedPhotos
-          if (fetchedPhotos.length > 0) {
-            // Get current hand from database
-            const currentHand = await getHandFromDatabase();
-
-            // If we have a valid hand and played card index
-            if (
-              currentHand &&
-              currentHand.length > 0 &&
-              index >= 0 &&
-              index < currentHand.length
-            ) {
-              // Get a new random card from fetchedPhotos
-              const newCard = getRandomCard(fetchedPhotos);
-
-              // Create updated hand with new card
-              const updatedHand = [...currentHand];
-              updatedHand[index] = newCard;
-
-              // Update hand in database
-              await setHandInDatabase(updatedHand);
-
-              // Update local state if Hand component has a method for this
-              if (handRef.current.updateCardUrl) {
-                handRef.current.updateCardUrl(index, newCard);
-              }
-            }
-          }
-
-          if (handRef.current.backToHand) {
-            handRef.current.backToHand(index);
-          }
-        }
+    handRef.current.backToHand(handRef.current.selectedCard);
+    handRef.current.setSelectedCard(-1);
+    if (fetchedPhotos.length > 0) {
+      const currentHand = await getHandFromDatabase();
+      if (currentHand && currentHand.length > 0) {
+        const newCard = getRandomCard(fetchedPhotos);
+        const updatedHand = [...currentHand];
+        updatedHand[index] = newCard;
+        await setHandInDatabase(updatedHand);
+        handRef.current.updateCardUrl(index, newCard);
       }
     }
   };
