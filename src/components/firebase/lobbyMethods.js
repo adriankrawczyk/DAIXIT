@@ -33,6 +33,7 @@ async function newGame() {
       started: false,
       chosenWord: "",
       votingPhase: false,
+      round: 0,
       players: {},
       afterVoteData: {},
     });

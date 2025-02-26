@@ -101,7 +101,13 @@ function getLeftTopButtonData(direction, votingPhase = false) {
       return bottomDefaultObject;
   }
 }
-
+function getNextRoundButtonData() {
+  return {
+    ...bottomDefaultObject,
+    rotation: [-Math.PI / 2, 0, Math.PI / 2],
+    position: [-1.5, 2, 0],
+  };
+}
 function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
   let basePosition;
   let horizontalSpacing = 0.75;
@@ -242,4 +248,5 @@ export {
   getLeftTopButtonData,
   getPointDisplayerData,
   getCardUIData,
+  getNextRoundButtonData,
 };

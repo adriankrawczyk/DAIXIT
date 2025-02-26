@@ -113,7 +113,6 @@ const Card = React.forwardRef(
     const playerColors = ["blue", "orange", "magenta", "lightgreen"];
     const isCorrectCard = cardData?.isCorrectCard || false;
     const ownerName = cardData?.playerName || "Unknown";
-    if (cardData) console.log(cardData);
     const ownerButtonData = getCardUIData(
       internalRef.current?.position || position,
       -1,

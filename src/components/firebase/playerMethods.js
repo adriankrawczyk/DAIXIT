@@ -234,6 +234,92 @@ async function calculateAndAddPoints() {
   return Object.values(allCards);
 }
 
+async function handleNextRound() {
+  const gameId = window.location.href.split("/").pop();
+  const gameRef = ref(database, `games/${gameId}`);
+  const snapshot = await get(gameRef);
+  const gameData = snapshot.val();
+  const prevRound = gameData.round;
+
+  // Get all players to determine next wordMaker
+  const playersRef = ref(database, `games/${gameId}/players`);
+  const playersSnapshot = await get(playersRef);
+  const players = playersSnapshot.val();
+
+  // Find current wordMaker and determine next one
+  let currentWordMakerPosition = -1;
+  let playerPositions = [];
+  let updates = {};
+
+  Object.values(players).forEach((player) => {
+    playerPositions.push({
+      playerUid: player.playerUid,
+      position: player.currentGameData.position,
+    });
+
+    if (player.wordMaker === true) {
+      currentWordMakerPosition = player.currentGameData.position;
+      // Reset current wordMaker
+      updates[`games/${gameId}/players/${player.playerUid}/wordMaker`] = false;
+    }
+
+    // Reset chosenCard for all players
+    updates[`games/${gameId}/players/${player.playerUid}/chosenCard`] = {};
+
+    // Remove the selected card from hand
+    if (
+      player.chosenCard &&
+      player.currentGameData &&
+      player.currentGameData.hand
+    ) {
+      const handCards = [...player.currentGameData.hand];
+      const cardToRemoveUrl = player.chosenCard.url;
+      const updatedHand = handCards.filter(
+        (cardUrl) => cardUrl !== cardToRemoveUrl
+      );
+      updates[
+        `games/${gameId}/players/${player.playerUid}/currentGameData/hand`
+      ] = updatedHand;
+    }
+
+    // Reset voting data
+    updates[
+      `games/${gameId}/players/${player.playerUid}/votingSelectedCardData`
+    ] = null;
+    updates[
+      `games/${gameId}/players/${player.playerUid}/pointsInThisRound`
+    ] = 0;
+  });
+
+  // Sort players by position to determine next wordMaker
+  playerPositions.sort((a, b) => a.position - b.position);
+  const playerCount = playerPositions.length;
+
+  // Calculate next wordMaker position (wrap around if needed)
+  const nextWordMakerPosition = (currentWordMakerPosition + 1) % playerCount;
+
+  // Find player with that position
+  const nextWordMakerPlayer = playerPositions.find(
+    (player) => player.position === nextWordMakerPosition
+  );
+
+  // Set new wordMaker
+  if (nextWordMakerPlayer) {
+    updates[
+      `games/${gameId}/players/${nextWordMakerPlayer.playerUid}/wordMaker`
+    ] = true;
+  }
+
+  // Update game state
+  updates[`games/${gameId}/chosenWord`] = "";
+  updates[`games/${gameId}/round`] = prevRound + 1;
+  updates[`games/${gameId}/afterVoteData`] = {};
+  updates[`games/${gameId}/votingPhase`] = false;
+
+  // Apply all updates at once
+  await update(ref(database), updates);
+}
+
 export {
   setPlayerData,
   setPlayerName,
@@ -245,4 +331,5 @@ export {
   updatePlayerInGame,
   updateThisPlayerInGame,
   calculateAndAddPoints,
+  handleNextRound,
 };
