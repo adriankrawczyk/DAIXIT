@@ -52,9 +52,8 @@ const GameScene = ({ setupContext }) => {
   const [wordMakerText, setWordMakerText] = useState("");
   const [chosenWordLabelData, setChosenWordLabelData] = useState({});
   const [votingSelectedCardRef, setVotingSelectedCardRef] = useState(null);
-  const [votingSelectedCardPosition, setVotingSelectedCardPosition] = useState(
-    {}
-  );
+  const [votingSelectedCardPosition, setVotingSelectedCardPosition] =
+    useState(null);
   const [isVotingSelectedCardThisPlayers, setIsVotingSelectedCardThisPlayers] =
     useState(false);
   const [hasVoted, setHasVoted] = useState(false);

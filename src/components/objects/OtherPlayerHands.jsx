@@ -174,10 +174,15 @@ const OtherPlayerHand = ({
       if (cardData) {
         setVotingSelectedCardData(cardData);
       }
-    } else if (votingSelectedCardRef === currentCard) {
+    } else if (
+      votingSelectedCardRef === currentCard &&
+      votingSelectedCardPosition
+    ) {
       animateToPosition(currentCard, votingSelectedCardPosition);
-      setVotingSelectedCardPosition({});
-      setVotingSelectedCardRef(null);
+      setVotingSelectedCardPosition(null);
+      setTimeout(() => {
+        setVotingSelectedCardRef(null);
+      }, 500);
     }
   };
 
@@ -227,6 +232,7 @@ const OtherPlayerHand = ({
                   votingPhase={votingPhase}
                   afterVoteData={afterVoteData}
                   playerUid={playerHand.playerUid}
+                  votingSelectedCardRef={votingSelectedCardRef}
                 />
               );
             }

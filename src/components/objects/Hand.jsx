@@ -132,11 +132,14 @@ const Hand = ({
         setIsVotingSelectedCardThisPlayers(true);
       } else if (
         index === selectedCard &&
-        votingSelectedCardRef === currentCard
+        votingSelectedCardRef === currentCard &&
+        votingSelectedCardPosition
       ) {
         animateToPosition(currentCard, votingSelectedCardPosition);
-        setVotingSelectedCardPosition({});
-        setVotingSelectedCardRef(null);
+        setVotingSelectedCardPosition(null);
+        setTimeout(() => {
+          setVotingSelectedCardRef(null);
+        }, 500);
       }
       return;
     }
@@ -260,6 +263,7 @@ const Hand = ({
           ref={(el) => assignRef(el, key)}
           votingPhase={votingPhase}
           afterVoteData={afterVoteData}
+          votingSelectedCardRef={votingSelectedCardRef}
         />
       ))}
       {currentClicked !== -1 &&

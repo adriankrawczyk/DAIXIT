@@ -30,6 +30,7 @@ const Card = React.forwardRef(
       direction,
       votingPhase,
       afterVoteData,
+      votingSelectedCardRef,
     },
     ref
   ) => {
@@ -166,34 +167,36 @@ const Card = React.forwardRef(
           <meshStandardMaterial attach="material-5" map={reverse} />
         </mesh>
 
-        {votingPhase && cardData && (
-          <>
-            <ActionButton
-              ref={ownerButtonRef}
-              onClick={() => {}}
-              buttonSetupData={ownerButtonData}
-              color={isCorrectCard ? "green" : "red"}
-              text={ownerName}
-              defaultScale={0.5}
-            />
-
-            {voters.map((voter, voterIndex) => (
+        {votingPhase &&
+          cardData &&
+          votingSelectedCardRef !== internalRef.current && (
+            <>
               <ActionButton
-                key={`voter-${voterIndex}`}
-                ref={(el) => (actionButtonRefs.current[voterIndex] = el)}
+                ref={ownerButtonRef}
                 onClick={() => {}}
-                buttonSetupData={getCardUIData(
-                  internalRef.current?.position || position,
-                  voterIndex,
-                  voters.length
-                )}
-                color={playerColors[voter.position || 0]}
-                text={voter.name || "Voter"}
+                buttonSetupData={ownerButtonData}
+                color={isCorrectCard ? "green" : "red"}
+                text={ownerName}
                 defaultScale={0.5}
               />
-            ))}
-          </>
-        )}
+
+              {voters.map((voter, voterIndex) => (
+                <ActionButton
+                  key={`voter-${voterIndex}`}
+                  ref={(el) => (actionButtonRefs.current[voterIndex] = el)}
+                  onClick={() => {}}
+                  buttonSetupData={getCardUIData(
+                    internalRef.current?.position || position,
+                    voterIndex,
+                    voters.length
+                  )}
+                  color={playerColors[voter.position || 0]}
+                  text={voter.name || "Voter"}
+                  defaultScale={0.5}
+                />
+              ))}
+            </>
+          )}
       </>
     );
   }
