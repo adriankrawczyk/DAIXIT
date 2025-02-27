@@ -8,6 +8,7 @@ import {
 import { setPlayerData } from "../../firebase/playerMethods";
 import { leaveGame } from "../../firebase/lobbyMethods";
 import { setPlayerName } from "../../firebase/playerMethods";
+import { useSetup } from "../../context/SetupContext";
 
 const FirebaseLogger = async () => {
   await signInAnonymously(auth).catch((error) =>
@@ -20,6 +21,7 @@ const FirebaseLogger = async () => {
     localStorage.setItem("name", DEFAULT_PLAYER_NAME);
     setPlayerName(DEFAULT_PLAYER_NAME);
   }
+
   const unsubscribe = onAuthStateChanged(auth, async (player) => {
     if (player) {
       await setPlayerData(player.uid);

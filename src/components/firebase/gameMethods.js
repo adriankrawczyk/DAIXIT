@@ -156,20 +156,79 @@ async function getPlayersCurrentGameDataRef() {
 //     return [];
 //   }
 // }
+// async function fetchAllPhotos() {
+//   const url = "https://storage.googleapis.com/storage/v1/b/daixit_photos/o";
+//   try {
+//     const response = await fetch(url);
+//     const data = await response.json();
+//     return data.items.map(
+//       (item) => `https://storage.googleapis.com/daixit_photos/${item.name}`
+//     );
+//   } catch (error) {
+//     console.error("Error fetching photos:", error);
+//     return [];
+//   }
+// }
 async function fetchAllPhotos() {
-  const url = "https://storage.googleapis.com/storage/v1/b/daixit_photos/o";
+  const baseUrl = "https://storage.googleapis.com/storage/v1/b/daixit_photos/o";
+  const pageTokensRef = ref(database, "pageTokens");
+
   try {
-    const response = await fetch(url);
-    const data = await response.json();
-    return data.items.map(
-      (item) => `https://storage.googleapis.com/daixit_photos/${item.name}`
-    );
+    const pageTokensSnapshot = await get(pageTokensRef);
+    let pageTokens = pageTokensSnapshot.val();
+
+    if (!pageTokens || !pageTokens.tokens || pageTokens.tokens.length === 0) {
+      let allPhotos = [];
+      let nextPageToken = null;
+      pageTokens = { tokens: [] };
+
+      do {
+        const url = nextPageToken
+          ? `${baseUrl}?pageToken=${nextPageToken}`
+          : baseUrl;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.items) {
+          allPhotos.push(
+            ...data.items.map(
+              (item) =>
+                `https://storage.googleapis.com/daixit_photos/${item.name}`
+            )
+          );
+        }
+
+        if (data.nextPageToken) {
+          pageTokens.tokens.push(data.nextPageToken);
+        }
+
+        nextPageToken = data.nextPageToken || null;
+      } while (nextPageToken);
+
+      await update(pageTokensRef, pageTokens);
+
+      return allPhotos;
+    } else {
+      const randomPageToken =
+        pageTokens.tokens[Math.floor(Math.random() * pageTokens.tokens.length)];
+      const url = `${baseUrl}?pageToken=${randomPageToken}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.items) {
+        return data.items.map(
+          (item) => `https://storage.googleapis.com/daixit_photos/${item.name}`
+        );
+      } else {
+        console.error("No items found in the random page.");
+        return [];
+      }
+    }
   } catch (error) {
     console.error("Error fetching photos:", error);
     return [];
   }
 }
-
 async function getPlayers() {
   const gameId = window.location.href.split("/").pop();
   const playersRef = ref(database, `games/${gameId}/players`);

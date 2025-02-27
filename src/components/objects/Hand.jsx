@@ -11,7 +11,6 @@ import {
   setHandInDatabase,
   getHandFromDatabase,
   getRandomCard,
-  fetchAllPhotos,
   getCardsPosition,
 } from "../firebase/gameMethods";
 import { calculateCardsLayout } from "../firebase/gameMethods";

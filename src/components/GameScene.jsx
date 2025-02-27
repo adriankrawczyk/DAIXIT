@@ -113,11 +113,12 @@ const GameScene = ({ setupContext }) => {
       await joinToGame(gameId);
       await setup();
       setJoined(true);
-      setFetchedPhotos(allPhotos);
     };
     join();
   }, []);
-
+  useEffect(() => {
+    setFetchedPhotos(allPhotos);
+  }, [allPhotos]);
   useEffect(() => {
     const fetchDataAndHostTheGame = async () => {
       const fetchedGameData = await fetchGameData();
@@ -232,7 +233,7 @@ const GameScene = ({ setupContext }) => {
 
   const nextRoundButtonData = getNextRoundButtonData();
 
-  if (!joined) {
+  if (!joined || !allPhotos.length) {
     return <SpinningWheel />;
   }
 

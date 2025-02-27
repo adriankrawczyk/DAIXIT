@@ -241,12 +241,10 @@ async function handleNextRound() {
   const gameData = snapshot.val();
   const prevRound = gameData.round;
 
-  // Get all players to determine next wordMaker
   const playersRef = ref(database, `games/${gameId}/players`);
   const playersSnapshot = await get(playersRef);
   const players = playersSnapshot.val();
 
-  // Find current wordMaker and determine next one
   let currentWordMakerPosition = -1;
   let playerPositions = [];
   let updates = {};
@@ -259,14 +257,11 @@ async function handleNextRound() {
 
     if (player.wordMaker === true) {
       currentWordMakerPosition = player.currentGameData.position;
-      // Reset current wordMaker
       updates[`games/${gameId}/players/${player.playerUid}/wordMaker`] = false;
     }
 
-    // Reset chosenCard for all players
     updates[`games/${gameId}/players/${player.playerUid}/chosenCard`] = {};
 
-    // Remove the selected card from hand
     if (
       player.chosenCard &&
       player.currentGameData &&
@@ -282,7 +277,6 @@ async function handleNextRound() {
       ] = updatedHand;
     }
 
-    // Reset voting data
     updates[
       `games/${gameId}/players/${player.playerUid}/votingSelectedCardData`
     ] = null;
@@ -291,32 +285,24 @@ async function handleNextRound() {
     ] = 0;
   });
 
-  // Sort players by position to determine next wordMaker
   playerPositions.sort((a, b) => a.position - b.position);
   const playerCount = playerPositions.length;
 
-  // Calculate next wordMaker position (wrap around if needed)
   const nextWordMakerPosition = (currentWordMakerPosition + 1) % playerCount;
 
-  // Find player with that position
   const nextWordMakerPlayer = playerPositions.find(
     (player) => player.position === nextWordMakerPosition
   );
 
-  // Set new wordMaker
   if (nextWordMakerPlayer) {
     updates[
       `games/${gameId}/players/${nextWordMakerPlayer.playerUid}/wordMaker`
     ] = true;
   }
-
-  // Update game state
   updates[`games/${gameId}/chosenWord`] = "";
   updates[`games/${gameId}/round`] = prevRound + 1;
   updates[`games/${gameId}/afterVoteData`] = {};
   updates[`games/${gameId}/votingPhase`] = false;
-
-  // Apply all updates at once
   await update(ref(database), updates);
 }
 

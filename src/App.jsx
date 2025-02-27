@@ -33,16 +33,6 @@ const CameraUpdater = () => {
 };
 
 const AppContent = () => {
-  const { setAllPhotos } = useSetup();
-
-  useEffect(() => {
-    const fetchPhotos = async () => {
-      const allPhotos = await fetchAllPhotos();
-      setAllPhotos(allPhotos);
-    };
-    fetchPhotos();
-  }, []);
-
   const location = useLocation();
   const { cameraPosition } = useSetup();
   return (
