@@ -34,10 +34,7 @@ const Card = React.forwardRef(
     },
     ref
   ) => {
-    const defaultTexture = useLoader(
-      TextureLoader,
-      "https://storage.googleapis.com/daixit_photos/dixit_20250215200353.png"
-    );
+    const defaultTexture = useLoader(TextureLoader, "/card.png");
     const reverse = useLoader(TextureLoader, "/card.png");
     const [cardImage, setCardImage] = useState(defaultTexture);
     const internalRef = useRef();
