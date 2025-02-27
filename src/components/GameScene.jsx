@@ -70,7 +70,6 @@ const GameScene = ({ setupContext }) => {
   const [votingSelectedCardData, setVotingSelectedCardData] = useState({});
   const acceptButtonRef = useRef();
   const declineButtonRef = useRef();
-  // Add ref to access Hand component
   const handRef = useRef();
   const [selectedCards, setSelectedCards] = useState([]);
 
@@ -158,7 +157,7 @@ const GameScene = ({ setupContext }) => {
         await updateGameWithData({ votingPhase: true });
       } else if (isHost && votPhase)
         await updateGameWithData({ votingPhase: false });
-      if (newRound !== round) {
+      if (afterVotData && votPhase && newRound !== round) {
         handleNewRound(newRound);
       }
       if (everyPlayerHasVoted && isHost && !pointsAdded) {
