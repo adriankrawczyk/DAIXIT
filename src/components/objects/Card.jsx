@@ -34,8 +34,8 @@ const Card = React.forwardRef(
     },
     ref
   ) => {
-    const defaultTexture = useLoader(TextureLoader, "/card.png");
-    const reverse = useLoader(TextureLoader, "/card.png");
+    const defaultTexture = useLoader(TextureLoader, "/DAIXIT/card.png");
+    const reverse = useLoader(TextureLoader, "/DAIXIT/card.png");
     const [cardImage, setCardImage] = useState(defaultTexture);
     const internalRef = useRef();
     const actionButtonRefs = useRef([]);

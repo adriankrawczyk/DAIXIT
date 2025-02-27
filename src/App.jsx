@@ -3,7 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import SceneWrapper from "./components/SceneWrapper";
 import Lobby from "./components/lobby/Lobby";
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Routes,
   Route,
   useLocation,

@@ -84,13 +84,16 @@ const Galaxy = () => {
 
   const planetTextures = useMemo(
     () =>
-      ["/earth.jpg", "/jupiter.jpg", "/moon.jpg", "/alien_planet.jpg"].map(
-        (texture, index) => ({
-          texture,
-          speed: Math.random() * 0.02 + 0.01,
-          fi: Math.random() * Math.PI,
-        })
-      ),
+      [
+        "/DAIXIT/earth.jpg",
+        "/DAIXIT/jupiter.jpg",
+        "/DAIXIT/moon.jpg",
+        "/DAIXIT/alien_planet.jpg",
+      ].map((texture, index) => ({
+        texture,
+        speed: Math.random() * 0.02 + 0.01,
+        fi: Math.random() * Math.PI,
+      })),
     []
   );
 

@@ -15,7 +15,7 @@ import {
 } from "../firebase/animations";
 
 const OtherPlayerHand = ({
-  numberOfCards = 6,
+  numberOfCards = 5,
   setVotingSelectedCardPosition,
   setVotingSelectedCardRef,
   votingSelectedCardRef,

@@ -10,7 +10,7 @@ async function getSetupData(n) {
     lookAt: [0, 0, -5],
     multiplier: [1, 1, 1],
     directionalLightPosition: [0, 2, 2.4],
-    cardsPosition: [-0.2, 0.75, 3],
+    cardsPosition: [0, 0.75, 3],
     cardsRotation: [-Math.PI / 8, 0, Math.PI / 16],
     direction: "Bottom",
   };
@@ -25,7 +25,7 @@ async function getSetupData(n) {
         lookAt: [0, 0, 5],
         multiplier: [-1, 1, 1],
         directionalLightPosition: [0, 2, -2.4],
-        cardsPosition: [0.2, 0.75, -3],
+        cardsPosition: [0, 0.75, -3],
         cardsRotation: [Math.PI / 8, Math.PI, Math.PI / 16],
         direction: "Top",
       };
@@ -37,7 +37,7 @@ async function getSetupData(n) {
         lookAt: [-5, 0, 0],
         multiplier: [1, 1, -1],
         directionalLightPosition: [2.4, 2, 0],
-        cardsPosition: [3, 0.75, -0.2],
+        cardsPosition: [3, 0.75, 0],
         cardsRotation: [-Math.PI / 16, Math.PI / 2, Math.PI / 8],
         direction: "Left",
       };
@@ -49,7 +49,7 @@ async function getSetupData(n) {
         lookAt: [-5, 0, 0],
         multiplier: [-1, 1, 1],
         directionalLightPosition: [-2.4, 2, 0],
-        cardsPosition: [-3, 0.75, -0.2],
+        cardsPosition: [-3, 0.75, 0],
         cardsRotation: [Math.PI / 16, -Math.PI / 2, Math.PI / 8],
         direction: "Right",
       };

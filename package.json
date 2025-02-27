@@ -1,5 +1,6 @@
 {
   "name": "react_daixit",
+  "homepage": "https://adriankrawczyk.github.io/DAIXIT/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,12 +8,15 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@react-three/drei": "^9.121.4",
     "@react-three/fiber": "^8.17.14",
     "firebase": "^11.3.1",
+    "gh-pages": "^6.3.0",
     "gsap": "^3.12.7",
     "lamina": "^1.1.23",
     "lodash": "^4.17.21",
