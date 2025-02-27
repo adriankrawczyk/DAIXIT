@@ -51,6 +51,7 @@ const GameScene = ({ setupContext }) => {
     cardsRotation,
     setChosenCard,
     allPhotos,
+    setAllPhotos,
   } = setupContext;
 
   const [gameData, setGameData] = useState([]);
@@ -112,6 +113,8 @@ const GameScene = ({ setupContext }) => {
       if (!localStorage.getItem("name")) await FirebaseLogger();
       await joinToGame(gameId);
       await setup();
+      const photos = await fetchAllPhotos();
+      setAllPhotos(photos);
       setJoined(true);
     };
     join();
@@ -309,7 +312,7 @@ const GameScene = ({ setupContext }) => {
             )}
           <Hand
             ref={handRef}
-            numberOfCards={7}
+            numberOfCards={6}
             fetchedPhotos={fetchedPhotos}
             isThisPlayerHost={isThisPlayerHost}
             isThisPlayerWordMaker={isThisPlayerWordMaker}
