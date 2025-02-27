@@ -69,7 +69,7 @@ const OtherPlayerHand = ({
     };
 
     fetchData();
-    const dataInterval = setInterval(fetchData, 5000);
+    const dataInterval = setInterval(fetchData, 1000);
     return () => clearInterval(dataInterval);
   }, []);
 
@@ -126,7 +126,7 @@ const OtherPlayerHand = ({
 
   useEffect(() => {
     fetchAnimations();
-    const animationInterval = setInterval(fetchAnimations, 5000);
+    const animationInterval = setInterval(fetchAnimations, 1000);
     return () => clearInterval(animationInterval);
   }, [otherPlayerHandsData]);
 
