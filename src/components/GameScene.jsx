@@ -201,7 +201,8 @@ const GameScene = ({ setupContext }) => {
     setChosenWord("");
     setSelectedCards([]);
     setChosenCard({});
-    handRef.current.backToHand(handRef.current.selectedCard);
+    const index = handRef.current.selectedCard;
+    handRef.current.backToHand(index);
     handRef.current.setSelectedCard(-1);
     if (fetchedPhotos.length > 0) {
       const currentHand = await getHandFromDatabase();
