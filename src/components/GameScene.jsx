@@ -157,7 +157,7 @@ const GameScene = ({ setupContext }) => {
         await updateGameWithData({ votingPhase: true });
       } else if (isHost && votPhase)
         await updateGameWithData({ votingPhase: false });
-      if (afterVotData && votPhase && newRound !== round) {
+      if (newRound && newRound !== round) {
         handleNewRound(newRound);
       }
       if (everyPlayerHasVoted && isHost && !pointsAdded) {
