@@ -32,7 +32,7 @@ const LobbyPage = ({ setPlayClicked }) => {
 
     const intervalId = setInterval(() => {
       fetch();
-    }, 1000);
+    }, 5000);
 
     return () => clearInterval(intervalId);
   }, []);

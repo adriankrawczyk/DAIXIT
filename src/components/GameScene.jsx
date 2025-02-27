@@ -186,7 +186,7 @@ const GameScene = ({ setupContext }) => {
       setPlayers(fetchedPlayers);
     };
 
-    const interval = setInterval(fetchDataAndHostTheGame, 1000);
+    const interval = setInterval(fetchDataAndHostTheGame, 5000);
     return () => clearInterval(interval);
   }, [direction, pointsAdded, round]);
 
