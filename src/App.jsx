@@ -11,6 +11,7 @@ import {
 import { useEffect } from "react";
 import { useThree } from "@react-three/fiber";
 import { SetupProvider, useSetup } from "./components/context/SetupContext";
+import { fetchAllPhotos } from "./components/firebase/gameMethods";
 
 const CameraUpdater = () => {
   const { camera } = useThree();
@@ -32,6 +33,16 @@ const CameraUpdater = () => {
 };
 
 const AppContent = () => {
+  const { setAllPhotos } = useSetup();
+
+  useEffect(() => {
+    const fetchPhotos = async () => {
+      const allPhotos = await fetchAllPhotos();
+      setAllPhotos(allPhotos);
+    };
+    fetchPhotos();
+  }, []);
+
   const location = useLocation();
   const { cameraPosition } = useSetup();
   return (

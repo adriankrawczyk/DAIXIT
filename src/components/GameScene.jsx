@@ -50,6 +50,7 @@ const GameScene = ({ setupContext }) => {
     cardsPosition,
     cardsRotation,
     setChosenCard,
+    allPhotos,
   } = setupContext;
 
   const [gameData, setGameData] = useState([]);
@@ -112,7 +113,6 @@ const GameScene = ({ setupContext }) => {
       await joinToGame(gameId);
       await setup();
       setJoined(true);
-      const allPhotos = await fetchAllPhotos();
       setFetchedPhotos(allPhotos);
     };
     join();

@@ -20,6 +20,8 @@ export const SetupProvider = ({ children }) => {
   const [chosenCard, setChosenCard] = useState({});
   const [votingPhase, setVotingPhase] = useState(false);
   const [round, setRound] = useState(0);
+  const [allPhotos, setAllPhotos] = useState([]);
+
   return (
     <SetupContext.Provider
       value={{
@@ -49,6 +51,8 @@ export const SetupProvider = ({ children }) => {
         setVotingPhase,
         round,
         setRound,
+        allPhotos,
+        setAllPhotos,
       }}
     >
       {children}
