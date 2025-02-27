@@ -24,7 +24,7 @@ async function newGame() {
     return null;
   }
 
-  const newGameRef = push(gamesRef);
+  const newGameRef = await push(gamesRef);
   try {
     await set(newGameRef, {
       host: playerData.name,
@@ -111,7 +111,7 @@ async function getGames() {
       const allPlayersInactive =
         Object.values(players).length > 0 &&
         Object.values(players).every((player) => !player.inGame);
-      if (allPlayersInactive || Object.values(players).length === 0) {
+      if (allPlayersInactive && Object.values(players).length > 0) {
         await remove(ref(database, `games/${gameId}`)); // temporary fix
       } else {
         gamesArray.push({ ...gameData });
