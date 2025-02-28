@@ -61,23 +61,22 @@ const CameraControls = () => {
         break;
 
       case "RightBottom":
-        normalGameVector.x = mouse.x * -0.7 * cameraLookAtMultiplier[0];
+        normalGameVector.x = mouse.x * 0.7 * cameraLookAtMultiplier[0];
+        normalGameVector.y =
+          (mouse.y + cameraLookAt[1]) * cameraLookAtMultiplier[1];
+        normalGameVector.z = mouse.x * -1.4 * cameraLookAtMultiplier[2];
+        break;
+
+      case "RightTop":
+        normalGameVector.x = mouse.x * 0.7 * cameraLookAtMultiplier[0];
         normalGameVector.y =
           (mouse.y + cameraLookAt[1]) * cameraLookAtMultiplier[1];
         normalGameVector.z = mouse.x * 1.4 * cameraLookAtMultiplier[2];
         break;
 
-      case "RightTop":
-        normalGameVector.x = mouse.x * -0.7 * cameraLookAtMultiplier[0];
-        normalGameVector.y =
-          (mouse.y + cameraLookAt[1]) * cameraLookAtMultiplier[1];
-        normalGameVector.z = mouse.x * -0.7 * cameraLookAtMultiplier[2];
-        break;
-
       default:
         break;
     }
-
     if (votingPhase) {
       camera.rotation.set(
         -Math.PI / 2 + mouse.x / 10,

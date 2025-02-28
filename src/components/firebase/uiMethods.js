@@ -41,9 +41,9 @@ const rightTopDefaultObject = {
 };
 
 const rightBottomDefaultObject = {
-  rotation: [0, Math.PI / 4, 0],
+  rotation: [0, -Math.PI / 4, 0],
   textPosition: [0, 0, 0.01],
-  textScaleMultiplier: [-1, 1, -1],
+  textScaleMultiplier: [1, 1, -1],
 };
 
 const offsetFactor = 0.707;
@@ -72,21 +72,20 @@ function getAcceptPositionSetupData(direction, votingPhase = false) {
       };
     case "LeftTop":
       return {
-        ...leftBottomDefaultObject,
+        ...leftTopDefaultObject,
         position: [offsetFactor * 4.5, 1.7, -offsetFactor * 2],
-
-        rotation: [0, Math.PI * 0.75, 0],
       };
     case "RightTop":
       return {
-        ...leftBottomDefaultObject,
+        ...rightTopDefaultObject,
         position: [-offsetFactor * 2, 1.7, -offsetFactor * 4.5],
       };
     case "RightBottom":
       return {
-        ...leftBottomDefaultObject,
-        position: [-offsetFactor * 2, 1.7, offsetFactor * 4.5],
+        ...rightBottomDefaultObject,
+        position: [-offsetFactor * 4.5, 1.7, offsetFactor * 2],
       };
+
     default:
       return bottomDefaultObject;
   }
@@ -116,20 +115,18 @@ function getDeclinePositionSetupData(direction, votingPhase = false) {
       };
     case "LeftTop":
       return {
-        ...leftBottomDefaultObject,
+        ...leftTopDefaultObject,
         position: [offsetFactor * 2, 1.7, -offsetFactor * 4.5],
-
-        rotation: [0, Math.PI * 0.75, 0],
       };
     case "RightTop":
       return {
-        ...leftBottomDefaultObject,
+        ...rightTopDefaultObject,
         position: [-offsetFactor * 4.5, 1.7, -offsetFactor * 2],
       };
     case "RightBottom":
       return {
-        ...leftBottomDefaultObject,
-        position: [-offsetFactor * 4.5, 1.7, offsetFactor * 2],
+        ...rightBottomDefaultObject,
+        position: [-offsetFactor * 2, 1.7, offsetFactor * 4.5],
       };
     default:
       return bottomDefaultObject;

@@ -4,7 +4,6 @@ import { setPlayerName } from "./playerMethods";
 import FirebaseLogger from "../lobby/firebase/firebaseLogger";
 
 async function getSetupData(n) {
-  n += 5;
   const defaultObj = {
     playerPosition: 0,
     position: [0, 2, 4.4],
@@ -63,7 +62,7 @@ async function getSetupData(n) {
         multiplier: [1, 1, -1],
         directionalLightPosition: [1.7, 2, 1.7],
         cardsPosition: [2.1, 0.75, 2.1],
-        cardsRotation: [-Math.PI / 16, Math.PI / 4, Math.PI / 8],
+        cardsRotation: [-Math.PI / 16, Math.PI / 4, Math.PI / 16],
         direction: "LeftBottom",
       };
     }
@@ -87,7 +86,7 @@ async function getSetupData(n) {
         multiplier: [-1, 1, 1],
         directionalLightPosition: [-1.7, 2, -1.7],
         cardsPosition: [-2.1, 0.75, -2.1],
-        cardsRotation: [Math.PI / 16, -Math.PI * 0.75, Math.PI / 8],
+        cardsRotation: [Math.PI / 16, -Math.PI * 0.75, Math.PI / 16],
         direction: "RightTop",
       };
     }
@@ -99,7 +98,7 @@ async function getSetupData(n) {
         multiplier: [-1, 1, -1],
         directionalLightPosition: [-1.7, 2, 1.7],
         cardsPosition: [-2.1, 0.75, 2.1],
-        cardsRotation: [-Math.PI / 16, -Math.PI / 4, Math.PI / 8],
+        cardsRotation: [-Math.PI / 16, -Math.PI / 4, Math.PI / 16],
         direction: "RightBottom",
       };
     }
