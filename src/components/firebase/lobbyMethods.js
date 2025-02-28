@@ -46,6 +46,11 @@ async function newGame() {
 }
 
 async function joinToGame(gameId) {
+  const gameRef = ref(database, `games/${gameId}`);
+  const snapshot = await get(gameRef);
+  const gameData = snapshot.val();
+  if (gameData.started) return;
+
   try {
     const playerUid = localStorage.getItem("playerUid");
     if (!playerUid) {
@@ -113,7 +118,7 @@ async function getGames() {
         Object.values(players).every((player) => !player.inGame);
       if (allPlayersInactive && Object.values(players).length > 0) {
         await remove(ref(database, `games/${gameId}`)); // temporary fix
-      } else {
+      } else if (!gameData.started) {
         gamesArray.push({ ...gameData });
       }
     }
