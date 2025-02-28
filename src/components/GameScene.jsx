@@ -276,10 +276,12 @@ const GameScene = ({ setupContext }) => {
 
   return (
     <>
-      <PointsDisplayer
-        players={players}
-        afterVotePhase={typeof afterVoteData === "object"}
-      />
+      {votingPhase && ( // IT HAS TO BE FIXED IN NORMAL MODE, TEMPORARY
+        <PointsDisplayer
+          players={players}
+          afterVotePhase={typeof afterVoteData === "object"}
+        />
+      )}
       {typeof afterVoteData === "object" && isThisPlayerHost && (
         <ActionButton
           ref={nextRoundButtonRef}
