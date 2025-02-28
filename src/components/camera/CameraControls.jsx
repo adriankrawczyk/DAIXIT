@@ -15,15 +15,68 @@ const CameraControls = () => {
     useSetup();
 
   useFrame(({ camera, mouse }) => {
-    const normalGameVector = new Vector3(
-      (direction === "Bottom" || direction === "Top"
-        ? mouse.x
-        : 0 + cameraLookAt[0]) * cameraLookAtMultiplier[0],
-      (mouse.y + cameraLookAt[1]) * cameraLookAtMultiplier[1],
-      (direction === "Left" || direction === "Right"
-        ? mouse.x
-        : 0 + cameraLookAt[2]) * cameraLookAtMultiplier[2]
-    );
+    const normalGameVector = new Vector3(0, 0, 0);
+
+    switch (direction) {
+      case "Bottom":
+        normalGameVector.x = mouse.x * 1 * cameraLookAtMultiplier[0];
+        normalGameVector.y =
+          (mouse.y + cameraLookAt[1]) * cameraLookAtMultiplier[1];
+        normalGameVector.z = 0 + cameraLookAt[2] * cameraLookAtMultiplier[2];
+        break;
+
+      case "Top":
+        normalGameVector.x = mouse.x * 1 * cameraLookAtMultiplier[0];
+        normalGameVector.y =
+          (mouse.y + cameraLookAt[1]) * cameraLookAtMultiplier[1];
+        normalGameVector.z = 0 + cameraLookAt[2] * cameraLookAtMultiplier[2];
+        break;
+
+      case "Left":
+        normalGameVector.x = 0 + cameraLookAt[0] * cameraLookAtMultiplier[0];
+        normalGameVector.y =
+          (mouse.y + cameraLookAt[1]) * cameraLookAtMultiplier[1];
+        normalGameVector.z = mouse.x * 1 * cameraLookAtMultiplier[2];
+        break;
+
+      case "Right":
+        normalGameVector.x = 0 + cameraLookAt[0] * cameraLookAtMultiplier[0];
+        normalGameVector.y =
+          (mouse.y + cameraLookAt[1]) * cameraLookAtMultiplier[1];
+        normalGameVector.z = mouse.x * 1 * cameraLookAtMultiplier[2];
+        break;
+
+      case "LeftBottom":
+        normalGameVector.x = mouse.x * 0.7 * cameraLookAtMultiplier[0];
+        normalGameVector.y =
+          (mouse.y + cameraLookAt[1]) * cameraLookAtMultiplier[1];
+        normalGameVector.z = mouse.x * 0.7 * cameraLookAtMultiplier[2];
+        break;
+
+      case "LeftTop":
+        normalGameVector.x = mouse.x * 0.7 * cameraLookAtMultiplier[0];
+        normalGameVector.y =
+          (mouse.y + cameraLookAt[1]) * cameraLookAtMultiplier[1];
+        normalGameVector.z = mouse.x * -1.4 * cameraLookAtMultiplier[2];
+        break;
+
+      case "RightBottom":
+        normalGameVector.x = mouse.x * -0.7 * cameraLookAtMultiplier[0];
+        normalGameVector.y =
+          (mouse.y + cameraLookAt[1]) * cameraLookAtMultiplier[1];
+        normalGameVector.z = mouse.x * 1.4 * cameraLookAtMultiplier[2];
+        break;
+
+      case "RightTop":
+        normalGameVector.x = mouse.x * -0.7 * cameraLookAtMultiplier[0];
+        normalGameVector.y =
+          (mouse.y + cameraLookAt[1]) * cameraLookAtMultiplier[1];
+        normalGameVector.z = mouse.x * -0.7 * cameraLookAtMultiplier[2];
+        break;
+
+      default:
+        break;
+    }
 
     if (votingPhase) {
       camera.rotation.set(

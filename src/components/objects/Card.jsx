@@ -10,6 +10,7 @@ import React, {
 import gsap from "gsap";
 import ActionButton from "./ActionButton";
 import { getCardUIData } from "../firebase/uiMethods";
+import { getCardsPosition } from "../firebase/gameMethods";
 
 const Card = React.forwardRef(
   (
@@ -74,6 +75,30 @@ const Card = React.forwardRef(
           hoverObject.x = -0.12 + index * 0.03 + (cardsPosition?.[0] || 0);
           break;
         }
+        case "LeftBottom": {
+          const pos = getCardsPosition(cardsPosition, index, direction);
+          hoverObject.x = pos[0] + 0.03;
+          hoverObject.z = pos[2] + 0.03;
+          break;
+        }
+        case "RightTop": {
+          const pos = getCardsPosition(cardsPosition, index, direction);
+          hoverObject.x = pos[0] - 0.03;
+          hoverObject.z = pos[2] - 0.03;
+          break;
+        }
+        case "LeftTop": {
+          const pos = getCardsPosition(cardsPosition, index, direction);
+          hoverObject.x = pos[0] + 0.03;
+          hoverObject.z = pos[2] - 0.03;
+          break;
+        }
+        case "RightBottom": {
+          const pos = getCardsPosition(cardsPosition, index, direction);
+          hoverObject.x = pos[0] - 0.03;
+          hoverObject.z = pos[2] + 0.03;
+          break;
+        }
       }
 
       gsap.to(internalRef.current.position, hoverObject);
@@ -82,15 +107,28 @@ const Card = React.forwardRef(
     const unhoverAnimation = useCallback(() => {
       if (!internalRef.current) return;
 
-      let hoverObject = { duration: 0.2, ease: "power2.out" };
-      if (direction === "Bottom" || direction === "Top") {
-        hoverObject.z = index * 0.01 + (cardsPosition?.[2] || 0);
-      } else {
-        hoverObject.x = index * 0.01 + (cardsPosition?.[0] || 0);
-      }
+      const initialPos = getCardsPosition(cardsPosition, index, direction);
 
-      gsap.to(internalRef.current.position, hoverObject);
+      gsap.to(internalRef.current.position, {
+        x: initialPos[0],
+        y: initialPos[1],
+        z: initialPos[2],
+        duration: 0.2,
+        ease: "power2.out",
+      });
     }, [direction, index, cardsPosition]);
+
+    // Set initial position based on the direction when component mounts
+    useEffect(() => {
+      if (internalRef.current && cardsPosition) {
+        const initialPos = getCardsPosition(cardsPosition, index, direction);
+        internalRef.current.position.set(
+          initialPos[0],
+          initialPos[1],
+          initialPos[2]
+        );
+      }
+    }, [cardsPosition, direction, index]);
 
     const findCardData = () => {
       if (
@@ -107,7 +145,16 @@ const Card = React.forwardRef(
 
     const cardData = votingPhase ? findCardData() : null;
     const voters = cardData?.voters || [];
-    const playerColors = ["blue", "orange", "magenta", "lightgreen"];
+    const playerColors = [
+      "blue",
+      "orange",
+      "magenta",
+      "lightgreen",
+      "cyan",
+      "yellow",
+      "purple",
+      "gold",
+    ];
     const isCorrectCard = cardData?.isCorrectCard || false;
     const ownerName = cardData?.playerName || "Unknown";
     const ownerButtonData = getCardUIData(

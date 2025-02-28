@@ -27,6 +27,38 @@ export const showCardCloser = (cardRef, direction) => {
       Object.assign(rotationObject, { x: 0, y: -Math.PI / 2, z: 0 });
       break;
     }
+    case "LeftBottom": {
+      Object.assign(positionObject, { x: 2.7, y: 1.8, z: 2.7 });
+      Object.assign(rotationObject, { x: 0, y: Math.PI / 4, z: 0 });
+      break;
+    }
+    case "RightBottom": {
+      Object.assign(positionObject, { x: -2.7, y: 1.8, z: 2.7 });
+      Object.assign(rotationObject, {
+        x: 0,
+        y: -Math.PI / 4,
+        z: 0,
+      });
+      break;
+    }
+    case "LeftTop": {
+      Object.assign(positionObject, { x: 2.7, y: 1.8, z: -2.7 });
+      Object.assign(rotationObject, {
+        x: 0,
+        y: (3 * Math.PI) / 4,
+        z: 0,
+      });
+      break;
+    }
+    case "RightTop": {
+      Object.assign(positionObject, { x: -2.7, y: 1.8, z: -2.7 });
+      Object.assign(rotationObject, {
+        x: 0,
+        y: (-3 * Math.PI) / 4,
+        z: 0,
+      });
+      break;
+    }
   }
 
   gsap.to(cardRef.position, positionObject);
@@ -61,6 +93,10 @@ export const addToTable = (cardRef, direction, setDisableHover = null) => {
     Top: { x: 0, z: -1 },
     Left: { x: 1, z: 0 },
     Right: { x: -1, z: 0 },
+    LeftBottom: { x: 0.7, z: 0.7 },
+    RightBottom: { x: -0.7, z: 0.7 },
+    LeftTop: { x: 0.7, z: -0.7 },
+    RightTop: { x: -0.7, z: -0.7 },
   };
 
   if (setDisableHover) setDisableHover(true);

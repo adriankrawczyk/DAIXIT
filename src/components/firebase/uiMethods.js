@@ -22,6 +22,32 @@ const rightDefaultObject = {
   textScaleMultiplier: [-1, 1, 1],
 };
 
+const leftBottomDefaultObject = {
+  rotation: [0, Math.PI / 4, 0],
+  textPosition: [0, 0, 0.01],
+  textScaleMultiplier: [1, 1, -1],
+};
+
+const leftTopDefaultObject = {
+  rotation: [0, -Math.PI / 4, 0],
+  textPosition: [0, 0, -0.01],
+  textScaleMultiplier: [-1, 1, 1],
+};
+
+const rightTopDefaultObject = {
+  rotation: [0, Math.PI / 4, 0],
+  textPosition: [0, 0, -0.01],
+  textScaleMultiplier: [-1, 1, 1],
+};
+
+const rightBottomDefaultObject = {
+  rotation: [0, Math.PI / 4, 0],
+  textPosition: [0, 0, 0.01],
+  textScaleMultiplier: [-1, 1, -1],
+};
+
+const offsetFactor = 0.707;
+
 function getAcceptPositionSetupData(direction, votingPhase = false) {
   if (votingPhase) {
     return {
@@ -39,6 +65,28 @@ function getAcceptPositionSetupData(direction, votingPhase = false) {
       return { ...leftDefaultObject, position: [3, 1.5, 1.7] };
     case "Right":
       return { ...rightDefaultObject, position: [-3, 1.5, -1.7] };
+    case "LeftBottom":
+      return {
+        ...leftBottomDefaultObject,
+        position: [offsetFactor * 2, 1.7, offsetFactor * 4.5],
+      };
+    case "LeftTop":
+      return {
+        ...leftBottomDefaultObject,
+        position: [offsetFactor * 4.5, 1.7, -offsetFactor * 2],
+
+        rotation: [0, Math.PI * 0.75, 0],
+      };
+    case "RightTop":
+      return {
+        ...leftBottomDefaultObject,
+        position: [-offsetFactor * 2, 1.7, -offsetFactor * 4.5],
+      };
+    case "RightBottom":
+      return {
+        ...leftBottomDefaultObject,
+        position: [-offsetFactor * 2, 1.7, offsetFactor * 4.5],
+      };
     default:
       return bottomDefaultObject;
   }
@@ -61,6 +109,28 @@ function getDeclinePositionSetupData(direction, votingPhase = false) {
       return { ...leftDefaultObject, position: [3, 1.5, -1.7] };
     case "Right":
       return { ...rightDefaultObject, position: [-3, 1.5, 1.7] };
+    case "LeftBottom":
+      return {
+        ...leftBottomDefaultObject,
+        position: [offsetFactor * 4.5, 1.7, offsetFactor * 2],
+      };
+    case "LeftTop":
+      return {
+        ...leftBottomDefaultObject,
+        position: [offsetFactor * 2, 1.7, -offsetFactor * 4.5],
+
+        rotation: [0, Math.PI * 0.75, 0],
+      };
+    case "RightTop":
+      return {
+        ...leftBottomDefaultObject,
+        position: [-offsetFactor * 4.5, 1.7, -offsetFactor * 2],
+      };
+    case "RightBottom":
+      return {
+        ...leftBottomDefaultObject,
+        position: [-offsetFactor * 4.5, 1.7, offsetFactor * 2],
+      };
     default:
       return bottomDefaultObject;
   }
@@ -76,10 +146,19 @@ function getCenteredButtonData(direction) {
       return { ...leftDefaultObject, position: [3, 1.5, 0] };
     case "Right":
       return { ...rightDefaultObject, position: [-3, 1.5, 0] };
+    case "LeftBottom":
+      return { ...leftBottomDefaultObject, position: [2.1, 1.5, 2.1] };
+    case "LeftTop":
+      return { ...leftTopDefaultObject, position: [2.1, 1.5, -2.1] };
+    case "RightTop":
+      return { ...rightTopDefaultObject, position: [-2.1, 1.5, -2.1] };
+    case "RightBottom":
+      return { ...rightBottomDefaultObject, position: [-2.1, 1.5, 2.1] };
     default:
       return bottomDefaultObject;
   }
 }
+
 function getLeftTopButtonData(direction, votingPhase = false) {
   if (votingPhase) {
     return {
@@ -97,10 +176,19 @@ function getLeftTopButtonData(direction, votingPhase = false) {
       return { ...leftDefaultObject, position: [3, 2.3, 1.7] };
     case "Right":
       return { ...rightDefaultObject, position: [-3, 2.3, -1.7] };
+    case "LeftBottom":
+      return { ...leftBottomDefaultObject, position: [2.1, 2.3, 2.1] };
+    case "LeftTop":
+      return { ...leftTopDefaultObject, position: [2.1, 2.3, -2.1] };
+    case "RightTop":
+      return { ...rightTopDefaultObject, position: [-2.1, 2.3, -2.1] };
+    case "RightBottom":
+      return { ...rightBottomDefaultObject, position: [-2.1, 2.3, 2.1] };
     default:
       return bottomDefaultObject;
   }
 }
+
 function getNextRoundButtonData() {
   return {
     ...bottomDefaultObject,
@@ -108,6 +196,7 @@ function getNextRoundButtonData() {
     position: [-1.5, 2, 0],
   };
 }
+
 function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
   let basePosition;
   let horizontalSpacing = 0.75;
@@ -116,11 +205,23 @@ function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
   let row = Math.floor(playerPosition / 2);
   let col = playerPosition % 2;
 
-  const playerColors = ["blue", "orange", "magenta", "lightgreen"];
+  const playerColors = [
+    "blue",
+    "orange",
+    "magenta",
+    "lightgreen",
+    "cyan",
+    "yellow",
+    "purple",
+    "gold",
+  ];
   const color = playerColors[playerPosition];
 
   if (votingPhase) {
     const basePosition = [1, 2, 3.5];
+    row = Math.floor(playerPosition / 2);
+    col = playerPosition % 2;
+
     return {
       ...bottomDefaultObject,
       rotation: [-Math.PI / 2, 0, Math.PI / 2],
@@ -184,6 +285,54 @@ function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
         color,
       };
 
+    case "LeftBottom":
+      basePosition = [2.5, 1, 2.5];
+      return {
+        ...leftBottomDefaultObject,
+        position: [
+          basePosition[0] - col * horizontalSpacing,
+          basePosition[1] - row * verticalSpacing,
+          basePosition[2] - col * horizontalSpacing,
+        ],
+        color,
+      };
+
+    case "LeftTop":
+      basePosition = [2.5, 1, -2.5];
+      return {
+        ...leftTopDefaultObject,
+        position: [
+          basePosition[0] - col * horizontalSpacing,
+          basePosition[1] - row * verticalSpacing,
+          basePosition[2] + col * horizontalSpacing,
+        ],
+        color,
+      };
+
+    case "RightTop":
+      basePosition = [-2.5, 1, -2.5];
+      return {
+        ...rightTopDefaultObject,
+        position: [
+          basePosition[0] + col * horizontalSpacing,
+          basePosition[1] - row * verticalSpacing,
+          basePosition[2] + col * horizontalSpacing,
+        ],
+        color,
+      };
+
+    case "RightBottom":
+      basePosition = [-2.5, 1, 2.5];
+      return {
+        ...rightBottomDefaultObject,
+        position: [
+          basePosition[0] + col * horizontalSpacing,
+          basePosition[1] - row * verticalSpacing,
+          basePosition[2] - col * horizontalSpacing,
+        ],
+        color,
+      };
+
     default:
       basePosition = [-2.5, 1, 3];
       return {
@@ -205,7 +354,7 @@ function getCardUIData(cardPosition, index, votersLength) {
   };
 
   switch (votersLength) {
-    case -1: // owner
+    case -1:
       result.position = [
         cardPosition.x - 0.6,
         cardPosition.y + 0.01,
@@ -213,27 +362,25 @@ function getCardUIData(cardPosition, index, votersLength) {
       ];
       break;
     case 0:
-      const width = 0.3 * (votersLength - 1);
-      const startX = cardPosition.x - width / 2;
-      result.position = [
-        startX + 0.3 * index,
-        cardPosition.y + +0.01,
-        cardPosition.z,
-      ];
+      result.position = [cardPosition.x, cardPosition.y + 0.01, cardPosition.z];
       break;
     case 1:
-      result.position = [
-        cardPosition.x,
-        cardPosition.y + +0.01,
-        cardPosition.z,
-      ];
+      result.position = [cardPosition.x, cardPosition.y + 0.01, cardPosition.z];
       break;
-
     case 2:
       const twoVoterOffset = 0.4;
       result.position = [
         cardPosition.x - twoVoterOffset / 2 + twoVoterOffset * index,
-        cardPosition.y + +0.01,
+        cardPosition.y + 0.01,
+        cardPosition.z,
+      ];
+      break;
+    default:
+      const width = 0.3 * (votersLength - 1);
+      const startX = cardPosition.x - width / 2;
+      result.position = [
+        startX + 0.3 * index,
+        cardPosition.y + 0.01,
         cardPosition.z,
       ];
       break;
@@ -241,6 +388,7 @@ function getCardUIData(cardPosition, index, votersLength) {
 
   return result;
 }
+
 export {
   getAcceptPositionSetupData,
   getDeclinePositionSetupData,

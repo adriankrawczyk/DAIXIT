@@ -4,6 +4,7 @@ import { setPlayerName } from "./playerMethods";
 import FirebaseLogger from "../lobby/firebase/firebaseLogger";
 
 async function getSetupData(n) {
+  n += 5;
   const defaultObj = {
     playerPosition: 0,
     position: [0, 2, 4.4],
@@ -52,6 +53,54 @@ async function getSetupData(n) {
         cardsPosition: [-3, 0.75, 0],
         cardsRotation: [Math.PI / 16, -Math.PI / 2, Math.PI / 8],
         direction: "Right",
+      };
+    }
+    case 4: {
+      return {
+        playerPosition: 4,
+        position: [3.1, 2, 3.1],
+        lookAt: [-3.5, 0, 3.5],
+        multiplier: [1, 1, -1],
+        directionalLightPosition: [1.7, 2, 1.7],
+        cardsPosition: [2.1, 0.75, 2.1],
+        cardsRotation: [-Math.PI / 16, Math.PI / 4, Math.PI / 8],
+        direction: "LeftBottom",
+      };
+    }
+    case 5: {
+      return {
+        playerPosition: 5,
+        position: [3.1, 2, -3.1],
+        lookAt: [-3.5, 0, 3.5],
+        multiplier: [1, 1, 1],
+        directionalLightPosition: [1.7, 2, -1.7],
+        cardsPosition: [2.1, 0.75, -2.1],
+        cardsRotation: [Math.PI / 16, Math.PI * 0.75, Math.PI / 16],
+        direction: "LeftTop",
+      };
+    }
+    case 6: {
+      return {
+        playerPosition: 6,
+        position: [-3.1, 2, -3.1],
+        lookAt: [3.5, 0, 3.5],
+        multiplier: [-1, 1, 1],
+        directionalLightPosition: [-1.7, 2, -1.7],
+        cardsPosition: [-2.1, 0.75, -2.1],
+        cardsRotation: [Math.PI / 16, -Math.PI * 0.75, Math.PI / 8],
+        direction: "RightTop",
+      };
+    }
+    case 7: {
+      return {
+        playerPosition: 7,
+        position: [-3.1, 2, 3.1],
+        lookAt: [3.5, 0, -3.5],
+        multiplier: [-1, 1, -1],
+        directionalLightPosition: [-1.7, 2, 1.7],
+        cardsPosition: [-2.1, 0.75, 2.1],
+        cardsRotation: [-Math.PI / 16, -Math.PI / 4, Math.PI / 8],
+        direction: "RightBottom",
       };
     }
     default: {
@@ -241,7 +290,6 @@ async function getPlayers() {
   );
   return playersObjectArray;
 }
-
 const calculateCardsLayout = (playerSetup, numberOfCards) => {
   if (!playerSetup) return [];
 
@@ -252,22 +300,38 @@ const calculateCardsLayout = (playerSetup, numberOfCards) => {
     rotation: cardsRotation,
   }));
 };
+
 function getCardsPosition(cardsPosition, i, direction) {
-  if (direction === "Bottom" || direction === "Top")
+  if (direction === "Bottom" || direction === "Top") {
     return [
       (i - 2) / 2 + cardsPosition[0],
       cardsPosition[1],
       i * 0.01 + cardsPosition[2],
     ];
-  else {
+  } else if (direction === "Left" || direction === "Right") {
     return [
       i * 0.01 + cardsPosition[0],
       cardsPosition[1],
       (i - 2) / 2 + cardsPosition[2],
     ];
+  } else {
+    const offsetFactor = 0.707;
+
+    if (direction === "LeftBottom" || direction === "RightTop") {
+      return [
+        cardsPosition[0] + i * 0.01 + ((i - 2) / 2) * offsetFactor,
+        cardsPosition[1],
+        cardsPosition[2] - i * 0.01 - ((i - 2) / 2) * offsetFactor,
+      ];
+    } else if (direction === "LeftTop" || direction === "RightBottom") {
+      return [
+        cardsPosition[0] + i * 0.01 + ((i - 2) / 2) * offsetFactor,
+        cardsPosition[1],
+        cardsPosition[2] - i * 0.01 + ((i - 2) / 2) * offsetFactor,
+      ];
+    }
   }
 }
-
 async function updateGameWithData(updateObj) {
   const gameId = window.location.href.split("/").pop();
   const gameRef = ref(database, `games/${gameId}`);
