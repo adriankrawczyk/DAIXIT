@@ -20,11 +20,6 @@ const ROTATION_THREE_QUARTER_PI = Math.PI * 0.75;
 const ROTATION_PI = Math.PI;
 
 async function getSetupData(n) {
-  if (n == 0) {
-    n = 4;
-  } else if (n == 1) {
-    n = 0;
-  }
   const defaultObj = {
     playerPosition: 0,
     position: [0, CAMERA_HEIGHT, CAMERA_DISTANCE],

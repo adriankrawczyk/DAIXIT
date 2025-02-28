@@ -118,17 +118,16 @@ const Card = React.forwardRef(
       });
     }, [direction, index, cardsPosition]);
 
-    // Set initial position based on the direction when component mounts
-    useEffect(() => {
-      if (internalRef.current && cardsPosition) {
-        const initialPos = getCardsPosition(cardsPosition, index, direction);
-        internalRef.current.position.set(
-          initialPos[0],
-          initialPos[1],
-          initialPos[2]
-        );
-      }
-    }, [cardsPosition, direction, index]);
+    // useEffect(() => {
+    //   if (internalRef.current && cardsPosition) {
+    //     const initialPos = getCardsPosition(cardsPosition, index, direction);
+    //     internalRef.current.position.set(
+    //       initialPos[0],
+    //       initialPos[1],
+    //       initialPos[2]
+    //     );
+    //   }
+    // }, [cardsPosition, direction, index]);
 
     const findCardData = () => {
       if (
