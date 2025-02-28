@@ -12,6 +12,7 @@ import {
   removePlayerFromGame,
   updateThisPlayerInGame,
   handleNextRound,
+  updatePlayerInGame,
 } from "./firebase/playerMethods";
 import { fetchAllPhotos, getCardsPosition } from "./firebase/gameMethods";
 import {
@@ -133,6 +134,39 @@ const GameScene = ({ setupContext }) => {
       const playerUid = localStorage.getItem("playerUid");
       const isHost = hostUid === playerUid;
       const fetchedPlayers = Object.values(fetchedGameData.players);
+
+      if (isHost) {
+        const positionMap = new Map();
+        const playersNeedingUpdate = [];
+        let doTheUpdate = false;
+
+        fetchedPlayers.forEach((player) => {
+          let originalPosition = player.position;
+
+          while (positionMap.has(player.position)) {
+            doTheUpdate = true;
+            player.position++;
+          }
+
+          positionMap.set(player.position, player.playerUid);
+          if (player.position !== originalPosition) {
+            playersNeedingUpdate.push({
+              playerUid: player.playerUid,
+              newPosition: player.currentGameData.position,
+            });
+          }
+        });
+        if (doTheUpdate && playersNeedingUpdate.length > 0) {
+          await Promise.all(
+            playersNeedingUpdate.map((playerUpdate) =>
+              updatePlayerInGame(playerUpdate.playerUid, {
+                position: playerUpdate.newPosition,
+              })
+            )
+          );
+        }
+      }
+
       let everyPlayerAcceptedCard = true;
       let everyPlayerHasVoted = votPhase;
       for (const fetchedPlayer of fetchedPlayers) {
