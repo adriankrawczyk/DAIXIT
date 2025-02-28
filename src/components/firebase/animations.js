@@ -1,60 +1,143 @@
 import gsap from "gsap";
 
+const ANIMATION_DEFAULTS = {
+  DURATION: 0.5,
+  EASE_IN: "power2.in",
+  EASE_OUT: "power2.out",
+  EASE_INOUT: "power2.inOut",
+};
+
+const POSITION_CONSTANTS = {
+  Y: 1.9,
+  DIAGONAL_Y: 1.8,
+  Z: 5.4,
+  X: 5.4,
+  DIAGONAL: 3.6,
+  Y_TABLE: 0.6,
+  Y_VOTING: 3.85,
+  Z_TABLE: 1,
+  X_TABLE: 1,
+  DIAGONAL_TABLE: 0.7,
+};
+
+const ROTATION_CONSTANTS = {
+  X: Math.PI / 15,
+  Y: Math.PI,
+  Y_HALF: Math.PI / 2,
+  Y_QUARTER: Math.PI / 4,
+  Y_THREE_QUARTERS: (3 * Math.PI) / 4,
+  X_TABLE: Math.PI / 2,
+};
+
 export const showCardCloser = (cardRef, direction) => {
   if (!cardRef) return;
 
-  let positionObject = { duration: 0.5, ease: "power2.in" };
-  let rotationObject = { duration: 0.5, ease: "power2.out" };
+  let positionObject = {
+    duration: ANIMATION_DEFAULTS.DURATION,
+    ease: ANIMATION_DEFAULTS.EASE_IN,
+  };
+  let rotationObject = {
+    duration: ANIMATION_DEFAULTS.DURATION,
+    ease: ANIMATION_DEFAULTS.EASE_OUT,
+  };
 
   switch (direction) {
     case "Bottom": {
-      Object.assign(positionObject, { x: 0, y: 1.9, z: 3.8 });
-      Object.assign(rotationObject, { x: -Math.PI / 15, y: 0, z: 0 });
+      Object.assign(positionObject, {
+        x: 0,
+        y: POSITION_CONSTANTS.Y,
+        z: POSITION_CONSTANTS.Z,
+      });
+      Object.assign(rotationObject, { x: -ROTATION_CONSTANTS.X, y: 0, z: 0 });
       break;
     }
     case "Top": {
-      Object.assign(positionObject, { x: 0, y: 1.9, z: -3.8 });
-      Object.assign(rotationObject, { x: Math.PI / 15, y: Math.PI, z: 0 });
+      Object.assign(positionObject, {
+        x: 0,
+        y: POSITION_CONSTANTS.Y,
+        z: -POSITION_CONSTANTS.Z,
+      });
+      Object.assign(rotationObject, {
+        x: ROTATION_CONSTANTS.X,
+        y: ROTATION_CONSTANTS.Y,
+        z: 0,
+      });
       break;
     }
     case "Left": {
-      Object.assign(positionObject, { x: 3.8, y: 1.9, z: 0 });
-      Object.assign(rotationObject, { x: 0, y: Math.PI / 2, z: 0 });
+      Object.assign(positionObject, {
+        x: POSITION_CONSTANTS.X,
+        y: POSITION_CONSTANTS.Y,
+        z: 0,
+      });
+      Object.assign(rotationObject, {
+        x: 0,
+        y: ROTATION_CONSTANTS.Y_HALF,
+        z: 0,
+      });
       break;
     }
     case "Right": {
-      Object.assign(positionObject, { x: -3.8, y: 1.9, z: 0 });
-      Object.assign(rotationObject, { x: 0, y: -Math.PI / 2, z: 0 });
+      Object.assign(positionObject, {
+        x: -POSITION_CONSTANTS.X,
+        y: POSITION_CONSTANTS.Y,
+        z: 0,
+      });
+      Object.assign(rotationObject, {
+        x: 0,
+        y: -ROTATION_CONSTANTS.Y_HALF,
+        z: 0,
+      });
       break;
     }
     case "LeftBottom": {
-      Object.assign(positionObject, { x: 2.7, y: 1.8, z: 2.7 });
-      Object.assign(rotationObject, { x: 0, y: Math.PI / 4, z: 0 });
+      Object.assign(positionObject, {
+        x: POSITION_CONSTANTS.DIAGONAL,
+        y: POSITION_CONSTANTS.DIAGONAL_Y,
+        z: POSITION_CONSTANTS.DIAGONAL,
+      });
+      Object.assign(rotationObject, {
+        x: 0,
+        y: ROTATION_CONSTANTS.Y_QUARTER,
+        z: 0,
+      });
       break;
     }
     case "RightBottom": {
-      Object.assign(positionObject, { x: -2.7, y: 1.8, z: 2.7 });
+      Object.assign(positionObject, {
+        x: -POSITION_CONSTANTS.DIAGONAL,
+        y: POSITION_CONSTANTS.DIAGONAL_Y,
+        z: POSITION_CONSTANTS.DIAGONAL,
+      });
       Object.assign(rotationObject, {
         x: 0,
-        y: -Math.PI / 4,
+        y: -ROTATION_CONSTANTS.Y_QUARTER,
         z: 0,
       });
       break;
     }
     case "LeftTop": {
-      Object.assign(positionObject, { x: 2.7, y: 1.8, z: -2.7 });
+      Object.assign(positionObject, {
+        x: POSITION_CONSTANTS.DIAGONAL,
+        y: POSITION_CONSTANTS.DIAGONAL_Y,
+        z: -POSITION_CONSTANTS.DIAGONAL,
+      });
       Object.assign(rotationObject, {
         x: 0,
-        y: (3 * Math.PI) / 4,
+        y: ROTATION_CONSTANTS.Y_THREE_QUARTERS,
         z: 0,
       });
       break;
     }
     case "RightTop": {
-      Object.assign(positionObject, { x: -2.7, y: 1.8, z: -2.7 });
+      Object.assign(positionObject, {
+        x: -POSITION_CONSTANTS.DIAGONAL,
+        y: POSITION_CONSTANTS.DIAGONAL_Y,
+        z: -POSITION_CONSTANTS.DIAGONAL,
+      });
       Object.assign(rotationObject, {
         x: 0,
-        y: (-3 * Math.PI) / 4,
+        y: -ROTATION_CONSTANTS.Y_THREE_QUARTERS,
         z: 0,
       });
       break;
@@ -68,67 +151,74 @@ export const showCardCloser = (cardRef, direction) => {
 export const animateActionButtons = (acceptButtonRef, declineButtonRef) => {
   if (!acceptButtonRef || !declineButtonRef) return;
 
-  gsap.to(acceptButtonRef.scale, {
+  const scaleConfig = {
     x: 1,
     y: 1,
     z: 1,
-    duration: 0.5,
-    ease: "power2.inOut",
-  });
+    duration: ANIMATION_DEFAULTS.DURATION,
+    ease: ANIMATION_DEFAULTS.EASE_INOUT,
+  };
 
-  gsap.to(declineButtonRef.scale, {
-    x: 1,
-    y: 1,
-    z: 1,
-    duration: 0.5,
-    ease: "power2.inOut",
-  });
+  gsap.to(acceptButtonRef.scale, scaleConfig);
+  gsap.to(declineButtonRef.scale, scaleConfig);
 };
 
 export const addToTable = (cardRef, direction, setDisableHover = null) => {
   if (!cardRef) return;
 
   const positions = {
-    Bottom: { x: 0, z: 1 },
-    Top: { x: 0, z: -1 },
-    Left: { x: 1, z: 0 },
-    Right: { x: -1, z: 0 },
-    LeftBottom: { x: 0.7, z: 0.7 },
-    RightBottom: { x: -0.7, z: 0.7 },
-    LeftTop: { x: 0.7, z: -0.7 },
-    RightTop: { x: -0.7, z: -0.7 },
+    Bottom: { x: 0, z: POSITION_CONSTANTS.Z_TABLE },
+    Top: { x: 0, z: -POSITION_CONSTANTS.Z_TABLE },
+    Left: { x: POSITION_CONSTANTS.X_TABLE, z: 0 },
+    Right: { x: -POSITION_CONSTANTS.X_TABLE, z: 0 },
+    LeftBottom: {
+      x: POSITION_CONSTANTS.DIAGONAL_TABLE,
+      z: POSITION_CONSTANTS.DIAGONAL_TABLE,
+    },
+    RightBottom: {
+      x: -POSITION_CONSTANTS.DIAGONAL_TABLE,
+      z: POSITION_CONSTANTS.DIAGONAL_TABLE,
+    },
+    LeftTop: {
+      x: POSITION_CONSTANTS.DIAGONAL_TABLE,
+      z: -POSITION_CONSTANTS.DIAGONAL_TABLE,
+    },
+    RightTop: {
+      x: -POSITION_CONSTANTS.DIAGONAL_TABLE,
+      z: -POSITION_CONSTANTS.DIAGONAL_TABLE,
+    },
   };
 
   if (setDisableHover) setDisableHover(true);
 
   gsap.to(cardRef.position, {
     x: positions[direction].x,
-    y: 0.6,
+    y: POSITION_CONSTANTS.Y_TABLE,
     z: positions[direction].z,
-    duration: 0.5,
-    ease: "power2.out",
+    duration: ANIMATION_DEFAULTS.DURATION,
+    ease: ANIMATION_DEFAULTS.EASE_OUT,
   });
 
   gsap.to(cardRef.rotation, {
-    x: Math.PI / 2,
+    x: ROTATION_CONSTANTS.X_TABLE,
     y: 0,
-    z: -Math.PI / 2,
-    duration: 0.5,
-    ease: "power2.out",
+    z: -ROTATION_CONSTANTS.X_TABLE,
+    duration: ANIMATION_DEFAULTS.DURATION,
+    ease: ANIMATION_DEFAULTS.EASE_OUT,
   });
 
   if (setDisableHover) {
-    gsap.delayedCall(0.5, () => setDisableHover(false));
+    gsap.delayedCall(ANIMATION_DEFAULTS.DURATION, () => setDisableHover(false));
   }
 };
 
 export const showCardCloserOnVotingPhase = (cardRef) => {
   gsap.to(cardRef.position, {
     x: 0,
-    y: 3.85,
+    y: POSITION_CONSTANTS.Y_VOTING,
     z: 0,
-    duration: 0.5,
-    ease: "power2.out",
+    duration: ANIMATION_DEFAULTS.DURATION,
+    ease: ANIMATION_DEFAULTS.EASE_OUT,
   });
 };
 
@@ -137,19 +227,19 @@ export const animateToPosition = (cardRef, position) => {
     x: position.x,
     y: position.y,
     z: position.z,
-    duration: 0.5,
-    ease: "power2.out",
+    duration: ANIMATION_DEFAULTS.DURATION,
+    ease: ANIMATION_DEFAULTS.EASE_OUT,
   });
 };
 
 export const rotateOnTable = (cardRef) => {
   if (!cardRef) return;
   gsap.to(cardRef.rotation, {
-    x: -Math.PI / 2,
+    x: -ROTATION_CONSTANTS.X_TABLE,
     y: 0,
-    z: Math.PI / 2,
-    duration: 0.5,
-    ease: "power2.out",
+    z: ROTATION_CONSTANTS.X_TABLE,
+    duration: ANIMATION_DEFAULTS.DURATION,
+    ease: ANIMATION_DEFAULTS.EASE_OUT,
   });
 };
 
@@ -167,19 +257,19 @@ export const backToHand = (
     x: position[0],
     y: position[1],
     z: position[2],
-    duration: 0.5,
-    ease: "power2.out",
+    duration: ANIMATION_DEFAULTS.DURATION,
+    ease: ANIMATION_DEFAULTS.EASE_OUT,
   });
 
   gsap.to(cardRef.rotation, {
     x: rotation[0],
     y: rotation[1],
     z: rotation[2],
-    duration: 0.5,
-    ease: "power2.out",
+    duration: ANIMATION_DEFAULTS.DURATION,
+    ease: ANIMATION_DEFAULTS.EASE_OUT,
   });
 
   if (setDisableHover) {
-    gsap.delayedCall(0.5, () => setDisableHover(false));
+    gsap.delayedCall(ANIMATION_DEFAULTS.DURATION, () => setDisableHover(false));
   }
 };

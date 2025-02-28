@@ -1,91 +1,171 @@
+const ROTATION_HALF_PI = Math.PI / 2;
+const ROTATION_QUARTER_PI = Math.PI / 4;
+const ROTATION_THIRTEENTH_PI = Math.PI / 13;
+const TEXT_POSITION_OFFSET = 0.01;
+const BUTTON_HEIGHT = 1.5;
+const CORNER_BUTTON_HEIGHT = 1.7;
+const VOTING_BUTTON_HEIGHT = 3;
+const VOTING_POSITION_OFFSET = 1.5;
+const STANDARD_DISTANCE = 4.5;
+const CORNER_DISTANCE = 3;
+const SIDE_OFFSET = 1.7;
+const OFFSET_FACTOR = 0.707;
+const LEFT_TOP_BUTTON_HEIGHT = 2.3;
+const VOTING_LEFT_TOP_X = -1.3;
+const VOTING_LEFT_TOP_Y = 2;
+const VOTING_LEFT_TOP_Z = 3.3;
+const NEXT_ROUND_X = -1.5;
+const NEXT_ROUND_Y = 2;
+const NEXT_ROUND_Z = 0;
+const POINTS_BASE_Y = 1;
+const POINTS_DISPLAY_OFFSET = 2.5;
+const HORIZONTAL_SPACING = 0.75;
+const VERTICAL_SPACING = 0.5;
+const VOTING_BASE_X = 1;
+const VOTING_BASE_Y = 2;
+const VOTING_BASE_Z = 3.5;
+const VOTING_HORIZONTAL_SPACING = HORIZONTAL_SPACING / 1.5;
+const VOTING_VERTICAL_SPACING = VERTICAL_SPACING * 1.5;
+const CARD_UI_DEFAULT_OFFSET = 0.01;
+const CARD_UI_NEGATIVE_OFFSET = -0.6;
+const TWO_VOTER_OFFSET = 0.4;
+const MULTI_VOTER_SPACING = 0.3;
+const SMALLER_OFFSET_MULTIPLIER = 3;
+const BIGGER_OFFSET_MULTIPLIER = 6;
+
+const NORMAL_MULTIPLIER = [1, 1, 1];
+const REVERSE_X_MULTIPLIER = [-1, 1, 1];
+const REVERSE_Z_MULTIPLIER = [1, 1, -1];
+
 const bottomDefaultObject = {
-  rotation: [-Math.PI / 13, 0, 0],
-  textPosition: [0, 0, 0.01],
-  textScaleMultiplier: [1, 1, 1],
+  rotation: [-ROTATION_THIRTEENTH_PI, 0, 0],
+  textPosition: [0, 0, TEXT_POSITION_OFFSET],
+  textScaleMultiplier: NORMAL_MULTIPLIER,
 };
 
 const topDefaultObject = {
-  rotation: [Math.PI / 13, 0, 0],
-  textPosition: [0, 0, -0.01],
-  textScaleMultiplier: [-1, 1, 1],
+  rotation: [ROTATION_THIRTEENTH_PI, 0, 0],
+  textPosition: [0, 0, -TEXT_POSITION_OFFSET],
+  textScaleMultiplier: REVERSE_X_MULTIPLIER,
 };
 
 const leftDefaultObject = {
-  rotation: [0, -Math.PI / 2, 0],
-  textPosition: [0, 0, -0.01],
-  textScaleMultiplier: [-1, 1, 1],
+  rotation: [0, -ROTATION_HALF_PI, 0],
+  textPosition: [0, 0, -TEXT_POSITION_OFFSET],
+  textScaleMultiplier: REVERSE_X_MULTIPLIER,
 };
 
 const rightDefaultObject = {
-  rotation: [0, Math.PI / 2, 0],
-  textPosition: [0, 0, -0.01],
-  textScaleMultiplier: [-1, 1, 1],
+  rotation: [0, ROTATION_HALF_PI, 0],
+  textPosition: [0, 0, -TEXT_POSITION_OFFSET],
+  textScaleMultiplier: REVERSE_X_MULTIPLIER,
 };
 
 const leftBottomDefaultObject = {
-  rotation: [0, Math.PI / 4, 0],
-  textPosition: [0, 0, 0.01],
-  textScaleMultiplier: [1, 1, -1],
+  rotation: [0, ROTATION_QUARTER_PI, 0],
+  textPosition: [0, 0, TEXT_POSITION_OFFSET],
+  textScaleMultiplier: REVERSE_Z_MULTIPLIER,
 };
 
 const leftTopDefaultObject = {
-  rotation: [0, -Math.PI / 4, 0],
-  textPosition: [0, 0, -0.01],
-  textScaleMultiplier: [-1, 1, 1],
+  rotation: [0, -ROTATION_QUARTER_PI, 0],
+  textPosition: [0, 0, -TEXT_POSITION_OFFSET],
+  textScaleMultiplier: REVERSE_X_MULTIPLIER,
 };
 
 const rightTopDefaultObject = {
-  rotation: [0, Math.PI / 4, 0],
-  textPosition: [0, 0, -0.01],
-  textScaleMultiplier: [-1, 1, 1],
+  rotation: [0, ROTATION_QUARTER_PI, 0],
+  textPosition: [0, 0, -TEXT_POSITION_OFFSET],
+  textScaleMultiplier: REVERSE_X_MULTIPLIER,
 };
 
 const rightBottomDefaultObject = {
-  rotation: [0, -Math.PI / 4, 0],
-  textPosition: [0, 0, 0.01],
-  textScaleMultiplier: [1, 1, -1],
+  rotation: [0, -ROTATION_QUARTER_PI, 0],
+  textPosition: [0, 0, TEXT_POSITION_OFFSET],
+  textScaleMultiplier: REVERSE_Z_MULTIPLIER,
 };
 
-const offsetFactor = 0.707;
+const votingPhaseCommonSettings = {
+  ...bottomDefaultObject,
+  rotation: [-ROTATION_HALF_PI, 0, ROTATION_HALF_PI],
+};
+
+const PLAYER_COLORS = [
+  "blue",
+  "orange",
+  "magenta",
+  "lightgreen",
+  "cyan",
+  "yellow",
+  "purple",
+  "gold",
+];
 
 function getAcceptPositionSetupData(direction, votingPhase = false) {
   if (votingPhase) {
     return {
-      ...bottomDefaultObject,
-      rotation: [-Math.PI / 2, 0, Math.PI / 2],
-      position: [0, 3, 1.5],
+      ...votingPhaseCommonSettings,
+      position: [0, VOTING_BUTTON_HEIGHT, VOTING_POSITION_OFFSET],
     };
   }
+
   switch (direction) {
     case "Bottom":
-      return { ...bottomDefaultObject, position: [-1.7, 1.5, 3] };
+      return {
+        ...bottomDefaultObject,
+        position: [-SIDE_OFFSET, BUTTON_HEIGHT, STANDARD_DISTANCE],
+      };
     case "Top":
-      return { ...topDefaultObject, position: [1.7, 1.5, -3] };
+      return {
+        ...topDefaultObject,
+        position: [SIDE_OFFSET, BUTTON_HEIGHT, -STANDARD_DISTANCE],
+      };
     case "Left":
-      return { ...leftDefaultObject, position: [3, 1.5, 1.7] };
+      return {
+        ...leftDefaultObject,
+        position: [STANDARD_DISTANCE, BUTTON_HEIGHT, SIDE_OFFSET],
+      };
     case "Right":
-      return { ...rightDefaultObject, position: [-3, 1.5, -1.7] };
+      return {
+        ...rightDefaultObject,
+        position: [-STANDARD_DISTANCE, BUTTON_HEIGHT, -SIDE_OFFSET],
+      };
     case "LeftBottom":
       return {
         ...leftBottomDefaultObject,
-        position: [offsetFactor * 2, 1.7, offsetFactor * 4.5],
+        position: [
+          OFFSET_FACTOR * SMALLER_OFFSET_MULTIPLIER,
+          CORNER_BUTTON_HEIGHT,
+          OFFSET_FACTOR * BIGGER_OFFSET_MULTIPLIER,
+        ],
       };
     case "LeftTop":
       return {
         ...leftTopDefaultObject,
-        position: [offsetFactor * 4.5, 1.7, -offsetFactor * 2],
+        position: [
+          OFFSET_FACTOR * BIGGER_OFFSET_MULTIPLIER,
+          CORNER_BUTTON_HEIGHT,
+          -OFFSET_FACTOR * SMALLER_OFFSET_MULTIPLIER,
+        ],
       };
     case "RightTop":
       return {
         ...rightTopDefaultObject,
-        position: [-offsetFactor * 2, 1.7, -offsetFactor * 4.5],
+        position: [
+          -OFFSET_FACTOR * SMALLER_OFFSET_MULTIPLIER,
+          CORNER_BUTTON_HEIGHT,
+          -OFFSET_FACTOR * BIGGER_OFFSET_MULTIPLIER,
+        ],
       };
     case "RightBottom":
       return {
         ...rightBottomDefaultObject,
-        position: [-offsetFactor * 4.5, 1.7, offsetFactor * 2],
+        position: [
+          -OFFSET_FACTOR * BIGGER_OFFSET_MULTIPLIER,
+          CORNER_BUTTON_HEIGHT,
+          OFFSET_FACTOR * SMALLER_OFFSET_MULTIPLIER,
+        ],
       };
-
     default:
       return bottomDefaultObject;
   }
@@ -94,39 +174,67 @@ function getAcceptPositionSetupData(direction, votingPhase = false) {
 function getDeclinePositionSetupData(direction, votingPhase = false) {
   if (votingPhase) {
     return {
-      ...bottomDefaultObject,
-      rotation: [-Math.PI / 2, 0, Math.PI / 2],
-      position: [0, 3, -1.5],
+      ...votingPhaseCommonSettings,
+      position: [0, VOTING_BUTTON_HEIGHT, -VOTING_POSITION_OFFSET],
     };
   }
+
   switch (direction) {
     case "Bottom":
-      return { ...bottomDefaultObject, position: [1.7, 1.5, 3] };
+      return {
+        ...bottomDefaultObject,
+        position: [SIDE_OFFSET, BUTTON_HEIGHT, STANDARD_DISTANCE],
+      };
     case "Top":
-      return { ...topDefaultObject, position: [-1.7, 1.5, -3] };
+      return {
+        ...topDefaultObject,
+        position: [-SIDE_OFFSET, BUTTON_HEIGHT, -STANDARD_DISTANCE],
+      };
     case "Left":
-      return { ...leftDefaultObject, position: [3, 1.5, -1.7] };
+      return {
+        ...leftDefaultObject,
+        position: [STANDARD_DISTANCE, BUTTON_HEIGHT, -SIDE_OFFSET],
+      };
     case "Right":
-      return { ...rightDefaultObject, position: [-3, 1.5, 1.7] };
+      return {
+        ...rightDefaultObject,
+        position: [-STANDARD_DISTANCE, BUTTON_HEIGHT, SIDE_OFFSET],
+      };
     case "LeftBottom":
       return {
         ...leftBottomDefaultObject,
-        position: [offsetFactor * 4.5, 1.7, offsetFactor * 2],
+        position: [
+          OFFSET_FACTOR * BIGGER_OFFSET_MULTIPLIER,
+          CORNER_BUTTON_HEIGHT,
+          OFFSET_FACTOR * SMALLER_OFFSET_MULTIPLIER,
+        ],
       };
     case "LeftTop":
       return {
         ...leftTopDefaultObject,
-        position: [offsetFactor * 2, 1.7, -offsetFactor * 4.5],
+        position: [
+          OFFSET_FACTOR * SMALLER_OFFSET_MULTIPLIER,
+          CORNER_BUTTON_HEIGHT,
+          -OFFSET_FACTOR * BIGGER_OFFSET_MULTIPLIER,
+        ],
       };
     case "RightTop":
       return {
         ...rightTopDefaultObject,
-        position: [-offsetFactor * 4.5, 1.7, -offsetFactor * 2],
+        position: [
+          -OFFSET_FACTOR * BIGGER_OFFSET_MULTIPLIER,
+          CORNER_BUTTON_HEIGHT,
+          -OFFSET_FACTOR * SMALLER_OFFSET_MULTIPLIER,
+        ],
       };
     case "RightBottom":
       return {
         ...rightBottomDefaultObject,
-        position: [-offsetFactor * 2, 1.7, offsetFactor * 4.5],
+        position: [
+          -OFFSET_FACTOR * SMALLER_OFFSET_MULTIPLIER,
+          CORNER_BUTTON_HEIGHT,
+          OFFSET_FACTOR * BIGGER_OFFSET_MULTIPLIER,
+        ],
       };
     default:
       return bottomDefaultObject;
@@ -136,21 +244,45 @@ function getDeclinePositionSetupData(direction, votingPhase = false) {
 function getCenteredButtonData(direction) {
   switch (direction) {
     case "Bottom":
-      return { ...bottomDefaultObject, position: [0, 1.5, 3] };
+      return {
+        ...bottomDefaultObject,
+        position: [0, BUTTON_HEIGHT, STANDARD_DISTANCE],
+      };
     case "Top":
-      return { ...topDefaultObject, position: [0, 1.5, -3] };
+      return {
+        ...topDefaultObject,
+        position: [0, BUTTON_HEIGHT, -STANDARD_DISTANCE],
+      };
     case "Left":
-      return { ...leftDefaultObject, position: [3, 1.5, 0] };
+      return {
+        ...leftDefaultObject,
+        position: [STANDARD_DISTANCE, BUTTON_HEIGHT, 0],
+      };
     case "Right":
-      return { ...rightDefaultObject, position: [-3, 1.5, 0] };
+      return {
+        ...rightDefaultObject,
+        position: [-STANDARD_DISTANCE, BUTTON_HEIGHT, 0],
+      };
     case "LeftBottom":
-      return { ...leftBottomDefaultObject, position: [2.1, 1.5, 2.1] };
+      return {
+        ...leftBottomDefaultObject,
+        position: [CORNER_DISTANCE, BUTTON_HEIGHT, CORNER_DISTANCE],
+      };
     case "LeftTop":
-      return { ...leftTopDefaultObject, position: [2.1, 1.5, -2.1] };
+      return {
+        ...leftTopDefaultObject,
+        position: [CORNER_DISTANCE, BUTTON_HEIGHT, -CORNER_DISTANCE],
+      };
     case "RightTop":
-      return { ...rightTopDefaultObject, position: [-2.1, 1.5, -2.1] };
+      return {
+        ...rightTopDefaultObject,
+        position: [-CORNER_DISTANCE, BUTTON_HEIGHT, -CORNER_DISTANCE],
+      };
     case "RightBottom":
-      return { ...rightBottomDefaultObject, position: [-2.1, 1.5, 2.1] };
+      return {
+        ...rightBottomDefaultObject,
+        position: [-CORNER_DISTANCE, BUTTON_HEIGHT, CORNER_DISTANCE],
+      };
     default:
       return bottomDefaultObject;
   }
@@ -159,28 +291,52 @@ function getCenteredButtonData(direction) {
 function getLeftTopButtonData(direction, votingPhase = false) {
   if (votingPhase) {
     return {
-      ...bottomDefaultObject,
-      rotation: [-Math.PI / 2, 0, Math.PI / 2],
-      position: [-1.3, 2, 3.3],
+      ...votingPhaseCommonSettings,
+      position: [VOTING_LEFT_TOP_X, VOTING_LEFT_TOP_Y, VOTING_LEFT_TOP_Z],
     };
   }
+
   switch (direction) {
     case "Bottom":
-      return { ...bottomDefaultObject, position: [-1.7, 2.3, 3] };
+      return {
+        ...bottomDefaultObject,
+        position: [-SIDE_OFFSET * 2, LEFT_TOP_BUTTON_HEIGHT, STANDARD_DISTANCE],
+      };
     case "Top":
-      return { ...topDefaultObject, position: [1.7, 2.3, -3] };
+      return {
+        ...topDefaultObject,
+        position: [SIDE_OFFSET, LEFT_TOP_BUTTON_HEIGHT, -STANDARD_DISTANCE],
+      };
     case "Left":
-      return { ...leftDefaultObject, position: [3, 2.3, 1.7] };
+      return {
+        ...leftDefaultObject,
+        position: [STANDARD_DISTANCE, LEFT_TOP_BUTTON_HEIGHT, SIDE_OFFSET],
+      };
     case "Right":
-      return { ...rightDefaultObject, position: [-3, 2.3, -1.7] };
+      return {
+        ...rightDefaultObject,
+        position: [-STANDARD_DISTANCE, LEFT_TOP_BUTTON_HEIGHT, -SIDE_OFFSET],
+      };
     case "LeftBottom":
-      return { ...leftBottomDefaultObject, position: [2.1, 2.3, 2.1] };
+      return {
+        ...leftBottomDefaultObject,
+        position: [CORNER_DISTANCE, LEFT_TOP_BUTTON_HEIGHT, CORNER_DISTANCE],
+      };
     case "LeftTop":
-      return { ...leftTopDefaultObject, position: [2.1, 2.3, -2.1] };
+      return {
+        ...leftTopDefaultObject,
+        position: [CORNER_DISTANCE, LEFT_TOP_BUTTON_HEIGHT, -CORNER_DISTANCE],
+      };
     case "RightTop":
-      return { ...rightTopDefaultObject, position: [-2.1, 2.3, -2.1] };
+      return {
+        ...rightTopDefaultObject,
+        position: [-CORNER_DISTANCE, LEFT_TOP_BUTTON_HEIGHT, -CORNER_DISTANCE],
+      };
     case "RightBottom":
-      return { ...rightBottomDefaultObject, position: [-2.1, 2.3, 2.1] };
+      return {
+        ...rightBottomDefaultObject,
+        position: [-CORNER_DISTANCE, LEFT_TOP_BUTTON_HEIGHT, CORNER_DISTANCE],
+      };
     default:
       return bottomDefaultObject;
   }
@@ -188,44 +344,24 @@ function getLeftTopButtonData(direction, votingPhase = false) {
 
 function getNextRoundButtonData() {
   return {
-    ...bottomDefaultObject,
-    rotation: [-Math.PI / 2, 0, Math.PI / 2],
-    position: [-1.5, 2, 0],
+    ...votingPhaseCommonSettings,
+    position: [NEXT_ROUND_X, NEXT_ROUND_Y, NEXT_ROUND_Z],
   };
 }
 
 function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
   let basePosition;
-  let horizontalSpacing = 0.75;
-  let verticalSpacing = 0.5;
-
   let row = Math.floor(playerPosition / 2);
   let col = playerPosition % 2;
-
-  const playerColors = [
-    "blue",
-    "orange",
-    "magenta",
-    "lightgreen",
-    "cyan",
-    "yellow",
-    "purple",
-    "gold",
-  ];
-  const color = playerColors[playerPosition];
+  const color = PLAYER_COLORS[playerPosition];
 
   if (votingPhase) {
-    const basePosition = [1, 2, 3.5];
-    row = Math.floor(playerPosition / 2);
-    col = playerPosition % 2;
-
     return {
-      ...bottomDefaultObject,
-      rotation: [-Math.PI / 2, 0, Math.PI / 2],
+      ...votingPhaseCommonSettings,
       position: [
-        basePosition[0] + (col * horizontalSpacing) / 1.5,
-        basePosition[1],
-        basePosition[2] - row * verticalSpacing * 1.5,
+        VOTING_BASE_X + col * VOTING_HORIZONTAL_SPACING,
+        VOTING_BASE_Y,
+        VOTING_BASE_Z - row * VOTING_VERTICAL_SPACING,
       ],
       color,
     };
@@ -233,12 +369,12 @@ function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
 
   switch (direction) {
     case "Bottom":
-      basePosition = [-2.5, 1, 3];
+      basePosition = [-POINTS_DISPLAY_OFFSET, POINTS_BASE_Y, STANDARD_DISTANCE];
       return {
         ...bottomDefaultObject,
         position: [
-          basePosition[0] + col * horizontalSpacing,
-          basePosition[1] - row * verticalSpacing,
+          basePosition[0] + col * HORIZONTAL_SPACING,
+          basePosition[1] - row * VERTICAL_SPACING,
           basePosition[2],
         ],
         rotation: [0, 0, 0],
@@ -246,12 +382,12 @@ function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
       };
 
     case "Top":
-      basePosition = [2.5, 1, -3];
+      basePosition = [POINTS_DISPLAY_OFFSET, POINTS_BASE_Y, -STANDARD_DISTANCE];
       return {
         ...topDefaultObject,
         position: [
-          basePosition[0] - col * horizontalSpacing,
-          basePosition[1] - row * verticalSpacing,
+          basePosition[0] - col * HORIZONTAL_SPACING,
+          basePosition[1] - row * VERTICAL_SPACING,
           basePosition[2],
         ],
         rotation: [0, 0, 0],
@@ -259,84 +395,104 @@ function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
       };
 
     case "Left":
-      basePosition = [3, 1, 2.5];
+      basePosition = [STANDARD_DISTANCE, POINTS_BASE_Y, POINTS_DISPLAY_OFFSET];
       return {
         ...leftDefaultObject,
         position: [
           basePosition[0],
-          basePosition[1] - row * verticalSpacing,
-          basePosition[2] - col * horizontalSpacing,
+          basePosition[1] - row * VERTICAL_SPACING,
+          basePosition[2] - col * HORIZONTAL_SPACING,
         ],
         color,
       };
 
     case "Right":
-      basePosition = [-3, 1, -2.5];
+      basePosition = [
+        -STANDARD_DISTANCE,
+        POINTS_BASE_Y,
+        -POINTS_DISPLAY_OFFSET,
+      ];
       return {
         ...rightDefaultObject,
         position: [
           basePosition[0],
-          basePosition[1] - row * verticalSpacing,
-          basePosition[2] + col * horizontalSpacing,
+          basePosition[1] - row * VERTICAL_SPACING,
+          basePosition[2] + col * HORIZONTAL_SPACING,
         ],
         color,
       };
 
     case "LeftBottom":
-      basePosition = [2.5, 1, 2.5];
+      basePosition = [
+        POINTS_DISPLAY_OFFSET,
+        POINTS_BASE_Y,
+        POINTS_DISPLAY_OFFSET,
+      ];
       return {
         ...leftBottomDefaultObject,
         position: [
-          basePosition[0] - col * horizontalSpacing,
-          basePosition[1] - row * verticalSpacing,
-          basePosition[2] - col * horizontalSpacing,
+          basePosition[0] - col * HORIZONTAL_SPACING,
+          basePosition[1] - row * VERTICAL_SPACING,
+          basePosition[2] - col * HORIZONTAL_SPACING,
         ],
         color,
       };
 
     case "LeftTop":
-      basePosition = [2.5, 1, -2.5];
+      basePosition = [
+        POINTS_DISPLAY_OFFSET,
+        POINTS_BASE_Y,
+        -POINTS_DISPLAY_OFFSET,
+      ];
       return {
         ...leftTopDefaultObject,
         position: [
-          basePosition[0] - col * horizontalSpacing,
-          basePosition[1] - row * verticalSpacing,
-          basePosition[2] + col * horizontalSpacing,
+          basePosition[0] - col * HORIZONTAL_SPACING,
+          basePosition[1] - row * VERTICAL_SPACING,
+          basePosition[2] + col * HORIZONTAL_SPACING,
         ],
         color,
       };
 
     case "RightTop":
-      basePosition = [-2.5, 1, -2.5];
+      basePosition = [
+        -POINTS_DISPLAY_OFFSET,
+        POINTS_BASE_Y,
+        -POINTS_DISPLAY_OFFSET,
+      ];
       return {
         ...rightTopDefaultObject,
         position: [
-          basePosition[0] + col * horizontalSpacing,
-          basePosition[1] - row * verticalSpacing,
-          basePosition[2] + col * horizontalSpacing,
+          basePosition[0] + col * HORIZONTAL_SPACING,
+          basePosition[1] - row * VERTICAL_SPACING,
+          basePosition[2] + col * HORIZONTAL_SPACING,
         ],
         color,
       };
 
     case "RightBottom":
-      basePosition = [-2.5, 1, 2.5];
+      basePosition = [
+        -POINTS_DISPLAY_OFFSET,
+        POINTS_BASE_Y,
+        POINTS_DISPLAY_OFFSET,
+      ];
       return {
         ...rightBottomDefaultObject,
         position: [
-          basePosition[0] + col * horizontalSpacing,
-          basePosition[1] - row * verticalSpacing,
-          basePosition[2] - col * horizontalSpacing,
+          basePosition[0] + col * HORIZONTAL_SPACING,
+          basePosition[1] - row * VERTICAL_SPACING,
+          basePosition[2] - col * HORIZONTAL_SPACING,
         ],
         color,
       };
 
     default:
-      basePosition = [-2.5, 1, 3];
+      basePosition = [-POINTS_DISPLAY_OFFSET, POINTS_BASE_Y, STANDARD_DISTANCE];
       return {
         ...bottomDefaultObject,
         position: [
-          basePosition[0] + col * horizontalSpacing,
-          basePosition[1] - row * verticalSpacing,
+          basePosition[0] + col * HORIZONTAL_SPACING,
+          basePosition[1] - row * VERTICAL_SPACING,
           basePosition[2],
         ],
         color,
@@ -346,38 +502,38 @@ function getPointDisplayerData(direction, playerPosition, votingPhase = false) {
 
 function getCardUIData(cardPosition, index, votersLength) {
   const result = {
-    ...bottomDefaultObject,
-    rotation: [-Math.PI / 2, 0, Math.PI / 2],
+    ...votingPhaseCommonSettings,
   };
 
   switch (votersLength) {
     case -1:
       result.position = [
-        cardPosition.x - 0.6,
-        cardPosition.y + 0.01,
+        cardPosition.x + CARD_UI_NEGATIVE_OFFSET,
+        cardPosition.y + CARD_UI_DEFAULT_OFFSET,
         cardPosition.z,
       ];
       break;
     case 0:
-      result.position = [cardPosition.x, cardPosition.y + 0.01, cardPosition.z];
-      break;
     case 1:
-      result.position = [cardPosition.x, cardPosition.y + 0.01, cardPosition.z];
+      result.position = [
+        cardPosition.x,
+        cardPosition.y + CARD_UI_DEFAULT_OFFSET,
+        cardPosition.z,
+      ];
       break;
     case 2:
-      const twoVoterOffset = 0.4;
       result.position = [
-        cardPosition.x - twoVoterOffset / 2 + twoVoterOffset * index,
-        cardPosition.y + 0.01,
+        cardPosition.x - TWO_VOTER_OFFSET / 2 + TWO_VOTER_OFFSET * index,
+        cardPosition.y + CARD_UI_DEFAULT_OFFSET,
         cardPosition.z,
       ];
       break;
     default:
-      const width = 0.3 * (votersLength - 1);
+      const width = MULTI_VOTER_SPACING * (votersLength - 1);
       const startX = cardPosition.x - width / 2;
       result.position = [
-        startX + 0.3 * index,
-        cardPosition.y + 0.01,
+        startX + MULTI_VOTER_SPACING * index,
+        cardPosition.y + CARD_UI_DEFAULT_OFFSET,
         cardPosition.z,
       ];
       break;

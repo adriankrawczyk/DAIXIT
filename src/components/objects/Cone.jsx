@@ -7,7 +7,7 @@ const Cone = () => {
 
   return (
     <mesh position={[0, -0.5, 0]} rotation={[Math.PI, 0, 0]}>
-      <coneGeometry args={[3, 2]} />
+      <coneGeometry args={[4.5, 2]} />
       {/* <meshBasicMaterial/> */}
       <meshStandardMaterial attachArray="material" map={texture} />
     </mesh>

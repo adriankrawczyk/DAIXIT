@@ -2,18 +2,44 @@ import { ref, get, update } from "firebase/database";
 import { database } from "./firebaseConfig";
 import { setPlayerName } from "./playerMethods";
 import FirebaseLogger from "../lobby/firebase/firebaseLogger";
+const CAMERA_HEIGHT = 2;
+const CAMERA_DISTANCE = 6;
+const LOOK_AT_DISTANCE = 5;
+const DIRECTIONAL_LIGHT_HEIGHT = 2;
+const DIRECTIONAL_LIGHT_DISTANCE = 3;
+const CARDS_HEIGHT = 0.75;
+const CARDS_DISTANCE = 4.5;
+const DIAGONAL_DISTANCE = 4;
+const DIAGONAL_LOOK_AT = 3.5;
+const DIAGONAL_CARDS_DISTANCE = 3.25;
+const ROTATION_EIGHTH_PI = Math.PI / 8;
+const ROTATION_SIXTEENTH_PI = Math.PI / 16;
+const ROTATION_QUARTER_PI = Math.PI / 4;
+const ROTATION_HALF_PI = Math.PI / 2;
+const ROTATION_THREE_QUARTER_PI = Math.PI * 0.75;
+const ROTATION_PI = Math.PI;
 
 async function getSetupData(n) {
+  if (n == 0) {
+    n = 4;
+  } else if (n == 1) {
+    n = 0;
+  }
   const defaultObj = {
     playerPosition: 0,
-    position: [0, 2, 4.4],
-    lookAt: [0, 0, -5],
+    position: [0, CAMERA_HEIGHT, CAMERA_DISTANCE],
+    lookAt: [0, 0, -LOOK_AT_DISTANCE],
     multiplier: [1, 1, 1],
-    directionalLightPosition: [0, 2, 2.4],
-    cardsPosition: [0, 0.75, 3],
-    cardsRotation: [-Math.PI / 8, 0, Math.PI / 16],
+    directionalLightPosition: [
+      0,
+      DIRECTIONAL_LIGHT_HEIGHT,
+      DIRECTIONAL_LIGHT_DISTANCE,
+    ],
+    cardsPosition: [0, CARDS_HEIGHT, CARDS_DISTANCE],
+    cardsRotation: [-ROTATION_EIGHTH_PI, 0, ROTATION_SIXTEENTH_PI],
     direction: "Bottom",
   };
+
   switch (n) {
     case 0: {
       return defaultObj;
@@ -21,84 +47,152 @@ async function getSetupData(n) {
     case 1: {
       return {
         playerPosition: 1,
-        position: [0, 2, -4.4],
-        lookAt: [0, 0, 5],
+        position: [0, CAMERA_HEIGHT, -CAMERA_DISTANCE],
+        lookAt: [0, 0, LOOK_AT_DISTANCE],
         multiplier: [-1, 1, 1],
-        directionalLightPosition: [0, 2, -2.4],
-        cardsPosition: [0, 0.75, -3],
-        cardsRotation: [Math.PI / 8, Math.PI, Math.PI / 16],
+        directionalLightPosition: [
+          0,
+          DIRECTIONAL_LIGHT_HEIGHT,
+          -DIRECTIONAL_LIGHT_DISTANCE,
+        ],
+        cardsPosition: [0, CARDS_HEIGHT, -CARDS_DISTANCE],
+        cardsRotation: [ROTATION_EIGHTH_PI, ROTATION_PI, ROTATION_SIXTEENTH_PI],
         direction: "Top",
       };
     }
     case 2: {
       return {
         playerPosition: 2,
-        position: [4.4, 2, 0],
-        lookAt: [-5, 0, 0],
+        position: [CAMERA_DISTANCE, CAMERA_HEIGHT, 0],
+        lookAt: [-LOOK_AT_DISTANCE, 0, 0],
         multiplier: [1, 1, -1],
-        directionalLightPosition: [2.4, 2, 0],
-        cardsPosition: [3, 0.75, 0],
-        cardsRotation: [-Math.PI / 16, Math.PI / 2, Math.PI / 8],
+        directionalLightPosition: [
+          DIRECTIONAL_LIGHT_DISTANCE,
+          DIRECTIONAL_LIGHT_HEIGHT,
+          0,
+        ],
+        cardsPosition: [CARDS_DISTANCE, CARDS_HEIGHT, 0],
+        cardsRotation: [
+          -ROTATION_SIXTEENTH_PI,
+          ROTATION_HALF_PI,
+          ROTATION_EIGHTH_PI,
+        ],
         direction: "Left",
       };
     }
     case 3: {
       return {
         playerPosition: 3,
-        position: [-4.4, 2, 0],
-        lookAt: [-5, 0, 0],
+        position: [-CAMERA_DISTANCE, CAMERA_HEIGHT, 0],
+        lookAt: [-LOOK_AT_DISTANCE, 0, 0],
         multiplier: [-1, 1, 1],
-        directionalLightPosition: [-2.4, 2, 0],
-        cardsPosition: [-3, 0.75, 0],
-        cardsRotation: [Math.PI / 16, -Math.PI / 2, Math.PI / 8],
+        directionalLightPosition: [
+          -DIRECTIONAL_LIGHT_DISTANCE,
+          DIRECTIONAL_LIGHT_HEIGHT,
+          0,
+        ],
+        cardsPosition: [-CARDS_DISTANCE, CARDS_HEIGHT, 0],
+        cardsRotation: [
+          ROTATION_SIXTEENTH_PI,
+          -ROTATION_HALF_PI,
+          ROTATION_EIGHTH_PI,
+        ],
         direction: "Right",
       };
     }
     case 4: {
       return {
         playerPosition: 4,
-        position: [3.1, 2, 3.1],
-        lookAt: [-3.5, 0, 3.5],
+        position: [DIAGONAL_DISTANCE, CAMERA_HEIGHT, DIAGONAL_DISTANCE],
+        lookAt: [-DIAGONAL_LOOK_AT, 0, DIAGONAL_LOOK_AT],
         multiplier: [1, 1, -1],
-        directionalLightPosition: [1.7, 2, 1.7],
-        cardsPosition: [2.1, 0.75, 2.1],
-        cardsRotation: [-Math.PI / 16, Math.PI / 4, Math.PI / 16],
+        directionalLightPosition: [
+          DIRECTIONAL_LIGHT_DISTANCE,
+          DIRECTIONAL_LIGHT_HEIGHT,
+          DIRECTIONAL_LIGHT_DISTANCE,
+        ],
+        cardsPosition: [
+          DIAGONAL_CARDS_DISTANCE,
+          CARDS_HEIGHT,
+          DIAGONAL_CARDS_DISTANCE,
+        ],
+        cardsRotation: [
+          -ROTATION_SIXTEENTH_PI,
+          ROTATION_QUARTER_PI,
+          ROTATION_SIXTEENTH_PI,
+        ],
         direction: "LeftBottom",
       };
     }
     case 5: {
       return {
         playerPosition: 5,
-        position: [3.1, 2, -3.1],
-        lookAt: [-3.5, 0, 3.5],
+        position: [DIAGONAL_DISTANCE, CAMERA_HEIGHT, -DIAGONAL_DISTANCE],
+        lookAt: [-DIAGONAL_LOOK_AT, 0, DIAGONAL_LOOK_AT],
         multiplier: [1, 1, 1],
-        directionalLightPosition: [1.7, 2, -1.7],
-        cardsPosition: [2.1, 0.75, -2.1],
-        cardsRotation: [Math.PI / 16, Math.PI * 0.75, Math.PI / 16],
+        directionalLightPosition: [
+          DIRECTIONAL_LIGHT_DISTANCE,
+          DIRECTIONAL_LIGHT_HEIGHT,
+          -DIRECTIONAL_LIGHT_DISTANCE,
+        ],
+        cardsPosition: [
+          DIAGONAL_CARDS_DISTANCE,
+          CARDS_HEIGHT,
+          -DIAGONAL_CARDS_DISTANCE,
+        ],
+        cardsRotation: [
+          ROTATION_SIXTEENTH_PI,
+          ROTATION_THREE_QUARTER_PI,
+          ROTATION_SIXTEENTH_PI,
+        ],
         direction: "LeftTop",
       };
     }
     case 6: {
       return {
         playerPosition: 6,
-        position: [-3.1, 2, -3.1],
-        lookAt: [3.5, 0, 3.5],
+        position: [-DIAGONAL_DISTANCE, CAMERA_HEIGHT, -DIAGONAL_DISTANCE],
+        lookAt: [DIAGONAL_LOOK_AT, 0, DIAGONAL_LOOK_AT],
         multiplier: [-1, 1, 1],
-        directionalLightPosition: [-1.7, 2, -1.7],
-        cardsPosition: [-2.1, 0.75, -2.1],
-        cardsRotation: [Math.PI / 16, -Math.PI * 0.75, Math.PI / 16],
+        directionalLightPosition: [
+          -DIRECTIONAL_LIGHT_DISTANCE,
+          DIRECTIONAL_LIGHT_HEIGHT,
+          -DIRECTIONAL_LIGHT_DISTANCE,
+        ],
+        cardsPosition: [
+          -DIAGONAL_CARDS_DISTANCE,
+          CARDS_HEIGHT,
+          -DIAGONAL_CARDS_DISTANCE,
+        ],
+        cardsRotation: [
+          ROTATION_SIXTEENTH_PI,
+          -ROTATION_THREE_QUARTER_PI,
+          ROTATION_SIXTEENTH_PI,
+        ],
         direction: "RightTop",
       };
     }
     case 7: {
       return {
         playerPosition: 7,
-        position: [-3.1, 2, 3.1],
-        lookAt: [3.5, 0, -3.5],
+        position: [-DIAGONAL_DISTANCE, CAMERA_HEIGHT, DIAGONAL_DISTANCE],
+        lookAt: [DIAGONAL_LOOK_AT, 0, -DIAGONAL_LOOK_AT],
         multiplier: [-1, 1, -1],
-        directionalLightPosition: [-1.7, 2, 1.7],
-        cardsPosition: [-2.1, 0.75, 2.1],
-        cardsRotation: [-Math.PI / 16, -Math.PI / 4, Math.PI / 16],
+        directionalLightPosition: [
+          -DIRECTIONAL_LIGHT_DISTANCE,
+          DIRECTIONAL_LIGHT_HEIGHT,
+          DIRECTIONAL_LIGHT_DISTANCE,
+        ],
+        cardsPosition: [
+          -DIAGONAL_CARDS_DISTANCE,
+          CARDS_HEIGHT,
+          DIAGONAL_CARDS_DISTANCE,
+        ],
+        cardsRotation: [
+          -ROTATION_SIXTEENTH_PI,
+          -ROTATION_QUARTER_PI,
+          ROTATION_SIXTEENTH_PI,
+        ],
         direction: "RightBottom",
       };
     }
