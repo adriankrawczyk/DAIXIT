@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useThree } from "@react-three/fiber";
 import TextLabel from "./TextLabel";
 import { setPlayerName } from "../../firebase/playerMethods";
 
@@ -15,8 +15,8 @@ const Input = ({
 }) => {
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
-  const ref = useRef();
-  const hiddenInputRef = useRef();
+  const meshRef = useRef();
+  const { gl } = useThree();
 
   useEffect(() => {
     setText(defaultText);
@@ -43,69 +43,62 @@ const Input = ({
   }, [text]);
 
   // Handle focus and show virtual keyboard on mobile
-  const handleInputFocus = () => {
+  const handleInputFocus = (e) => {
+    e.stopPropagation();
     setIsFocused(true);
-    // Focus the hidden input to bring up the virtual keyboard on mobile
-    if (hiddenInputRef.current) {
-      hiddenInputRef.current.focus();
-    }
+
+    // Create and focus a temporary input element for mobile
+    const tempInput = document.createElement("input");
+    tempInput.style.position = "fixed";
+    tempInput.style.opacity = "0";
+    tempInput.style.height = "1px";
+    tempInput.style.width = "1px";
+    tempInput.style.pointerEvents = "none";
+    tempInput.value = text;
+
+    document.body.appendChild(tempInput);
+    tempInput.focus();
+
+    // Handle input from mobile keyboard
+    const handleMobileInput = () => {
+      setText(tempInput.value);
+    };
+
+    tempInput.addEventListener("input", handleMobileInput);
+
+    // Remove the temporary input when done
+    const handleBlur = () => {
+      document.body.removeChild(tempInput);
+      setIsFocused(false);
+    };
+
+    tempInput.addEventListener("blur", handleBlur);
   };
 
-  // Handle blur event
-  const handleInputBlur = () => {
+  // Handle pointer missed event
+  const handlePointerMissed = () => {
     setIsFocused(false);
   };
 
-  // Handle input change from virtual keyboard
-  const handleInputChange = (e) => {
-    setText(e.target.value);
-  };
-
   return (
-    <>
-      {/* Hidden input element to capture mobile keyboard input */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          opacity: 0,
-          pointerEvents: isFocused ? "auto" : "none",
-        }}
-      >
-        <input
-          ref={hiddenInputRef}
-          type="text"
-          value={text}
-          onChange={handleInputChange}
-          onBlur={handleInputBlur}
-          autoFocus={isFocused}
-          style={{ opacity: 0, height: "1px", width: "1px" }}
-        />
-      </div>
-
-      <mesh
-        ref={ref}
-        rotation={rotation}
-        position={position}
-        onClick={(e) => {
-          e.stopPropagation();
-          handleInputFocus();
-        }}
-        onPointerMissed={handleInputBlur}
-      >
-        <TextLabel
-          position={textPosition}
-          fontSize={fontSize}
-          text={text}
-          anchorX="center"
-          anchorY="middle"
-          textScale={textScale}
-        />
-        <boxGeometry args={dimensions} />
-        <meshBasicMaterial color={isFocused ? "lightgray" : "white"} />
-      </mesh>
-    </>
+    <mesh
+      ref={meshRef}
+      rotation={rotation}
+      position={position}
+      onClick={handleInputFocus}
+      onPointerMissed={handlePointerMissed}
+    >
+      <TextLabel
+        position={textPosition}
+        fontSize={fontSize}
+        text={text}
+        anchorX="center"
+        anchorY="middle"
+        textScale={textScale}
+      />
+      <boxGeometry args={dimensions} />
+      <meshBasicMaterial color={isFocused ? "lightgray" : "white"} />
+    </mesh>
   );
 };
 
