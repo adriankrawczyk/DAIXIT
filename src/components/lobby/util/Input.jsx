@@ -16,6 +16,7 @@ const Input = ({
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const ref = useRef();
+  const hiddenInputRef = useRef();
 
   useEffect(() => {
     setText(defaultText);
@@ -24,6 +25,7 @@ const Input = ({
   useEffect(() => {
     if (!isFocused) return;
 
+    // For desktop keyboard input
     const handleKeyDown = (event) => {
       if (event.key === "Backspace") {
         setText((prev) => prev.slice(0, -1));
@@ -40,28 +42,70 @@ const Input = ({
     set(text);
   }, [text]);
 
+  // Handle focus and show virtual keyboard on mobile
+  const handleInputFocus = () => {
+    setIsFocused(true);
+    // Focus the hidden input to bring up the virtual keyboard on mobile
+    if (hiddenInputRef.current) {
+      hiddenInputRef.current.focus();
+    }
+  };
+
+  // Handle blur event
+  const handleInputBlur = () => {
+    setIsFocused(false);
+  };
+
+  // Handle input change from virtual keyboard
+  const handleInputChange = (e) => {
+    setText(e.target.value);
+  };
+
   return (
-    <mesh
-      ref={ref}
-      rotation={rotation}
-      position={position}
-      onClick={(e) => {
-        e.stopPropagation();
-        setIsFocused(true);
-      }}
-      onPointerMissed={() => setIsFocused(false)}
-    >
-      <TextLabel
-        position={textPosition}
-        fontSize={fontSize}
-        text={text}
-        anchorX="center"
-        anchorY="middle"
-        textScale={textScale}
-      />
-      <boxGeometry args={dimensions} />
-      <meshBasicMaterial color={isFocused ? "lightgray" : "white"} />
-    </mesh>
+    <>
+      {/* Hidden input element to capture mobile keyboard input */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          opacity: 0,
+          pointerEvents: isFocused ? "auto" : "none",
+        }}
+      >
+        <input
+          ref={hiddenInputRef}
+          type="text"
+          value={text}
+          onChange={handleInputChange}
+          onBlur={handleInputBlur}
+          autoFocus={isFocused}
+          style={{ opacity: 0, height: "1px", width: "1px" }}
+        />
+      </div>
+
+      <mesh
+        ref={ref}
+        rotation={rotation}
+        position={position}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleInputFocus();
+        }}
+        onPointerMissed={handleInputBlur}
+      >
+        <TextLabel
+          position={textPosition}
+          fontSize={fontSize}
+          text={text}
+          anchorX="center"
+          anchorY="middle"
+          textScale={textScale}
+        />
+        <boxGeometry args={dimensions} />
+        <meshBasicMaterial color={isFocused ? "lightgray" : "white"} />
+      </mesh>
+    </>
   );
 };
 
