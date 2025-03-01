@@ -11,15 +11,18 @@ const CARDS_HEIGHT = 0.75;
 const CARDS_DISTANCE = 4.5;
 const DIAGONAL_DISTANCE = 4;
 const DIAGONAL_LOOK_AT = 3.5;
-const DIAGONAL_CARDS_DISTANCE = 3.25;
+const DIAGONAL_CARDS_DISTANCE = 3.15;
 const ROTATION_EIGHTH_PI = Math.PI / 8;
 const ROTATION_SIXTEENTH_PI = Math.PI / 16;
 const ROTATION_QUARTER_PI = Math.PI / 4;
 const ROTATION_HALF_PI = Math.PI / 2;
 const ROTATION_THREE_QUARTER_PI = Math.PI * 0.75;
 const ROTATION_PI = Math.PI;
+const CARDS_OFFSET = 0;
 
 async function getSetupData(n) {
+  //uncomment to change player view
+  //n = 7;
   const defaultObj = {
     playerPosition: 0,
     position: [0, CAMERA_HEIGHT, CAMERA_DISTANCE],
@@ -30,7 +33,7 @@ async function getSetupData(n) {
       DIRECTIONAL_LIGHT_HEIGHT,
       DIRECTIONAL_LIGHT_DISTANCE,
     ],
-    cardsPosition: [0, CARDS_HEIGHT, CARDS_DISTANCE],
+    cardsPosition: [-CARDS_OFFSET, CARDS_HEIGHT, CARDS_DISTANCE],
     cardsRotation: [-ROTATION_EIGHTH_PI, 0, ROTATION_SIXTEENTH_PI],
     direction: "Bottom",
   };
@@ -50,7 +53,7 @@ async function getSetupData(n) {
           DIRECTIONAL_LIGHT_HEIGHT,
           -DIRECTIONAL_LIGHT_DISTANCE,
         ],
-        cardsPosition: [0, CARDS_HEIGHT, -CARDS_DISTANCE],
+        cardsPosition: [-CARDS_OFFSET, CARDS_HEIGHT, -CARDS_DISTANCE],
         cardsRotation: [ROTATION_EIGHTH_PI, ROTATION_PI, ROTATION_SIXTEENTH_PI],
         direction: "Top",
       };
@@ -66,7 +69,7 @@ async function getSetupData(n) {
           DIRECTIONAL_LIGHT_HEIGHT,
           0,
         ],
-        cardsPosition: [CARDS_DISTANCE, CARDS_HEIGHT, 0],
+        cardsPosition: [CARDS_DISTANCE, CARDS_HEIGHT, -CARDS_OFFSET],
         cardsRotation: [
           -ROTATION_SIXTEENTH_PI,
           ROTATION_HALF_PI,
@@ -86,7 +89,7 @@ async function getSetupData(n) {
           DIRECTIONAL_LIGHT_HEIGHT,
           0,
         ],
-        cardsPosition: [-CARDS_DISTANCE, CARDS_HEIGHT, 0],
+        cardsPosition: [-CARDS_DISTANCE, CARDS_HEIGHT, -CARDS_OFFSET],
         cardsRotation: [
           ROTATION_SIXTEENTH_PI,
           -ROTATION_HALF_PI,
@@ -109,7 +112,7 @@ async function getSetupData(n) {
         cardsPosition: [
           DIAGONAL_CARDS_DISTANCE,
           CARDS_HEIGHT,
-          DIAGONAL_CARDS_DISTANCE,
+          DIAGONAL_CARDS_DISTANCE + CARDS_OFFSET,
         ],
         cardsRotation: [
           -ROTATION_SIXTEENTH_PI,
@@ -131,7 +134,7 @@ async function getSetupData(n) {
           -DIRECTIONAL_LIGHT_DISTANCE,
         ],
         cardsPosition: [
-          DIAGONAL_CARDS_DISTANCE,
+          DIAGONAL_CARDS_DISTANCE - CARDS_OFFSET,
           CARDS_HEIGHT,
           -DIAGONAL_CARDS_DISTANCE,
         ],
@@ -157,7 +160,7 @@ async function getSetupData(n) {
         cardsPosition: [
           -DIAGONAL_CARDS_DISTANCE,
           CARDS_HEIGHT,
-          -DIAGONAL_CARDS_DISTANCE,
+          -DIAGONAL_CARDS_DISTANCE + CARDS_OFFSET,
         ],
         cardsRotation: [
           ROTATION_SIXTEENTH_PI,
@@ -181,7 +184,7 @@ async function getSetupData(n) {
         cardsPosition: [
           -DIAGONAL_CARDS_DISTANCE,
           CARDS_HEIGHT,
-          DIAGONAL_CARDS_DISTANCE,
+          DIAGONAL_CARDS_DISTANCE - CARDS_OFFSET,
         ],
         cardsRotation: [
           -ROTATION_SIXTEENTH_PI,
@@ -390,9 +393,11 @@ const calculateCardsLayout = (playerSetup, numberOfCards) => {
 };
 
 function getCardsPosition(cardsPosition, i, direction) {
+  const OFFSET_DIVIDER = 2.4;
+  const INDEX_OFFSET = 3;
   if (direction === "Bottom" || direction === "Top") {
     return [
-      (i - 2) / 2 + cardsPosition[0],
+      (i - INDEX_OFFSET) / OFFSET_DIVIDER + cardsPosition[0],
       cardsPosition[1],
       i * 0.01 + cardsPosition[2],
     ];
@@ -400,22 +405,30 @@ function getCardsPosition(cardsPosition, i, direction) {
     return [
       i * 0.01 + cardsPosition[0],
       cardsPosition[1],
-      (i - 2) / 2 + cardsPosition[2],
+      (i - INDEX_OFFSET) / OFFSET_DIVIDER + cardsPosition[2],
     ];
   } else {
     const offsetFactor = 0.707;
 
     if (direction === "LeftBottom" || direction === "RightTop") {
       return [
-        cardsPosition[0] + i * 0.01 + ((i - 2) / 2) * offsetFactor,
+        cardsPosition[0] +
+          i * 0.01 +
+          ((i - INDEX_OFFSET) / OFFSET_DIVIDER) * offsetFactor,
         cardsPosition[1],
-        cardsPosition[2] - i * 0.01 - ((i - 2) / 2) * offsetFactor,
+        cardsPosition[2] -
+          i * 0.01 -
+          ((i - INDEX_OFFSET) / OFFSET_DIVIDER) * offsetFactor,
       ];
     } else if (direction === "LeftTop" || direction === "RightBottom") {
       return [
-        cardsPosition[0] + i * 0.01 + ((i - 2) / 2) * offsetFactor,
+        cardsPosition[0] +
+          i * 0.01 +
+          ((i - INDEX_OFFSET) / OFFSET_DIVIDER) * offsetFactor,
         cardsPosition[1],
-        cardsPosition[2] - i * 0.01 + ((i - 2) / 2) * offsetFactor,
+        cardsPosition[2] -
+          i * 0.01 +
+          ((i - INDEX_OFFSET) / OFFSET_DIVIDER) * offsetFactor,
       ];
     }
   }

@@ -348,7 +348,7 @@ const GameScene = ({ setupContext }) => {
             )}
           <Hand
             ref={handRef}
-            numberOfCards={5}
+            numberOfCards={7}
             fetchedPhotos={fetchedPhotos}
             isThisPlayerHost={isThisPlayerHost}
             isThisPlayerWordMaker={isThisPlayerWordMaker}
