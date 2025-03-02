@@ -208,7 +208,7 @@ const OtherPlayerHand = ({
                   setCurrentHovered={() => {}}
                   currentClicked={-1}
                   onCardClick={() => {
-                    if (isSelected)
+                    if (isSelected && votingPhase)
                       handleCardClick(
                         cardKey,
                         cardIndex,

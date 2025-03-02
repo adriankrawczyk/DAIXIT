@@ -245,9 +245,13 @@ async function getOtherPlayersData() {
   return hands;
 }
 
-function getRandomCard(allPhotos) {
+function getRandomCard(allPhotos, setAllPhotos) {
+  if (allPhotos.length === 0) return null;
   const randomIndex = Math.floor(Math.random() * allPhotos.length);
-  return allPhotos[randomIndex];
+  const selectedCard = allPhotos[randomIndex];
+  const updatedPhotos = allPhotos.filter((_, index) => index !== randomIndex);
+  setAllPhotos(updatedPhotos);
+  return selectedCard;
 }
 
 async function getHandFromDatabase() {

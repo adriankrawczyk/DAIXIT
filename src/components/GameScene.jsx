@@ -245,7 +245,7 @@ const GameScene = ({ setupContext }) => {
     if (fetchedPhotos.length > 0) {
       const currentHand = await getHandFromDatabase();
       if (currentHand && currentHand.length > 0) {
-        const newCard = getRandomCard(fetchedPhotos);
+        const newCard = getRandomCard(fetchedPhotos, setFetchedPhotos);
         const updatedHand = [...currentHand];
         updatedHand[index] = newCard;
         await setHandInDatabase(updatedHand);
@@ -362,6 +362,7 @@ const GameScene = ({ setupContext }) => {
             }
             direction={direction}
             afterVoteData={afterVoteData}
+            setFetchedPhotos={setFetchedPhotos}
           />
           <OtherPlayerCards
             setVotingSelectedCardPosition={setVotingSelectedCardPosition}

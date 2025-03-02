@@ -39,6 +39,7 @@ const Hand = forwardRef(
     {
       numberOfCards,
       fetchedPhotos,
+      setFetchedPhotos,
       isThisPlayerHost,
       isThisPlayerWordMaker,
       wordMakerText,
@@ -102,7 +103,7 @@ const Hand = forwardRef(
       async function setStartingHand() {
         if (fetchedPhotos.length > 0) {
           const newPhotoUrls = Array.from({ length: numberOfCards }, () =>
-            getRandomCard(fetchedPhotos)
+            getRandomCard(fetchedPhotos, setFetchedPhotos)
           );
           setPhotoUrls(newPhotoUrls);
           await setHandInDatabase(newPhotoUrls);
