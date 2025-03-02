@@ -202,7 +202,6 @@ async function getSetupData(n) {
 
 async function getPosition() {
   const playerCurrentGameDataRef = await getPlayersCurrentGameDataRef();
-
   try {
     const gameDataSnapshot = await get(playerCurrentGameDataRef);
     const gameData = gameDataSnapshot.val();
@@ -438,7 +437,11 @@ async function updateGameWithData(updateObj) {
   const gameRef = ref(database, `games/${gameId}`);
   const snapshot = await get(gameRef);
   if (!snapshot.val()) return;
-  await update(gameRef, updateObj);
+  try {
+    await update(gameRef, updateObj);
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 async function getOtherPlayerSelectedCards() {

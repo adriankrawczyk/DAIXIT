@@ -262,21 +262,6 @@ async function handleNextRound() {
 
     updates[`games/${gameId}/players/${player.playerUid}/chosenCard`] = {};
 
-    if (
-      player.chosenCard &&
-      player.currentGameData &&
-      player.currentGameData.hand
-    ) {
-      const handCards = [...player.currentGameData.hand];
-      const cardToRemoveUrl = player.chosenCard.url;
-      const updatedHand = handCards.filter(
-        (cardUrl) => cardUrl !== cardToRemoveUrl
-      );
-      updates[
-        `games/${gameId}/players/${player.playerUid}/currentGameData/hand`
-      ] = updatedHand;
-    }
-
     updates[
       `games/${gameId}/players/${player.playerUid}/votingSelectedCardData`
     ] = null;

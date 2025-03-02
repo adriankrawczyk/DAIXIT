@@ -300,7 +300,7 @@ function getLeftTopButtonData(direction, votingPhase = false) {
     case "Bottom":
       return {
         ...bottomDefaultObject,
-        position: [-SIDE_OFFSET * 2, LEFT_TOP_BUTTON_HEIGHT, STANDARD_DISTANCE],
+        position: [-SIDE_OFFSET, LEFT_TOP_BUTTON_HEIGHT, STANDARD_DISTANCE],
       };
     case "Top":
       return {
