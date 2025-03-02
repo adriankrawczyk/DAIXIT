@@ -60,7 +60,12 @@ const OtherPlayerHand = ({
   };
 
   useEffect(() => {
-    setSelectedCards([]);
+    const changeRound = async () => {
+      await fetchAnimations();
+
+      setSelectedCards([]);
+    };
+    changeRound();
   }, [round]);
 
   useEffect(() => {
