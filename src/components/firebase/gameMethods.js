@@ -245,12 +245,10 @@ async function getOtherPlayersData() {
   return hands;
 }
 
-function getRandomCard(allPhotos, setAllPhotos) {
+function getRandomCard(allPhotos) {
   if (allPhotos.length === 0) return null;
   const randomIndex = Math.floor(Math.random() * allPhotos.length);
   const selectedCard = allPhotos[randomIndex];
-  const updatedPhotos = allPhotos.filter((_, index) => index !== randomIndex);
-  setAllPhotos(updatedPhotos);
   return selectedCard;
 }
 

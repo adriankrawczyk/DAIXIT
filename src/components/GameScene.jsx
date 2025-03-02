@@ -245,6 +245,7 @@ const GameScene = ({ setupContext }) => {
       const currentHand = await getHandFromDatabase();
       if (currentHand && currentHand.length > 0) {
         const newCard = getRandomCard(fetchedPhotos, setFetchedPhotos);
+        setFetchedPhotos(fetchedPhotos.filter((url) => url !== newCard));
         const updatedHand = [...currentHand];
         updatedHand[index] = newCard;
         await setHandInDatabase(updatedHand);

@@ -102,9 +102,11 @@ const Hand = forwardRef(
 
       async function setStartingHand() {
         if (fetchedPhotos.length > 0) {
-          const newPhotoUrls = Array.from({ length: numberOfCards }, () =>
-            getRandomCard(fetchedPhotos, setFetchedPhotos)
-          );
+          const newPhotoUrls = Array.from({ length: numberOfCards }, () => {
+            const randomUrl = getRandomCard(fetchedPhotos, setFetchedPhotos);
+            setFetchedPhotos(fetchedPhotos.filter((url) => url !== randomUrl));
+            return randomUrl;
+          });
           setPhotoUrls(newPhotoUrls);
           await setHandInDatabase(newPhotoUrls);
         }
