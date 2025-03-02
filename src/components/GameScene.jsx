@@ -237,7 +237,6 @@ const GameScene = ({ setupContext }) => {
     setIsThisPlayerWordMaker(false);
     setWordMakerText("");
     setChosenWord("");
-    setSelectedCards([]);
     setChosenCard({});
     const index = handRef.current.selectedCard;
     handRef.current.backToHand(index);
@@ -377,6 +376,7 @@ const GameScene = ({ setupContext }) => {
             afterVoteData={afterVoteData}
             selectedCards={selectedCards}
             setSelectedCards={setSelectedCards}
+            round={round}
           />
         </>
       ) : (

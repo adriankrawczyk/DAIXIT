@@ -25,6 +25,7 @@ const OtherPlayerHand = ({
   afterVoteData,
   selectedCards,
   setSelectedCards,
+  round,
 }) => {
   const { votingPhase } = useSetup();
   const [otherPlayersData, setOtherPlayersData] = useState([]);
@@ -47,15 +48,20 @@ const OtherPlayerHand = ({
         (hand) => hand.playerPosition === playerPosition
       );
       if (!playerHand) return;
-
       const { position, rotation } = calculateCardsLayout(
         playerHand,
         numberOfCards
       )[index];
-
+      setSelectedCards(
+        selectedCards.filter((card) => card !== cardRef.current)
+      );
       backToHand(cardRef.current, position, rotation);
     }
   };
+
+  useEffect(() => {
+    setSelectedCards([]);
+  }, [round]);
 
   useEffect(() => {
     const fetchData = async () => {
