@@ -35,6 +35,7 @@ const OtherPlayerHand = ({
     []
   );
   const cardsRef = useRef({});
+  const previousRoundRef = useRef(round);
 
   const handleAnimation = (animation, cardRef) => {
     if (!cardRef?.current) return;
@@ -61,12 +62,36 @@ const OtherPlayerHand = ({
 
   useEffect(() => {
     const changeRound = async () => {
-      await fetchAnimations();
+      if (previousRoundRef.current !== round) {
+        const returnAllCardsToHands = async () => {
+          for (const card of selectedCards) {
+            for (const playerHand of otherPlayerHandsData) {
+              for (let i = 0; i < numberOfCards; i++) {
+                const key = `${playerHand.playerPosition}-${i}`;
+                if (cardsRef.current[key]?.current === card) {
+                  const { position, rotation } = calculateCardsLayout(
+                    playerHand,
+                    numberOfCards
+                  )[i];
+                  backToHand(card, position, rotation);
+                  await new Promise((resolve) => setTimeout(resolve, 50));
+                }
+              }
+            }
+          }
 
-      setSelectedCards([]);
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          setSelectedCards([]);
+        };
+
+        await returnAllCardsToHands();
+        await fetchAnimations();
+        previousRoundRef.current = round;
+      }
     };
+
     changeRound();
-  }, [round]);
+  }, [round, otherPlayerHandsData, selectedCards]);
 
   useEffect(() => {
     const fetchData = async () => {

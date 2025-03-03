@@ -25,7 +25,6 @@ const Input = ({
   useEffect(() => {
     if (!isFocused) return;
 
-    // For desktop keyboard input
     const handleKeyDown = (event) => {
       if (event.key === "Backspace") {
         setText((prev) => prev.slice(0, -1));
@@ -42,12 +41,10 @@ const Input = ({
     set(text);
   }, [text]);
 
-  // Handle focus and show virtual keyboard on mobile
   const handleInputFocus = (e) => {
     e.stopPropagation();
     setIsFocused(true);
 
-    // Create and focus a temporary input element for mobile
     const tempInput = document.createElement("input");
     tempInput.style.position = "fixed";
     tempInput.style.opacity = "0";
@@ -59,14 +56,12 @@ const Input = ({
     document.body.appendChild(tempInput);
     tempInput.focus();
 
-    // Handle input from mobile keyboard
     const handleMobileInput = () => {
       setText(tempInput.value);
     };
 
     tempInput.addEventListener("input", handleMobileInput);
 
-    // Remove the temporary input when done
     const handleBlur = () => {
       document.body.removeChild(tempInput);
       setIsFocused(false);
@@ -75,7 +70,6 @@ const Input = ({
     tempInput.addEventListener("blur", handleBlur);
   };
 
-  // Handle pointer missed event
   const handlePointerMissed = () => {
     setIsFocused(false);
   };
