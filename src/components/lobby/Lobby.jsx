@@ -17,7 +17,7 @@ const Lobby = () => {
       setAllPhotos(photos);
     };
     log();
-  });
+  }, []);
   const gameId = localStorage.getItem("currentGame");
   if (gameId) {
     leaveGame(gameId, localStorage.getItem("playerUid"));
