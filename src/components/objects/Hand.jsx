@@ -85,6 +85,8 @@ const Hand = forwardRef(
       cardsRef,
       setDisableHover,
       backToHand: handleBackToHand,
+      acceptClicked,
+      setCurrentClicked,
       setSelectedCard,
       selectedCard,
       updateCardUrl,
@@ -242,12 +244,12 @@ const Hand = forwardRef(
       }
     };
 
-    const acceptClicked = async () => {
-      setSelectedCard(currentClicked);
-      handleAddCardOnTable(currentClicked);
+    const acceptClicked = async (url = null, currentIndex = null) => {
+      setSelectedCard(currentIndex || currentClicked);
+      handleAddCardOnTable(currentIndex || currentClicked);
       const chosenCardObj = {
-        index: currentClicked,
-        url: photoUrls[currentClicked],
+        index: currentIndex || currentClicked,
+        url: url || photoUrls[currentClicked],
         playerUid: localStorage.getItem("playerUid"),
       };
       await updateThisPlayerInGame({ chosenCard: chosenCardObj });
