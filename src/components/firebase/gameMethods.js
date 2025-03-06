@@ -457,7 +457,10 @@ async function getOtherPlayerSelectedCards() {
       playerData.chosenCard &&
       Object.values(playerData.chosenCard).length
     ) {
-      selectedCards.push(playerData.chosenCard);
+      selectedCards.push({
+        ...playerData.chosenCard,
+        playerUid: playerData.playerUid,
+      });
     }
   });
   return selectedCards;
