@@ -207,19 +207,20 @@ const Hand = forwardRef(
         setPhotoUrls(updatedUrls);
       }
     };
-    const handleAddCardOnTable = async (index) => {
+    const handleAddCardOnTable = async (index, addAnimation = true) => {
       if (cardsRef.current[index]) {
         if (isThisPlayerWordMaker && !chosenWord.length) {
           await updateGameWithData({ chosenWord: wordMakerText });
           setChosenWord(wordMakerText);
         }
         addToTable(cardsRef.current[index], direction, setDisableHover);
-        await addAnimationToOtherPlayers({
-          type: "addOnTable",
-          playerPosition,
-          index,
-          direction,
-        });
+        if (addAnimation)
+          await addAnimationToOtherPlayers({
+            type: "addOnTable",
+            playerPosition,
+            index,
+            direction,
+          });
       }
     };
 
@@ -246,7 +247,10 @@ const Hand = forwardRef(
 
     const acceptClicked = async (url = null, currentIndex = null) => {
       setSelectedCard(currentIndex || currentClicked);
-      handleAddCardOnTable(currentIndex || currentClicked);
+      handleAddCardOnTable(
+        currentIndex || currentClicked,
+        !url && !currentIndex
+      );
       const chosenCardObj = {
         index: currentIndex || currentClicked,
         url: url || photoUrls[currentClicked],

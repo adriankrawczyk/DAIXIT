@@ -43,11 +43,11 @@ const OtherPlayerHand = ({
 
   const handleAnimation = (animation, cardRef) => {
     if (!cardRef?.current) return;
-
     const { type, direction, playerPosition, index } = animation;
+
     if (type === "addOnTable") {
       setSelectedCards((prev) => [...prev, cardRef.current]);
-      addToTable(cardRef.current, direction);
+      addToTable(cardRef.current, direction, null, votingPhase);
     } else if (type === "backToHand") {
       const playerHand = otherPlayerHandsData.find(
         (hand) => hand.playerPosition === playerPosition
@@ -101,10 +101,14 @@ const OtherPlayerHand = ({
           if (playerHand) {
             const cardKey = `${playerHand.playerPosition}-${cardData.index}`;
             const cardRef = cardsRef.current[cardKey];
-
             if (cardRef?.current) {
               setSelectedCards((prev) => [...prev, cardRef.current]);
-              addToTable(cardRef.current, playerHand.direction);
+              addToTable(
+                cardRef.current,
+                playerHand.direction,
+                null,
+                votingPhase
+              );
 
               if (votingPhase) {
                 rotateOnTable(cardRef.current);

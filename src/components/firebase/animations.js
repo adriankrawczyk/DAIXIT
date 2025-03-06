@@ -163,9 +163,13 @@ export const animateActionButtons = (acceptButtonRef, declineButtonRef) => {
   gsap.to(declineButtonRef.scale, scaleConfig);
 };
 
-export const addToTable = (cardRef, direction, setDisableHover = null) => {
+export const addToTable = (
+  cardRef,
+  direction,
+  setDisableHover = null,
+  votingPhase = false
+) => {
   if (!cardRef) return;
-
   const positions = {
     Bottom: { x: 0, z: POSITION_CONSTANTS.Z_TABLE },
     Top: { x: 0, z: -POSITION_CONSTANTS.Z_TABLE },
@@ -207,6 +211,11 @@ export const addToTable = (cardRef, direction, setDisableHover = null) => {
     ease: ANIMATION_DEFAULTS.EASE_OUT,
   });
 
+  // if (votingPhase) {
+  //   setTimeout(() => {
+  //     rotateOnTable(cardRef);
+  //   }, ANIMATION_DEFAULTS.DURATION);
+  // }
   if (setDisableHover) {
     gsap.delayedCall(ANIMATION_DEFAULTS.DURATION, () => setDisableHover(false));
   }
