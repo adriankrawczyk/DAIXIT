@@ -26,6 +26,7 @@ const OtherPlayerHand = ({
   selectedCards,
   setSelectedCards,
   round,
+  players,
 }) => {
   const { votingPhase } = useSetup();
   const [otherPlayersData, setOtherPlayersData] = useState([]);
@@ -34,8 +35,10 @@ const OtherPlayerHand = ({
   const [selectedCardsFromDatabase, setSelectedCardsFromDatabase] = useState(
     []
   );
+  const [isInitialized, setIsInitialized] = useState(false);
   const cardsRef = useRef({});
   const previousRoundRef = useRef(round);
+  const hasRefreshedCardsRef = useRef(false);
 
   const handleAnimation = (animation, cardRef) => {
     if (!cardRef?.current) return;
@@ -59,6 +62,68 @@ const OtherPlayerHand = ({
       backToHand(cardRef.current, position, rotation);
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const players = await getOtherPlayersData();
+      setOtherPlayersData(players);
+      const handsData = await Promise.all(
+        players.map((player) => getSetupData(player.position))
+      );
+      setOtherPlayerHandsData(handsData);
+      setIsInitialized(true);
+    };
+
+    fetchData();
+    const dataInterval = setInterval(fetchData, 1000);
+    return () => clearInterval(dataInterval);
+  }, []);
+
+  useEffect(() => {
+    const refreshOtherPlayersCards = async () => {
+      if (
+        !isInitialized ||
+        hasRefreshedCardsRef.current ||
+        !otherPlayerHandsData.length
+      ) {
+        return;
+      }
+      const selectedCardsData = await getOtherPlayerSelectedCards();
+      if (selectedCardsData && selectedCardsData.length > 0) {
+        for (const cardData of selectedCardsData) {
+          const playerPosition = players.find(
+            (player) => player.playerUid === cardData.playerUid
+          ).currentGameData.position;
+          const playerHand = otherPlayerHandsData.find(
+            (hand) => hand.playerPosition === playerPosition
+          );
+          if (playerHand) {
+            const cardKey = `${playerHand.playerPosition}-${cardData.index}`;
+            const cardRef = cardsRef.current[cardKey];
+
+            if (cardRef?.current) {
+              setSelectedCards((prev) => [...prev, cardRef.current]);
+              addToTable(cardRef.current, playerHand.direction);
+
+              if (votingPhase) {
+                rotateOnTable(cardRef.current);
+              }
+            }
+          }
+        }
+      }
+
+      hasRefreshedCardsRef.current = true;
+    };
+
+    refreshOtherPlayersCards();
+  }, [isInitialized, otherPlayerHandsData, votingPhase]);
+
+  useEffect(() => {
+    if (previousRoundRef.current !== round) {
+      hasRefreshedCardsRef.current = false;
+    }
+  }, [round]);
 
   useEffect(() => {
     const changeRound = async () => {
@@ -92,22 +157,6 @@ const OtherPlayerHand = ({
 
     changeRound();
   }, [round, otherPlayerHandsData, selectedCards]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const players = await getOtherPlayersData();
-      setOtherPlayersData(players);
-      setOtherPlayerHandsData(
-        await Promise.all(
-          players.map((player) => getSetupData(player.position))
-        )
-      );
-    };
-
-    fetchData();
-    const dataInterval = setInterval(fetchData, 1000);
-    return () => clearInterval(dataInterval);
-  }, []);
 
   useEffect(() => {
     const handleVotingPhase = async () => {

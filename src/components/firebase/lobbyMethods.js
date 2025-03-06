@@ -77,20 +77,24 @@ async function joinToGame(gameId) {
     );
     const playerInGameRefSnapshot = await get(playerInGameRef);
     const playerInGameData = playerInGameRefSnapshot.val();
-    //if (!playerInGameData) temporary
-    await update(playerInGameRef, {
-      currentGameData,
-      chosenCard: {},
-      wordMaker: false,
-      points: 0,
-      pointsInThisRound: 0,
-    });
 
-    await update(playerInGameRef, {
+    const updateObj = {
       playerUid,
       name,
       inGame: true,
-    });
+    };
+
+    if (!playerInGameData) {
+      Object.assign(updateObj, {
+        currentGameData,
+        chosenCard: {},
+        wordMaker: false,
+        points: 0,
+        pointsInThisRound: 0,
+      });
+    }
+
+    await update(playerInGameRef, updateObj);
 
     onDisconnect(playerInGameRef).update({ inGame: false });
 

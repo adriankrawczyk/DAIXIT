@@ -5,14 +5,20 @@ import StartGameUI from "./objects/startGameUI";
 import Input from "./lobby/util/Input";
 import SpinningWheel from "./objects/SpinningWheel";
 import { fetchGameData, joinToGame } from "./firebase/lobbyMethods";
-import { getPosition, updateGameWithData } from "./firebase/gameMethods";
+import {
+  getOtherPlayerSelectedCards,
+  getPosition,
+  updateGameWithData,
+} from "./firebase/gameMethods";
 import FirebaseLogger from "./lobby/firebase/firebaseLogger";
+import { rotateOnTable } from "./firebase/animations";
 import {
   calculateAndAddPoints,
   removePlayerFromGame,
   updateThisPlayerInGame,
   handleNextRound,
   updatePlayerInGame,
+  getSelectedCard,
 } from "./firebase/playerMethods";
 import { fetchAllPhotos, getCardsPosition } from "./firebase/gameMethods";
 import {
@@ -83,6 +89,7 @@ const GameScene = ({ setupContext }) => {
   const [pointsAdded, setPointsAdded] = useState(false);
   const [afterVoteData, setAfterVoteData] = useState(null);
   const nextRoundButtonRef = useRef();
+  const refreshCardsExecuted = useRef(false);
 
   const setup = async () => {
     const pos = await getPosition();
@@ -120,6 +127,33 @@ const GameScene = ({ setupContext }) => {
     };
     join();
   }, []);
+
+  const refreshCards = async () => {
+    if (!handRef.current || refreshCardsExecuted.current) return;
+    refreshCardsExecuted.current = true;
+    const thisPlayerSelectedCardFromDatabase = await getSelectedCard();
+
+    if (thisPlayerSelectedCardFromDatabase) {
+      await handRef.current.acceptClicked(
+        thisPlayerSelectedCardFromDatabase.url,
+        thisPlayerSelectedCardFromDatabase.index
+      );
+
+      if (votingPhase) {
+        rotateOnTable(
+          handRef.current.cardsRef.current[
+            thisPlayerSelectedCardFromDatabase.index
+          ]
+        );
+      }
+    }
+  };
+  useEffect(() => {
+    if (joined && handRef.current && !refreshCardsExecuted.current) {
+      refreshCards();
+    }
+  }, [joined, handRef.current]);
+
   useEffect(() => {
     setFetchedPhotos(allPhotos);
   }, [allPhotos]);
@@ -378,6 +412,7 @@ const GameScene = ({ setupContext }) => {
             selectedCards={selectedCards}
             setSelectedCards={setSelectedCards}
             round={round}
+            players={players}
           />
         </>
       ) : (

@@ -291,6 +291,15 @@ async function handleNextRound() {
   await update(ref(database), updates);
 }
 
+async function getSelectedCard() {
+  const gameId = window.location.href.split("/").pop();
+  const playerUid = localStorage.getItem("playerUid");
+  const playerRef = ref(database, `games/${gameId}/players/${playerUid}`);
+  const snapshot = await get(playerRef);
+  const playerData = snapshot.val();
+  return playerData.chosenCard ? playerData.chosenCard : null;
+}
+
 export {
   setPlayerData,
   setPlayerName,
@@ -303,4 +312,5 @@ export {
   updateThisPlayerInGame,
   calculateAndAddPoints,
   handleNextRound,
+  getSelectedCard,
 };
