@@ -138,7 +138,6 @@ const GameScene = ({ setupContext }) => {
         thisPlayerSelectedCardFromDatabase.url,
         thisPlayerSelectedCardFromDatabase.index
       );
-
       if (votingPhase) {
         rotateOnTable(
           handRef.current.cardsRef.current[
@@ -168,7 +167,7 @@ const GameScene = ({ setupContext }) => {
       const playerUid = localStorage.getItem("playerUid");
       const isHost = hostUid === playerUid;
       const fetchedPlayers = Object.values(fetchedGameData.players);
-
+      let voted = false;
       if (isHost) {
         const positionMap = new Map();
         const playersNeedingUpdate = [];
@@ -204,6 +203,12 @@ const GameScene = ({ setupContext }) => {
       let everyPlayerAcceptedCard = true;
       let everyPlayerHasVoted = votPhase;
       for (const fetchedPlayer of fetchedPlayers) {
+        if (
+          fetchedPlayer.playerUid === playerUid &&
+          typeof fetchedPlayer.votingSelectedCardData === "object"
+        ) {
+          voted = true;
+        }
         if (
           !fetchedPlayer.wordMaker &&
           typeof fetchedPlayer.votingSelectedCardData !== "object"
@@ -252,6 +257,7 @@ const GameScene = ({ setupContext }) => {
       setNumberOfPlayers(fetchedPlayers.length);
       setGameStarted(started);
       setPlayers(fetchedPlayers);
+      if (voted && !hasVoted) setHasVoted(true);
     };
 
     const interval = setInterval(fetchDataAndHostTheGame, 1000);
@@ -272,6 +278,7 @@ const GameScene = ({ setupContext }) => {
     setWordMakerText("");
     setChosenWord("");
     setChosenCard({});
+    if (!handRef.current) return;
     const index = handRef.current.selectedCard;
     handRef.current.backToHand(index);
     handRef.current.setSelectedCard(-1);

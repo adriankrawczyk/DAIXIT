@@ -234,6 +234,14 @@ export const animateToPosition = (cardRef, position) => {
 
 export const rotateOnTable = (cardRef) => {
   if (!cardRef) return;
+
+  const isAlreadyRotated =
+    Math.abs(cardRef.rotation.x + ROTATION_CONSTANTS.X_TABLE) < 0.01 &&
+    Math.abs(cardRef.rotation.y) < 0.01 &&
+    Math.abs(cardRef.rotation.z - ROTATION_CONSTANTS.X_TABLE) < 0.01;
+
+  if (isAlreadyRotated) return;
+
   gsap.to(cardRef.rotation, {
     x: -ROTATION_CONSTANTS.X_TABLE,
     y: 0,
@@ -242,7 +250,6 @@ export const rotateOnTable = (cardRef) => {
     ease: ANIMATION_DEFAULTS.EASE_OUT,
   });
 };
-
 export const backToHand = (
   cardRef,
   position,

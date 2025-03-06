@@ -39,6 +39,7 @@ const OtherPlayerHand = ({
   const cardsRef = useRef({});
   const previousRoundRef = useRef(round);
   const hasRefreshedCardsRef = useRef(false);
+  const votingPhaseHandled = useRef(false);
 
   const handleAnimation = (animation, cardRef) => {
     if (!cardRef?.current) return;
@@ -121,7 +122,7 @@ const OtherPlayerHand = ({
 
   useEffect(() => {
     if (previousRoundRef.current !== round) {
-      hasRefreshedCardsRef.current = false;
+      votingPhaseHandled.current = false;
     }
   }, [round]);
 
@@ -160,7 +161,7 @@ const OtherPlayerHand = ({
 
   useEffect(() => {
     const handleVotingPhase = async () => {
-      if (votingPhase) {
+      if (votingPhase && votingPhaseHandled.current !== true) {
         await fetchAnimations();
         const cards = await getOtherPlayerSelectedCards();
         setSelectedCardsFromDatabase(
@@ -171,6 +172,7 @@ const OtherPlayerHand = ({
             rotateOnTable(selectedCard);
           }, (index + 1) * 500);
         });
+        votingPhaseHandled.current = true;
       }
     };
     handleVotingPhase();
