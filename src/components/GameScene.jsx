@@ -344,7 +344,7 @@ const GameScene = ({ setupContext }) => {
                 inputData.position[2],
               ]}
               dimensions={[2, 0.5, 0.01]}
-              defaultText={""}
+              defaultText={"Your special word..."}
               set={setWordMakerText}
               fontSize={18}
               rotation={inputData.rotation}
@@ -393,7 +393,9 @@ const GameScene = ({ setupContext }) => {
             fetchedPhotos={fetchedPhotos}
             isThisPlayerHost={isThisPlayerHost}
             isThisPlayerWordMaker={isThisPlayerWordMaker}
-            wordMakerText={wordMakerText}
+            wordMakerText={
+              wordMakerText === "Your special word..." ? "" : wordMakerText
+            }
             setVotingSelectedCardPosition={setVotingSelectedCardPosition}
             setVotingSelectedCardRef={setVotingSelectedCardRef}
             votingSelectedCardRef={votingSelectedCardRef}

@@ -16,7 +16,6 @@ const Input = ({
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const meshRef = useRef();
-  const { gl } = useThree();
 
   useEffect(() => {
     setText(defaultText);
@@ -43,15 +42,16 @@ const Input = ({
 
   const handleInputFocus = (e) => {
     e.stopPropagation();
-    setIsFocused(true);
+    if (text === defaultText) setText("");
 
+    setIsFocused(true);
     const tempInput = document.createElement("input");
     tempInput.style.position = "fixed";
     tempInput.style.opacity = "0";
     tempInput.style.height = "1px";
     tempInput.style.width = "1px";
     tempInput.style.pointerEvents = "none";
-    tempInput.value = text;
+    tempInput.value = text === defaultText ? "" : text;
 
     document.body.appendChild(tempInput);
     tempInput.focus();
