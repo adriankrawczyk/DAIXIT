@@ -1,38 +1,17 @@
 import React, {
-  useEffect,
   useRef,
-  useState,
   forwardRef,
   useImperativeHandle,
+  useEffect,
 } from "react";
 import Card from "../card/Card";
-import { useSetup } from "../../context/SetupContext";
-import {
-  setHandInDatabase,
-  getHandFromDatabase,
-  getRandomCard,
-  getCardsPosition,
-} from "../../firebase/gameMethods";
-import { calculateCardsLayout } from "../../firebase/gameMethods";
-import {
-  addAnimationToOtherPlayers,
-  updateThisPlayerInGame,
-} from "../../firebase/playerMethods";
-import {
-  addToTable,
-  backToHand,
-  showCardCloser,
-  animateActionButtons,
-  rotateOnTable,
-  showCardCloserOnVotingPhase,
-  animateToPosition,
-} from "../../firebase/animations";
 import ActionButton from "../ActionButton";
 import {
   getAcceptPositionSetupData,
   getDeclinePositionSetupData,
 } from "../../firebase/uiMethods";
-import { updateGameWithData } from "../../firebase/gameMethods";
+import { animateActionButtons } from "../../firebase/animations";
+import useHandLogic from "./useHandLogic";
 
 const Hand = forwardRef(
   (
@@ -52,38 +31,62 @@ const Hand = forwardRef(
     },
     ref
   ) => {
-    const [currentHovered, setCurrentHovered] = useState(-1);
-    const [currentClicked, setCurrentClicked] = useState(-1);
-    const [selectedCard, setSelectedCard] = useState(-1);
-    const [inMenu, setInMenu] = useState(false);
-    const [disableHover, setDisableHover] = useState(true);
-    const [photoUrls, setPhotoUrls] = useState([]);
     const acceptButtonRef = useRef();
     const declineButtonRef = useRef();
-    const cardsRef = useRef({});
+
     const {
-      cardsPosition,
-      cardsRotation,
-      playerPosition,
+      currentHovered,
+      setCurrentHovered,
+      currentClicked,
+      setCurrentClicked,
+      selectedCard,
+      setSelectedCard,
+      inMenu,
+      disableHover,
+      photoUrls,
+      cardsRef,
+      cardsLayout,
       direction,
       chosenWord,
-      setChosenWord,
-      setChosenCard,
       chosenCard,
       votingPhase,
-    } = useSetup();
+      handleCardClick,
+      handleBackToHand,
+      acceptClicked,
+      declineClicked,
+      assignRef,
+      playerPosition,
+      cardsPosition,
+      updateCardUrl,
+    } = useHandLogic({
+      numberOfCards,
+      fetchedPhotos,
+      setFetchedPhotos,
+      isThisPlayerWordMaker,
+      wordMakerText,
+      setVotingSelectedCardPosition,
+      setVotingSelectedCardRef,
+      votingSelectedCardRef,
+      votingSelectedCardPosition,
+      setIsVotingSelectedCardThisPlayers,
+    });
+
+    // Animate action buttons when needed
+    useEffect(() => {
+      if (currentClicked !== -1 && selectedCard !== currentClicked) {
+        animateActionButtons(acceptButtonRef.current, declineButtonRef.current);
+      }
+    }, [currentClicked, selectedCard]);
+
     const acceptButtonSetupData = getAcceptPositionSetupData(direction);
     const declineButtonSetupData = getDeclinePositionSetupData(direction);
-    const [cardsLayout, setCardsLayout] = useState(
-      calculateCardsLayout(
-        { cardsPosition, cardsRotation, direction },
-        numberOfCards
-      )
-    );
 
     useImperativeHandle(ref, () => ({
       cardsRef,
-      setDisableHover,
+      setDisableHover: (value) => {
+        disableHover.current = value;
+        setCurrentHovered((prev) => prev); // Force a re-render
+      },
       backToHand: handleBackToHand,
       acceptClicked,
       setCurrentClicked,
@@ -91,188 +94,6 @@ const Hand = forwardRef(
       selectedCard,
       updateCardUrl,
     }));
-
-    useEffect(() => {
-      async function start() {
-        const handFromDatabase = await getHandFromDatabase();
-        if (handFromDatabase.length === 0) {
-          setStartingHand();
-        } else {
-          setPhotoUrls(handFromDatabase);
-        }
-      }
-
-      async function setStartingHand() {
-        if (fetchedPhotos.length > 0) {
-          const newPhotoUrls = Array.from({ length: numberOfCards }, () => {
-            const randomUrl = getRandomCard(fetchedPhotos, setFetchedPhotos);
-            setFetchedPhotos(fetchedPhotos.filter((url) => url !== randomUrl));
-            return randomUrl;
-          });
-          setPhotoUrls(newPhotoUrls);
-          await setHandInDatabase(newPhotoUrls);
-        }
-      }
-
-      start();
-    }, [numberOfCards]);
-
-    useEffect(() => {
-      if (
-        photoUrls.length > 0 &&
-        Object.keys(cardsRef.current).length === photoUrls.length
-      ) {
-        setDisableHover(false);
-      }
-    }, [photoUrls]);
-
-    useEffect(() => {
-      if (votingPhase) {
-        rotateOnTable(cardsRef.current[selectedCard]);
-      }
-    }, [votingPhase]);
-
-    useEffect(() => {
-      setCardsLayout(
-        calculateCardsLayout(
-          { cardsPosition, cardsRotation, direction },
-          numberOfCards
-        )
-      );
-    }, [cardsPosition, cardsRotation, direction, numberOfCards]);
-
-    const handleCardClick = (index) => {
-      if (votingPhase) {
-        const currentCard = cardsRef.current[index];
-        if (index === selectedCard && !votingSelectedCardRef) {
-          setVotingSelectedCardPosition({
-            x: currentCard.position.x,
-            y: currentCard.position.y,
-            z: currentCard.position.z,
-          });
-          showCardCloserOnVotingPhase(currentCard);
-          setVotingSelectedCardRef(currentCard);
-          setIsVotingSelectedCardThisPlayers(true);
-        } else if (
-          index === selectedCard &&
-          votingSelectedCardRef === currentCard &&
-          votingSelectedCardPosition
-        ) {
-          animateToPosition(currentCard, votingSelectedCardPosition);
-          setVotingSelectedCardPosition(null);
-          setTimeout(() => {
-            setVotingSelectedCardRef(null);
-          }, 500);
-        }
-        return;
-      }
-
-      // Prevent interaction with card that's already on the table
-      if (index === selectedCard) {
-        return;
-      }
-
-      // If clicking the same card that's currently shown closer
-      if (currentClicked === index) {
-        // Return it back to hand position
-        handleBackToHand(index);
-        // Reset clicked state
-        setCurrentClicked(-1);
-        // Exit the card menu state
-        setInMenu(false);
-      }
-      // If we're not in menu state and clicking a new card
-      else if (!inMenu) {
-        // If there's already a card shown closer
-        if (currentClicked !== -1) {
-          // Return that card back to hand first
-          handleBackToHand(currentClicked);
-        }
-        // Set the newly clicked card
-        setCurrentClicked(index);
-      }
-    };
-
-    useEffect(() => {
-      if (currentClicked !== -1 && selectedCard !== currentClicked) {
-        showCardCloser(cardsRef.current[currentClicked], direction);
-        animateActionButtons(acceptButtonRef.current, declineButtonRef.current);
-        setInMenu(true);
-      }
-    }, [currentClicked]);
-    const updateCardUrl = (index, newUrl) => {
-      if (index >= 0 && index < photoUrls.length) {
-        const updatedUrls = [...photoUrls];
-        updatedUrls[index] = newUrl;
-        setPhotoUrls(updatedUrls);
-      }
-    };
-    const handleAddCardOnTable = async (index, addAnimation = true) => {
-      if (cardsRef.current[index]) {
-        if (isThisPlayerWordMaker && !chosenWord.length) {
-          await updateGameWithData({ chosenWord: wordMakerText });
-          setChosenWord(wordMakerText);
-        }
-        addToTable(cardsRef.current[index], direction, setDisableHover);
-        if (addAnimation)
-          await addAnimationToOtherPlayers({
-            type: "addOnTable",
-            playerPosition,
-            index,
-            direction,
-          });
-      }
-    };
-
-    const handleBackToHand = async (index) => {
-      if (cardsRef.current[index]) {
-        await addAnimationToOtherPlayers({
-          type: "backToHand",
-          playerPosition,
-          index,
-        });
-        const cardsAnimationPosition = getCardsPosition(
-          cardsPosition,
-          index,
-          direction
-        );
-        backToHand(
-          cardsRef.current[index],
-          cardsAnimationPosition,
-          cardsRotation,
-          setDisableHover
-        );
-      }
-    };
-
-    const acceptClicked = async (url = null, currentIndex = null) => {
-      setSelectedCard(currentIndex || currentClicked);
-      handleAddCardOnTable(
-        currentIndex || currentClicked,
-        !url && !currentIndex
-      );
-      const chosenCardObj = {
-        index: currentIndex || currentClicked,
-        url: url || photoUrls[currentClicked],
-        playerUid: localStorage.getItem("playerUid"),
-      };
-      await updateThisPlayerInGame({ chosenCard: chosenCardObj });
-      setChosenCard(chosenCardObj);
-      setCurrentClicked(-1);
-      setInMenu(false);
-    };
-
-    const declineClicked = () => {
-      handleBackToHand(currentClicked);
-      setCurrentClicked(-1);
-      setInMenu(false);
-    };
-
-    const assignRef = (el, key) => {
-      if (el) {
-        cardsRef.current[key] = el;
-      }
-    };
 
     return (
       <>
@@ -283,13 +104,13 @@ const Hand = forwardRef(
             selectedCard={selectedCard}
             inMenu={inMenu}
             currentHovered={currentHovered}
-            disableHover={disableHover}
+            disableHover={disableHover.current}
             setCurrentHovered={setCurrentHovered}
             currentClicked={currentClicked}
             onCardClick={handleCardClick}
             position={item.position}
             rotation={item.rotation}
-            imageUrl={photoUrls[key]}
+            imageUrl={photoUrls.current[key]}
             cardsPosition={cardsPosition}
             direction={direction}
             playerPosition={playerPosition}
@@ -310,7 +131,7 @@ const Hand = forwardRef(
             <>
               <ActionButton
                 ref={acceptButtonRef}
-                onClick={acceptClicked}
+                onClick={() => acceptClicked()}
                 buttonSetupData={acceptButtonSetupData}
                 color="lightgreen"
                 text="accept"
