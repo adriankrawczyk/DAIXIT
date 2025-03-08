@@ -6,6 +6,7 @@ import { getGames, joinToGame, newGame } from "../../firebase/lobbyMethods";
 import { useNavigate } from "react-router-dom";
 import GameListElement from "../util/GameListElement";
 import { debounce } from "lodash";
+import { setCurrentGame } from "../../firebase/localVariables";
 
 const LobbyPage = ({ setPlayClicked }) => {
   const [userCount, setUserCount] = useState(0);
@@ -44,7 +45,7 @@ const LobbyPage = ({ setPlayClicked }) => {
     setIsProcessing(true);
     try {
       const gameId = await newGame();
-      localStorage.setItem("currentGame", gameId);
+      setCurrentGame(gameId);
       navigate(`/game/${gameId}`);
     } catch (error) {
       console.error("Error creating new game:", error);

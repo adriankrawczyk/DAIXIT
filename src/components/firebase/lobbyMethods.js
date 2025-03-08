@@ -9,7 +9,7 @@ import {
 } from "firebase/database";
 import { database } from "./firebaseConfig";
 import { fetchPlayerData } from "./playerMethods";
-import { playerUid } from "./localVariables";
+import { playerUid, setCurrentGame } from "./localVariables";
 
 async function newGame() {
   if (!playerUid) {
@@ -57,7 +57,7 @@ async function joinToGame(gameId) {
     }
 
     const playerData = await fetchPlayerData(playerUid);
-    localStorage.setItem("currentGame", gameId);
+    setCurrentGame(gameId);
     if (!playerData || !playerData.uid) {
       throw new Error("Invalid player data");
     }
