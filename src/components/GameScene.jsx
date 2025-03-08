@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import Hand from "./objects/hand/Hand";
-import OtherPlayerHands from "./objects/OtherPlayerHands";
+import OtherPlayerHands from "./objects/otherPlayerHands/OtherPlayerHands";
 import StartGameUI from "./objects/startGameUI";
 import Input from "./lobby/util/Input";
 import SpinningWheel from "./objects/SpinningWheel";

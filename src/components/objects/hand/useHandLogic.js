@@ -42,10 +42,8 @@ const useHandLogic = ({
   const photoUrls = useRef([]);
   const cardsRef = useRef({});
   const [cardsLayout, setCardsLayout] = useState([]);
-  // Keep track of the current wordMakerText in a ref to access in closures
   const wordMakerTextRef = useRef(wordMakerText);
 
-  // Update wordMakerText ref when prop changes
   useEffect(() => {
     wordMakerTextRef.current = wordMakerText;
   }, [wordMakerText]);
