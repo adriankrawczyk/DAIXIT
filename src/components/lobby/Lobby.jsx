@@ -9,8 +9,12 @@ import { useSetup } from "../context/SetupContext";
 import { fetchAllPhotos } from "../firebase/gameMethods";
 
 const Lobby = () => {
-  const { setAllPhotos } = useSetup();
+  const { setAllPhotos, setCameraPosition, setCameraLookAt, setDirection } =
+    useSetup();
   useEffect(() => {
+    setDirection("Bottom");
+    setCameraPosition([0, 2, 4.4]);
+    setCameraLookAt([0, 0, -5]);
     const log = async () => {
       await FirebaseLogger();
       const photos = await fetchAllPhotos();
