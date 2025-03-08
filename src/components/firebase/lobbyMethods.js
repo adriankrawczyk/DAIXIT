@@ -9,9 +9,9 @@ import {
 } from "firebase/database";
 import { database } from "./firebaseConfig";
 import { fetchPlayerData } from "./playerMethods";
+import { playerUid } from "./localVariables";
 
 async function newGame() {
-  const playerUid = localStorage.getItem("playerUid");
   if (!playerUid) {
     console.error("No player UID found in localStorage");
     return null;
@@ -52,7 +52,6 @@ async function joinToGame(gameId) {
   if (gameData.started) return;
 
   try {
-    const playerUid = localStorage.getItem("playerUid");
     if (!playerUid) {
       throw new Error("No player UID found in localStorage");
     }

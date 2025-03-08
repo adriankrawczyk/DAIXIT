@@ -7,6 +7,7 @@ import { leaveGame } from "../firebase/lobbyMethods";
 import { getActivePlayersInGame } from "../firebase/lobbyMethods";
 import { useSetup } from "../context/SetupContext";
 import { fetchAllPhotos } from "../firebase/gameMethods";
+import { playerUid } from "../firebase/localVariables";
 
 const Lobby = () => {
   const { setAllPhotos, setCameraPosition, setCameraLookAt, setDirection } =
@@ -24,7 +25,7 @@ const Lobby = () => {
   }, []);
   const gameId = localStorage.getItem("currentGame");
   if (gameId) {
-    leaveGame(gameId, localStorage.getItem("playerUid"));
+    leaveGame(gameId, playerUid);
   }
 
   return (

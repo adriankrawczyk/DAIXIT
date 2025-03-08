@@ -2,6 +2,8 @@ import { ref, get, update } from "firebase/database";
 import { database } from "./firebaseConfig";
 import { setPlayerName } from "./playerMethods";
 import FirebaseLogger from "../lobby/firebase/firebaseLogger";
+import { playerUid } from "./localVariables";
+
 const CAMERA_HEIGHT = 2;
 const CAMERA_DISTANCE = 6;
 const LOOK_AT_DISTANCE = 5;
@@ -229,8 +231,7 @@ async function setHandInDatabase(hand) {
 }
 
 async function getOtherPlayersData() {
-  const playerId = localStorage.getItem("playerUid");
-  if (!playerId) return [];
+  if (!playerUid) return [];
   const gameId = window.location.href.split("/").pop();
 
   const playersRef = ref(database, `games/${gameId}/players`);
@@ -240,7 +241,7 @@ async function getOtherPlayersData() {
   if (!snapshot.val()) return [];
 
   for (const [key, value] of Object.entries(snapshot.val())) {
-    if (key !== playerId) hands.push(value.currentGameData);
+    if (key !== playerUid) hands.push(value.currentGameData);
   }
   return hands;
 }
@@ -263,10 +264,9 @@ async function getHandFromDatabase() {
 }
 
 async function getPlayersCurrentGameDataRef() {
-  const playerId = localStorage.getItem("playerUid");
   const gameId = window.location.href.split("/").pop();
 
-  return ref(database, `games/${gameId}/players/${playerId}/currentGameData`);
+  return ref(database, `games/${gameId}/players/${playerUid}/currentGameData`);
 }
 
 // async function fetchAllPhotos() {
@@ -447,7 +447,6 @@ async function updateGameWithData(updateObj) {
 }
 
 async function getOtherPlayerSelectedCards() {
-  const playerUid = localStorage.getItem("playerUid");
   const playersData = await getPlayers();
   const selectedCards = [];
 

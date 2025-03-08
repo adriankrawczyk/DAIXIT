@@ -5,6 +5,7 @@ import ActionButton from "./ActionButton";
 import { Text } from "@react-three/drei";
 import { updateGameWithData } from "../firebase/gameMethods";
 import { updatePlayerInGame } from "../firebase/playerMethods";
+import { playerUid } from "../firebase/localVariables";
 
 const StartGameUI = ({
   numberOfPlayers,
@@ -19,7 +20,6 @@ const StartGameUI = ({
   const handleStartClick = async () => {
     // if (numberOfPlayers < 3) return;
     const players = Object.values(gameData.players);
-    const playerUid = localStorage.getItem("playerUid");
     if (
       isThisPlayerHost &&
       !players.some((player) => player.wordMaker === true)

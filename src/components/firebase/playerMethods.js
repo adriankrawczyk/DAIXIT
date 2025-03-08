@@ -1,6 +1,7 @@
 import { ref, set, update, get, onDisconnect, remove } from "firebase/database";
 import { database } from "./firebaseConfig";
 import _ from "lodash";
+import { playerUid, setPlayerUid } from "./localVariables";
 
 async function fetchPlayerData(chosenUid) {
   const playerRef = ref(database, `players/${chosenUid}`);
@@ -18,7 +19,7 @@ async function fetchPlayerData(chosenUid) {
 }
 
 async function setPlayerData(newUID) {
-  localStorage.setItem("playerUid", newUID);
+  setPlayerUid(newUID);
   const playerRef = ref(database, `players/${newUID}`);
   await set(playerRef, {
     uid: newUID,
@@ -32,7 +33,6 @@ async function setPlayerData(newUID) {
 }
 
 async function setPlayerName(newPlayerName) {
-  const playerUid = localStorage.getItem("playerUid");
   const playerRef = ref(database, `players/${playerUid}`);
   await update(playerRef, { name: newPlayerName }).catch((error) =>
     console.error("Error updating player name:", error)
@@ -48,7 +48,6 @@ async function updatePlayerInGame(playerUid, updateObj) {
 }
 
 async function updateThisPlayerInGame(updateObj) {
-  const playerUid = localStorage.getItem("playerUid");
   await updatePlayerInGame(playerUid, updateObj);
 }
 
@@ -89,7 +88,6 @@ async function getUserCount() {
 async function addAnimationToOtherPlayers(animation) {
   const gameId = window.location.href.split("/").pop();
   const gameRef = ref(database, `games/${gameId}/players`);
-  const currentPlayerUid = localStorage.getItem("playerUid");
   try {
     const snapshot = await get(gameRef);
     if (!snapshot.exists()) return;
@@ -98,7 +96,7 @@ async function addAnimationToOtherPlayers(animation) {
     const timestamp = Date.now();
     animation.timestamp = timestamp;
     Object.entries(players).forEach(([uid, playerData]) => {
-      if (uid !== currentPlayerUid) {
+      if (uid !== playerUid) {
         updates[`games/${gameId}/players/${uid}/animations/${timestamp}`] =
           animation;
       }
@@ -111,7 +109,6 @@ async function addAnimationToOtherPlayers(animation) {
 
 async function getAnimations() {
   const gameId = window.location.href.split("/").pop();
-  const playerUid = localStorage.getItem("playerUid");
 
   if (!playerUid) {
     console.error("No playerUid found in localStorage");
@@ -293,7 +290,6 @@ async function handleNextRound() {
 
 async function getSelectedCard() {
   const gameId = window.location.href.split("/").pop();
-  const playerUid = localStorage.getItem("playerUid");
   const playerRef = ref(database, `games/${gameId}/players/${playerUid}`);
   const snapshot = await get(playerRef);
   const playerData = snapshot.val();

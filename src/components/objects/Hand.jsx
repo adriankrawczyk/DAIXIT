@@ -33,6 +33,7 @@ import {
   getDeclinePositionSetupData,
 } from "../firebase/uiMethods";
 import { updateGameWithData } from "../firebase/gameMethods";
+import { playerUid } from "../firebase/localVariables";
 
 const Hand = forwardRef(
   (
@@ -254,7 +255,7 @@ const Hand = forwardRef(
       const chosenCardObj = {
         index: currentIndex || currentClicked,
         url: url || photoUrls[currentClicked],
-        playerUid: localStorage.getItem("playerUid"),
+        playerUid: playerUid,
       };
       await updateThisPlayerInGame({ chosenCard: chosenCardObj });
       setChosenCard(chosenCardObj);

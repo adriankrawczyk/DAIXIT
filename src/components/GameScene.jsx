@@ -32,7 +32,7 @@ import { getHandFromDatabase, setHandInDatabase } from "./firebase/gameMethods";
 import ActionButton from "./objects/ActionButton";
 import { animateToPosition, backToHand } from "./firebase/animations";
 import { getRandomCard } from "./firebase/gameMethods";
-
+import { playerUid } from "./firebase/localVariables";
 import PointsDisplayer from "./objects/PointsDisplayer";
 
 const GameScene = ({ setupContext }) => {
@@ -118,7 +118,8 @@ const GameScene = ({ setupContext }) => {
   useEffect(() => {
     const join = async () => {
       const gameId = window.location.href.split("/").pop();
-      if (!localStorage.getItem("name")) await FirebaseLogger();
+      // if (!localStorage.getItem("name"))
+      await FirebaseLogger();
       await joinToGame(gameId);
       await setup();
       const photos = await fetchAllPhotos();
@@ -164,7 +165,6 @@ const GameScene = ({ setupContext }) => {
       const votPhase = fetchedGameData.votingPhase;
       const newRound = fetchedGameData.round;
       const afterVotData = fetchedGameData.afterVoteData;
-      const playerUid = localStorage.getItem("playerUid");
       const isHost = hostUid === playerUid;
       const fetchedPlayers = Object.values(fetchedGameData.players);
       let voted = false;
