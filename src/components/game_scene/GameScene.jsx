@@ -2,16 +2,41 @@ import React, { useEffect, useState, useRef } from "react";
 import Hand from "../objects/Hand";
 import OtherPlayerCards from "../objects/OtherPlayerHands";
 import StartGameUI from "../objects/startGameUI";
-import SpinningWheel from "../objects/SpinningWheel";
-import PointsDisplayer from "../objects/PointsDisplayer";
-import ActionButton from "../objects/ActionButton";
 import Input from "../lobby/util/Input";
+import SpinningWheel from "../objects/SpinningWheel";
+import { fetchGameData, joinToGame } from "../firebase/lobbyMethods";
+import {
+  getOtherPlayerSelectedCards,
+  getPosition,
+  updateGameWithData,
+} from "../firebase/gameMethods";
+import FirebaseLogger from "../lobby/firebase/firebaseLogger";
+import { rotateOnTable } from "../firebase/animations";
+import {
+  calculateAndAddPoints,
+  removePlayerFromGame,
+  updateThisPlayerInGame,
+  handleNextRound,
+  updatePlayerInGame,
+  getSelectedCard,
+} from "../firebase/playerMethods";
+import { fetchAllPhotos, getCardsPosition } from "../firebase/gameMethods";
+import {
+  getCenteredButtonData,
+  getLeftTopButtonData,
+  getAcceptPositionSetupData,
+  getDeclinePositionSetupData,
+  getNextRoundButtonData,
+} from "../firebase/uiMethods";
+import {
+  getHandFromDatabase,
+  setHandInDatabase,
+} from "../firebase/gameMethods";
+import ActionButton from "../objects/ActionButton";
+import { animateToPosition, backToHand } from "../firebase/animations";
+import { getRandomCard } from "../firebase/gameMethods";
 
-import { useGameSetup } from "./hooks/useGameSetup";
-import { useGameState } from "./hooks/useGameState";
-import { useGameActions } from "./hooks/useGameActions";
-import { useVotingPhase } from "./hooks/useVotingPhase";
-import { useRoundManagement } from "./hooks/useRoundManagement";
+import PointsDisplayer from "../objects/PointsDisplayer";
 
 const GameScene = ({ setupContext }) => {
   const {
@@ -32,141 +57,262 @@ const GameScene = ({ setupContext }) => {
     votingPhase,
     round,
     setRound,
+    cardsPosition,
+    cardsRotation,
     setChosenCard,
     allPhotos,
     setAllPhotos,
-    setAfterVoteData,
   } = setupContext;
 
-  const handRef = useRef();
-  const chosenWordLabelRef = useRef();
+  const [gameData, setGameData] = useState([]);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [numberOfPlayers, setNumberOfPlayers] = useState(1);
+  const [isThisPlayerHost, setIsThisPlayerHost] = useState(false);
+  const [isThisPlayerWordMaker, setIsThisPlayerWordMaker] = useState(false);
+  const [inputData, setInputData] = useState({});
+  const [fetchedPhotos, setFetchedPhotos] = useState([]);
+  const [wordMakerText, setWordMakerText] = useState("");
+  const [chosenWordLabelData, setChosenWordLabelData] = useState({});
+  const [votingSelectedCardRef, setVotingSelectedCardRef] = useState(null);
+  const [votingSelectedCardPosition, setVotingSelectedCardPosition] =
+    useState(null);
+  const [isVotingSelectedCardThisPlayers, setIsVotingSelectedCardThisPlayers] =
+    useState(false);
+  const [hasVoted, setHasVoted] = useState(false);
+  const [votingSelectedCardData, setVotingSelectedCardData] = useState({});
   const acceptButtonRef = useRef();
   const declineButtonRef = useRef();
+  const handRef = useRef();
+  const [selectedCards, setSelectedCards] = useState([]);
+
+  const chosenWordLabelRef = useRef();
+  const [acceptButtonSetupData, setAcceptButtonSetupData] = useState(null);
+  const [declineButtonSetupData, setDeclineButtonSetupData] = useState(null);
+  const [players, setPlayers] = useState([]);
+  const [pointsAdded, setPointsAdded] = useState(false);
+  const [afterVoteData, setAfterVoteData] = useState(null);
   const nextRoundButtonRef = useRef();
   const refreshCardsExecuted = useRef(false);
 
-  const {
-    gameData,
-    players,
-    numberOfPlayers,
-    isThisPlayerHost,
-    setIsThisPlayerHost,
-    isThisPlayerWordMaker,
-    setIsThisPlayerWordMaker,
-    gameStarted,
-    inputData,
-    chosenWordLabelData,
-    acceptButtonSetupData,
-    declineButtonSetupData,
-    nextRoundButtonData,
-    fetchedPhotos,
-    setFetchedPhotos,
-    setGameData,
-    setGameStarted,
-    setPlayers,
-  } = useGameSetup({
-    handRef,
-    joined,
-    setJoined,
-    direction,
-    votingPhase,
-    allPhotos,
-    setAllPhotos,
-    setCameraPosition,
-    setCameraLookAt,
-    setCameraLookAtMultiplier,
-    setDirectionalLightPosition,
-    setCardsPosition,
-    setCardsRotation,
-    setPlayerPosition,
-    setDirection,
-    refreshCardsExecuted,
-  });
+  const setup = async () => {
+    const pos = await getPosition();
+    const {
+      playerPosition,
+      position,
+      lookAt,
+      multiplier,
+      directionalLightPosition,
+      cardsPosition,
+      cardsRotation,
+    } = pos;
+    const dir = pos.direction;
+    setCameraPosition(position);
+    setCameraLookAt(lookAt);
+    setCameraLookAtMultiplier(multiplier);
+    setDirectionalLightPosition(directionalLightPosition);
+    setCardsPosition(cardsPosition);
+    setCardsRotation(cardsRotation);
+    setPlayerPosition(playerPosition);
+    setDirection(dir);
+    setInputData(getCenteredButtonData(dir));
+    setChosenWordLabelData(getLeftTopButtonData(direction, votingPhase));
+  };
 
-  // Initialize the hooks in the correct order
-  const {
-    wordMakerText,
-    setWordMakerText,
-    afterVoteData,
-    setAfterVoteData: setAfterVoteDataLocal,
-    pointsAdded,
-    setPointsAdded,
-    hasVoted,
-    setHasVoted,
-  } = useGameState({
-    gameData,
-    players,
-    isThisPlayerHost,
-    setIsThisPlayerHost,
-    setIsThisPlayerWordMaker,
-    setVotingPhase,
-    votingPhase,
-    setChosenWord,
-    direction,
-    round,
-    setRound,
-    setGameData,
-    setGameStarted,
-    setPlayers,
-  });
-
-  const {
-    votingSelectedCardRef,
-    setVotingSelectedCardRef,
-    votingSelectedCardPosition,
-    setVotingSelectedCardPosition,
-    isVotingSelectedCardThisPlayers,
-    setIsVotingSelectedCardThisPlayers,
-    votingSelectedCardData,
-    setVotingSelectedCardData,
-    selectedCards,
-    setSelectedCards,
-    handleAcceptOnVotingPhaseClicked,
-    handleDeclineOnVotingPhaseClicked,
-  } = useVotingPhase({
-    handRef,
-    setHasVoted,
-  });
-
-  // Make sure useRoundManagement has access to all required state setters
-  const { handleNextRound, handleNewRound } = useRoundManagement({
-    setRound,
-    setPointsAdded,
-    setVotingPhase,
-    setHasVoted,
-    setAfterVoteData: setAfterVoteData || setAfterVoteDataLocal, // Use the one from context if available
-    setVotingSelectedCardRef,
-    setVotingSelectedCardPosition,
-    setIsVotingSelectedCardThisPlayers,
-    setVotingSelectedCardData,
-    setIsThisPlayerWordMaker,
-    setWordMakerText,
-    setChosenWord,
-    setChosenCard,
-    handRef,
-    fetchedPhotos,
-    setFetchedPhotos,
-  });
-
-  // Add this new effect to listen for the newRound event
   useEffect(() => {
-    const handleNewRoundEvent = (event) => {
-      handleNewRound(event.detail.round);
+    const join = async () => {
+      const gameId = window.location.href.split("/").pop();
+      if (!localStorage.getItem("name")) await FirebaseLogger();
+      await joinToGame(gameId);
+      await setup();
+      const photos = await fetchAllPhotos();
+      setAllPhotos(photos);
+      setJoined(true);
     };
+    join();
+  }, []);
 
-    window.addEventListener("newRound", handleNewRoundEvent);
+  const refreshCards = async () => {
+    if (!handRef.current || refreshCardsExecuted.current) return;
+    refreshCardsExecuted.current = true;
+    const thisPlayerSelectedCardFromDatabase = await getSelectedCard();
 
-    return () => {
-      window.removeEventListener("newRound", handleNewRoundEvent);
-    };
-  }, [handleNewRound]);
-
-  // Sync afterVoteData with context if needed
-  useEffect(() => {
-    if (setAfterVoteData && afterVoteData !== undefined) {
-      setAfterVoteData(afterVoteData);
+    if (thisPlayerSelectedCardFromDatabase) {
+      await handRef.current.acceptClicked(
+        thisPlayerSelectedCardFromDatabase.url,
+        thisPlayerSelectedCardFromDatabase.index
+      );
+      if (votingPhase) {
+        rotateOnTable(
+          handRef.current.cardsRef.current[
+            thisPlayerSelectedCardFromDatabase.index
+          ]
+        );
+      }
     }
-  }, [afterVoteData, setAfterVoteData]);
+  };
+  useEffect(() => {
+    if (joined && handRef.current && !refreshCardsExecuted.current) {
+      refreshCards();
+    }
+  }, [joined, handRef.current]);
+
+  useEffect(() => {
+    setFetchedPhotos(allPhotos);
+  }, [allPhotos]);
+  useEffect(() => {
+    const fetchDataAndHostTheGame = async () => {
+      const fetchedGameData = await fetchGameData();
+      setGameData(fetchedGameData);
+      const { started, hostUid, chosenWord } = fetchedGameData;
+      const votPhase = fetchedGameData.votingPhase;
+      const newRound = fetchedGameData.round;
+      const afterVotData = fetchedGameData.afterVoteData;
+      const playerUid = localStorage.getItem("playerUid");
+      const isHost = hostUid === playerUid;
+      const fetchedPlayers = Object.values(fetchedGameData.players);
+      let voted = false;
+      if (isHost) {
+        const positionMap = new Map();
+        const playersNeedingUpdate = [];
+        let doTheUpdate = false;
+
+        fetchedPlayers.forEach((player) => {
+          let originalPosition = player.position;
+
+          while (positionMap.has(player.position)) {
+            doTheUpdate = true;
+            player.position++;
+          }
+
+          positionMap.set(player.position, player.playerUid);
+          if (player.position !== originalPosition) {
+            playersNeedingUpdate.push({
+              playerUid: player.playerUid,
+              newPosition: player.currentGameData.position,
+            });
+          }
+        });
+        if (doTheUpdate && playersNeedingUpdate.length > 0) {
+          await Promise.all(
+            playersNeedingUpdate.map((playerUpdate) =>
+              updatePlayerInGame(playerUpdate.playerUid, {
+                position: playerUpdate.newPosition,
+              })
+            )
+          );
+        }
+      }
+
+      let everyPlayerAcceptedCard = true;
+      let everyPlayerHasVoted = votPhase;
+      for (const fetchedPlayer of fetchedPlayers) {
+        if (
+          fetchedPlayer.playerUid === playerUid &&
+          typeof fetchedPlayer.votingSelectedCardData === "object"
+        ) {
+          voted = true;
+        }
+        if (
+          !fetchedPlayer.wordMaker &&
+          typeof fetchedPlayer.votingSelectedCardData !== "object"
+        ) {
+          everyPlayerHasVoted = false;
+        }
+        if (fetchedPlayer.playerUid === playerUid && fetchedPlayer.wordMaker)
+          setIsThisPlayerWordMaker(true);
+        if (
+          !started &&
+          !fetchedPlayer.inGame &&
+          fetchedPlayer.playerUid !== playerUid
+        ) {
+          await removePlayerFromGame(fetchedPlayer.playerUid);
+        }
+        if (
+          !fetchedPlayer.chosenCard ||
+          !Object.values(fetchedPlayer.chosenCard).length
+        )
+          everyPlayerAcceptedCard = false;
+      }
+      if (isHost && started && chosenWord.length && everyPlayerAcceptedCard) {
+        await updateGameWithData({ votingPhase: true });
+      } else if (isHost && votPhase)
+        await updateGameWithData({ votingPhase: false });
+      if (newRound && newRound !== round) {
+        handleNewRound(newRound);
+      }
+      if (everyPlayerHasVoted && isHost && !pointsAdded) {
+        setPointsAdded(true);
+        const calculatedPoints = await calculateAndAddPoints();
+        await updateGameWithData({
+          afterVoteData: calculatedPoints,
+        });
+      }
+
+      setChosenWordLabelData(getLeftTopButtonData(direction, votPhase));
+      setAcceptButtonSetupData(getAcceptPositionSetupData(direction, votPhase));
+      setDeclineButtonSetupData(
+        getDeclinePositionSetupData(direction, votPhase)
+      );
+      setAfterVoteData(afterVotData);
+      setVotingPhase(votPhase);
+      setIsThisPlayerHost(isHost);
+      setChosenWord(chosenWord);
+      setNumberOfPlayers(fetchedPlayers.length);
+      setGameStarted(started);
+      setPlayers(fetchedPlayers);
+      if (voted && !hasVoted) setHasVoted(true);
+    };
+
+    const interval = setInterval(fetchDataAndHostTheGame, 1000);
+    return () => clearInterval(interval);
+  }, [direction, pointsAdded, round]);
+
+  const handleNewRound = async (newRound) => {
+    setRound(newRound);
+    setPointsAdded(false);
+    setVotingPhase(false);
+    setHasVoted(false);
+    setAfterVoteData(null);
+    setVotingSelectedCardRef(null);
+    setVotingSelectedCardPosition(null);
+    setIsVotingSelectedCardThisPlayers(false);
+    setVotingSelectedCardData({});
+    setIsThisPlayerWordMaker(false);
+    setWordMakerText("");
+    setChosenWord("");
+    setChosenCard({});
+    if (!handRef.current) return;
+    const index = handRef.current.selectedCard;
+    handRef.current.backToHand(index);
+    handRef.current.setSelectedCard(-1);
+    if (fetchedPhotos.length > 0) {
+      const currentHand = await getHandFromDatabase();
+      if (currentHand && currentHand.length > 0) {
+        const newCard = getRandomCard(fetchedPhotos, setFetchedPhotos);
+        setFetchedPhotos(fetchedPhotos.filter((url) => url !== newCard));
+        const updatedHand = [...currentHand];
+        updatedHand[index] = newCard;
+        await setHandInDatabase(updatedHand);
+        handRef.current.updateCardUrl(index, newCard);
+      }
+    }
+  };
+
+  const handleAcceptOnVotingPhaseClicked = async () => {
+    setHasVoted(true);
+    await updateThisPlayerInGame({ votingSelectedCardData });
+    handleDeclineOnVotingPhaseClicked();
+  };
+
+  const declineButtonData = getDeclinePositionSetupData(direction);
+
+  const handleDeclineOnVotingPhaseClicked = () => {
+    animateToPosition(votingSelectedCardRef, votingSelectedCardPosition);
+    setVotingSelectedCardPosition({});
+    setVotingSelectedCardRef(null);
+  };
+
+  const nextRoundButtonData = getNextRoundButtonData();
 
   if (!joined || !allPhotos.length) {
     return <SpinningWheel />;
@@ -174,13 +320,12 @@ const GameScene = ({ setupContext }) => {
 
   return (
     <>
-      {votingPhase && (
+      {votingPhase && ( // IT HAS TO BE FIXED IN NORMAL MODE, TEMPORARY
         <PointsDisplayer
           players={players}
           afterVotePhase={typeof afterVoteData === "object"}
         />
       )}
-
       {typeof afterVoteData === "object" && isThisPlayerHost && (
         <ActionButton
           ref={nextRoundButtonRef}
@@ -192,7 +337,6 @@ const GameScene = ({ setupContext }) => {
           fontSize={0.2}
         />
       )}
-
       {gameStarted ? (
         <>
           {isThisPlayerWordMaker && !chosenWord.length && (
@@ -211,7 +355,6 @@ const GameScene = ({ setupContext }) => {
               textScale={inputData.textScaleMultiplier}
             />
           )}
-
           {(!isThisPlayerWordMaker || chosenWord.length) && (
             <ActionButton
               ref={chosenWordLabelRef}
@@ -223,7 +366,6 @@ const GameScene = ({ setupContext }) => {
               fontSize={0.125}
             />
           )}
-
           {votingPhase &&
             votingSelectedCardRef &&
             !isVotingSelectedCardThisPlayers &&
@@ -248,7 +390,6 @@ const GameScene = ({ setupContext }) => {
                 />
               </>
             )}
-
           <Hand
             ref={handRef}
             numberOfCards={7}
@@ -269,7 +410,6 @@ const GameScene = ({ setupContext }) => {
             afterVoteData={afterVoteData}
             setFetchedPhotos={setFetchedPhotos}
           />
-
           <OtherPlayerCards
             setVotingSelectedCardPosition={setVotingSelectedCardPosition}
             setVotingSelectedCardRef={setVotingSelectedCardRef}
