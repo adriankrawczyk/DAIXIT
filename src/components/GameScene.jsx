@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import Hand from "./objects/Hand";
+import Hand from "./objects/hand/Hand";
 import OtherPlayerHands from "./objects/OtherPlayerHands";
 import StartGameUI from "./objects/startGameUI";
 import Input from "./lobby/util/Input";
