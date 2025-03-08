@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
-import Hand from "./objects/Hand";
-import OtherPlayerCards from "./objects/OtherPlayerHands";
-import StartGameUI from "./objects/startGameUI";
-import Input from "./lobby/util/Input";
-import SpinningWheel from "./objects/SpinningWheel";
-import { fetchGameData, joinToGame } from "./firebase/lobbyMethods";
+import Hand from "../objects/Hand";
+import OtherPlayerCards from "../objects/OtherPlayerHands";
+import StartGameUI from "../objects/startGameUI";
+import Input from "../lobby/util/Input";
+import SpinningWheel from "../objects/SpinningWheel";
+import { fetchGameData, joinToGame } from "../firebase/lobbyMethods";
 import {
   getOtherPlayerSelectedCards,
   getPosition,
   updateGameWithData,
-} from "./firebase/gameMethods";
-import FirebaseLogger from "./lobby/firebase/firebaseLogger";
-import { rotateOnTable } from "./firebase/animations";
+} from "../firebase/gameMethods";
+import FirebaseLogger from "../lobby/firebase/firebaseLogger";
+import { rotateOnTable } from "../firebase/animations";
 import {
   calculateAndAddPoints,
   removePlayerFromGame,
@@ -19,21 +19,24 @@ import {
   handleNextRound,
   updatePlayerInGame,
   getSelectedCard,
-} from "./firebase/playerMethods";
-import { fetchAllPhotos, getCardsPosition } from "./firebase/gameMethods";
+} from "../firebase/playerMethods";
+import { fetchAllPhotos, getCardsPosition } from "../firebase/gameMethods";
 import {
   getCenteredButtonData,
   getLeftTopButtonData,
   getAcceptPositionSetupData,
   getDeclinePositionSetupData,
   getNextRoundButtonData,
-} from "./firebase/uiMethods";
-import { getHandFromDatabase, setHandInDatabase } from "./firebase/gameMethods";
-import ActionButton from "./objects/ActionButton";
-import { animateToPosition, backToHand } from "./firebase/animations";
-import { getRandomCard } from "./firebase/gameMethods";
-import { playerUid } from "./firebase/localVariables";
-import PointsDisplayer from "./objects/PointsDisplayer";
+} from "../firebase/uiMethods";
+import {
+  getHandFromDatabase,
+  setHandInDatabase,
+} from "../firebase/gameMethods";
+import ActionButton from "../objects/ActionButton";
+import { animateToPosition, backToHand } from "../firebase/animations";
+import { getRandomCard } from "../firebase/gameMethods";
+import { playerUid } from "../firebase/localVariables";
+import PointsDisplayer from "../objects/PointsDisplayer";
 
 const GameScene = ({ setupContext }) => {
   // Setup context
