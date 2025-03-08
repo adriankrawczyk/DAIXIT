@@ -8,9 +8,9 @@ import React, {
   useRef,
 } from "react";
 import gsap from "gsap";
-import ActionButton from "./ActionButton";
-import { getCardUIData } from "../firebase/uiMethods";
-import { getCardsPosition } from "../firebase/gameMethods";
+import ActionButton from "../ActionButton";
+import { getCardUIData } from "../../firebase/uiMethods";
+import { getCardsPosition } from "../../firebase/gameMethods";
 
 const Card = React.forwardRef(
   (

@@ -5,19 +5,19 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import Card from "./Card";
-import { useSetup } from "../context/SetupContext";
+import Card from "../card/Card";
+import { useSetup } from "../../context/SetupContext";
 import {
   setHandInDatabase,
   getHandFromDatabase,
   getRandomCard,
   getCardsPosition,
-} from "../firebase/gameMethods";
-import { calculateCardsLayout } from "../firebase/gameMethods";
+} from "../../firebase/gameMethods";
+import { calculateCardsLayout } from "../../firebase/gameMethods";
 import {
   addAnimationToOtherPlayers,
   updateThisPlayerInGame,
-} from "../firebase/playerMethods";
+} from "../../firebase/playerMethods";
 import {
   addToTable,
   backToHand,
@@ -26,13 +26,13 @@ import {
   rotateOnTable,
   showCardCloserOnVotingPhase,
   animateToPosition,
-} from "../firebase/animations";
-import ActionButton from "./ActionButton";
+} from "../../firebase/animations";
+import ActionButton from "../ActionButton";
 import {
   getAcceptPositionSetupData,
   getDeclinePositionSetupData,
-} from "../firebase/uiMethods";
-import { updateGameWithData } from "../firebase/gameMethods";
+} from "../../firebase/uiMethods";
+import { updateGameWithData } from "../../firebase/gameMethods";
 
 const Hand = forwardRef(
   (

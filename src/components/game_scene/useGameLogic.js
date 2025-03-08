@@ -1,15 +1,13 @@
 import { useState, useCallback } from "react";
 import { fetchGameData, joinToGame } from "../firebase/lobbyMethods";
 import {
-  getOtherPlayerSelectedCards,
   getPosition,
   updateGameWithData,
   getHandFromDatabase,
   setHandInDatabase,
   getRandomCard,
-  getSelectedCard,
-  fetchAllPhotos,
 } from "../firebase/gameMethods";
+import { getSelectedCard } from "../firebase/playerMethods";
 import {
   calculateAndAddPoints,
   removePlayerFromGame,
@@ -25,7 +23,6 @@ import {
   getNextRoundButtonData,
 } from "../firebase/uiMethods";
 import { animateToPosition, rotateOnTable } from "../firebase/animations";
-import FirebaseLogger from "../lobby/firebase/firebaseLogger";
 
 export const useGameLogic = ({
   direction,
@@ -71,6 +68,8 @@ export const useGameLogic = ({
   setJoined,
   setAllPhotos,
   refreshCardsExecuted,
+  setGameData,
+  gameData,
 }) => {
   // Setup function to initialize camera and position settings
   const setup = useCallback(async () => {
@@ -119,41 +118,49 @@ export const useGameLogic = ({
   }, [handRef, votingPhase, refreshCardsExecuted]);
 
   // Handle new round when round changes
-  const handleNewRound = useCallback(async () => {
-    setRound((prev) => prev + 1);
-    setPointsAdded(false);
-    setVotingPhase(false);
-    setHasVoted(false);
-    setAfterVoteData(null);
-    setVotingSelectedCardRef(null);
-    setVotingSelectedCardPosition(null);
-    setIsVotingSelectedCardThisPlayers(false);
-    setVotingSelectedCardData({});
-    setIsThisPlayerWordMaker(false);
-    setWordMakerText("");
-    setChosenWord("");
-    setChosenCard({});
-
-    if (!handRef.current) return;
-    const index = handRef.current.selectedCard;
-    handRef.current.backToHand(index);
-    handRef.current.setSelectedCard(-1);
-
-    if (fetchedPhotos.length > 0) {
-      const currentHand = await getHandFromDatabase();
-      if (currentHand && currentHand.length > 0) {
-        const newCard = getRandomCard(fetchedPhotos, setFetchedPhotos);
-        setFetchedPhotos(fetchedPhotos.filter((url) => url !== newCard));
-        const updatedHand = [...currentHand];
-        updatedHand[index] = newCard;
-        await setHandInDatabase(updatedHand);
-        handRef.current.updateCardUrl(index, newCard);
+  const handleNewRound = useCallback(
+    async (newRound) => {
+      if (newRound) {
+        setRound(newRound);
+      } else {
+        setRound((prev) => prev + 1);
       }
-    }
 
-    // Call the imported handleNextRound function
-    await nextRound();
-  }, [handRef, fetchedPhotos, setFetchedPhotos]);
+      setPointsAdded(false);
+      setVotingPhase(false);
+      setHasVoted(false);
+      setAfterVoteData(null);
+      setVotingSelectedCardRef(null);
+      setVotingSelectedCardPosition(null);
+      setIsVotingSelectedCardThisPlayers(false);
+      setVotingSelectedCardData({});
+      setIsThisPlayerWordMaker(false);
+      setWordMakerText("");
+      setChosenWord("");
+      setChosenCard({});
+
+      if (!handRef.current) return;
+      const index = handRef.current.selectedCard;
+      handRef.current.backToHand(index);
+      handRef.current.setSelectedCard(-1);
+
+      if (fetchedPhotos.length > 0) {
+        const currentHand = await getHandFromDatabase();
+        if (currentHand && currentHand.length > 0) {
+          const newCard = getRandomCard(fetchedPhotos, setFetchedPhotos);
+          setFetchedPhotos(fetchedPhotos.filter((url) => url !== newCard));
+          const updatedHand = [...currentHand];
+          updatedHand[index] = newCard;
+          await setHandInDatabase(updatedHand);
+          handRef.current.updateCardUrl(index, newCard);
+        }
+      }
+
+      // Call the imported handleNextRound function
+      await nextRound();
+    },
+    [handRef, fetchedPhotos, setFetchedPhotos]
+  );
 
   // Handle accept button click in voting phase
   const handleAcceptOnVotingPhaseClicked = useCallback(async () => {
@@ -172,6 +179,8 @@ export const useGameLogic = ({
   // Fetch game data and update game state
   const fetchDataAndHostTheGame = useCallback(async () => {
     const fetchedGameData = await fetchGameData();
+    setGameData(fetchedGameData);
+
     const { started, hostUid, chosenWord } = fetchedGameData;
     const votPhase = fetchedGameData.votingPhase;
     const newRound = fetchedGameData.round;

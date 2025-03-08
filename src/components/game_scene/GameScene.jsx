@@ -1,13 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import Hand from "../objects/Hand";
-import OtherPlayerCards from "../objects/OtherPlayerHands";
+import Hand from "../objects/hand/Hand";
+import OtherPlayerCards from "../objects/otherPlayerHands/OtherPlayerHands";
 import StartGameUI from "../objects/startGameUI";
 import Input from "../lobby/util/Input";
 import SpinningWheel from "../objects/SpinningWheel";
 import PointsDisplayer from "../objects/PointsDisplayer";
 import ActionButton from "../objects/ActionButton";
-import { rotateOnTable } from "../firebase/animations";
 import { useGameLogic } from "./useGameLogic";
+import { fetchAllPhotos } from "../firebase/gameMethods";
+import { joinToGame } from "../firebase/lobbyMethods";
+import FirebaseLogger from "../lobby/firebase/firebaseLogger";
 
 const GameScene = ({ setupContext }) => {
   const {
@@ -67,7 +69,6 @@ const GameScene = ({ setupContext }) => {
   const [afterVoteData, setAfterVoteData] = useState(null);
   const [selectedCards, setSelectedCards] = useState([]);
 
-  // Custom hook for game logic
   const {
     setup,
     refreshCards,
@@ -120,6 +121,8 @@ const GameScene = ({ setupContext }) => {
     setJoined,
     setAllPhotos,
     refreshCardsExecuted,
+    setGameData,
+    gameData,
   });
 
   // Initial setup when component mounts
@@ -152,7 +155,7 @@ const GameScene = ({ setupContext }) => {
   useEffect(() => {
     const interval = setInterval(fetchDataAndHostTheGame, 1000);
     return () => clearInterval(interval);
-  }, [direction, pointsAdded, round]);
+  }, [direction, pointsAdded, round, hasVoted]);
 
   // Loading state
   if (!joined || !allPhotos.length) {
@@ -171,7 +174,7 @@ const GameScene = ({ setupContext }) => {
       {typeof afterVoteData === "object" && isThisPlayerHost && (
         <ActionButton
           ref={nextRoundButtonRef}
-          onClick={handleNextRound}
+          onClick={handleNewRound}
           buttonSetupData={nextRoundButtonData}
           color="lightgreen"
           text="next round"
