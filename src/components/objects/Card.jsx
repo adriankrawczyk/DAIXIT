@@ -35,15 +35,20 @@ const Card = React.forwardRef(
     },
     ref
   ) => {
+    // Load textures for the card - default front and back textures
     const defaultTexture = useLoader(TextureLoader, "/DAIXIT/card.png");
     const reverse = useLoader(TextureLoader, "/DAIXIT/card.png");
     const [cardImage, setCardImage] = useState(defaultTexture);
+
+    // References for the card mesh and action buttons
     const internalRef = useRef();
     const actionButtonRefs = useRef([]);
     const ownerButtonRef = useRef();
 
+    // Expose the internal ref to parent components
     useImperativeHandle(ref, () => internalRef.current);
 
+    // Load the card's image when imageUrl changes
     useEffect(() => {
       if (imageUrl) {
         const loader = new TextureLoader();
@@ -53,6 +58,8 @@ const Card = React.forwardRef(
       }
     }, [imageUrl]);
 
+    // Animation for when the card is hovered
+    // Different hover animations based on the card's direction
     const hoverAnimation = useCallback(() => {
       if (!internalRef.current) return;
 
@@ -104,6 +111,8 @@ const Card = React.forwardRef(
       gsap.to(internalRef.current.position, hoverObject);
     }, [direction, index, cardsPosition]);
 
+    // Animation for when the card is no longer hovered
+    // Returns the card to its original position
     const unhoverAnimation = useCallback(() => {
       if (!internalRef.current) return;
 
@@ -118,17 +127,6 @@ const Card = React.forwardRef(
       });
     }, [direction, index, cardsPosition]);
 
-    // useEffect(() => {
-    //   if (internalRef.current && cardsPosition) {
-    //     const initialPos = getCardsPosition(cardsPosition, index, direction);
-    //     internalRef.current.position.set(
-    //       initialPos[0],
-    //       initialPos[1],
-    //       initialPos[2]
-    //     );
-    //   }
-    // }, [cardsPosition, direction, index]);
-
     const findCardData = () => {
       if (
         !afterVoteData ||
@@ -142,6 +140,7 @@ const Card = React.forwardRef(
       });
     };
 
+    // Voting-related data for the card
     const cardData = votingPhase ? findCardData() : null;
     const voters = cardData?.voters || [];
     const playerColors = [
@@ -164,6 +163,7 @@ const Card = React.forwardRef(
 
     return (
       <>
+        {/* Card mesh */}
         <mesh
           position={position}
           ref={internalRef}
@@ -200,6 +200,7 @@ const Card = React.forwardRef(
             onCardClick(index);
           }}
         >
+          {/* Card geometry and materials */}
           <boxGeometry args={[0.64, 0.896, 0.02]} />
           <meshStandardMaterial attach="material-0" map={reverse} />
           <meshStandardMaterial attach="material-1" map={reverse} />
@@ -209,6 +210,7 @@ const Card = React.forwardRef(
           <meshStandardMaterial attach="material-5" map={reverse} />
         </mesh>
 
+        {/* Voting phase UI - shows the card owner and who voted for this card */}
         {votingPhase &&
           cardData &&
           votingSelectedCardRef !== internalRef.current && (

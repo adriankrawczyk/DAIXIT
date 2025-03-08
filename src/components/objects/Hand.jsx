@@ -53,15 +53,20 @@ const Hand = forwardRef(
     },
     ref
   ) => {
+    // State for tracking card interactions and display
     const [currentHovered, setCurrentHovered] = useState(-1);
     const [currentClicked, setCurrentClicked] = useState(-1);
     const [selectedCard, setSelectedCard] = useState(-1);
     const [inMenu, setInMenu] = useState(false);
     const [disableHover, setDisableHover] = useState(true);
     const [photoUrls, setPhotoUrls] = useState([]);
+
+    // Refs for DOM elements and animations
     const acceptButtonRef = useRef();
     const declineButtonRef = useRef();
     const cardsRef = useRef({});
+
+    // Setup context provides game state and player position information
     const {
       cardsPosition,
       cardsRotation,
@@ -73,8 +78,12 @@ const Hand = forwardRef(
       chosenCard,
       votingPhase,
     } = useSetup();
+
+    // Button position data based on player direction
     const acceptButtonSetupData = getAcceptPositionSetupData(direction);
     const declineButtonSetupData = getDeclinePositionSetupData(direction);
+
+    // Calculate initial layout of cards in hand
     const [cardsLayout, setCardsLayout] = useState(
       calculateCardsLayout(
         { cardsPosition, cardsRotation, direction },
@@ -82,6 +91,7 @@ const Hand = forwardRef(
       )
     );
 
+    // Expose component methods to parent through ref
     useImperativeHandle(ref, () => ({
       cardsRef,
       setDisableHover,
@@ -93,6 +103,7 @@ const Hand = forwardRef(
       updateCardUrl,
     }));
 
+    // Initialize hand with cards from database or create new hand if none exists
     useEffect(() => {
       async function start() {
         const handFromDatabase = await getHandFromDatabase();
@@ -118,6 +129,7 @@ const Hand = forwardRef(
       start();
     }, [numberOfCards]);
 
+    // Enable hover effects once all cards are loaded and refs are assigned
     useEffect(() => {
       if (
         photoUrls.length > 0 &&
@@ -127,12 +139,14 @@ const Hand = forwardRef(
       }
     }, [photoUrls]);
 
+    // Rotate selected card when entering voting phase
     useEffect(() => {
       if (votingPhase) {
         rotateOnTable(cardsRef.current[selectedCard]);
       }
     }, [votingPhase]);
 
+    // Recalculate card layout when position or rotation changes
     useEffect(() => {
       setCardsLayout(
         calculateCardsLayout(
@@ -142,6 +156,7 @@ const Hand = forwardRef(
       );
     }, [cardsPosition, cardsRotation, direction, numberOfCards]);
 
+    // Handle card click events - different behavior in voting vs. normal phase
     const handleCardClick = (index) => {
       if (votingPhase) {
         const currentCard = cardsRef.current[index];
@@ -173,27 +188,22 @@ const Hand = forwardRef(
         return;
       }
 
-      // If clicking the same card that's currently shown closer
+      // Toggle card close-up view when clicking the same card
       if (currentClicked === index) {
-        // Return it back to hand position
         handleBackToHand(index);
-        // Reset clicked state
         setCurrentClicked(-1);
-        // Exit the card menu state
         setInMenu(false);
       }
-      // If we're not in menu state and clicking a new card
+      // Handle showing a new card in close-up view
       else if (!inMenu) {
-        // If there's already a card shown closer
         if (currentClicked !== -1) {
-          // Return that card back to hand first
           handleBackToHand(currentClicked);
         }
-        // Set the newly clicked card
         setCurrentClicked(index);
       }
     };
 
+    // Show card close-up and action buttons when a card is clicked
     useEffect(() => {
       if (currentClicked !== -1 && selectedCard !== currentClicked) {
         showCardCloser(cardsRef.current[currentClicked], direction);
@@ -201,6 +211,8 @@ const Hand = forwardRef(
         setInMenu(true);
       }
     }, [currentClicked]);
+
+    // Update a specific card's URL in the hand
     const updateCardUrl = (index, newUrl) => {
       if (index >= 0 && index < photoUrls.length) {
         const updatedUrls = [...photoUrls];
@@ -208,12 +220,17 @@ const Hand = forwardRef(
         setPhotoUrls(updatedUrls);
       }
     };
+
+    // Add card to the table and update game state
     const handleAddCardOnTable = async (index, addAnimation = true) => {
       if (cardsRef.current[index]) {
+        // If player is word maker, update the chosen word in game state
         if (isThisPlayerWordMaker && !chosenWord.length) {
           await updateGameWithData({ chosenWord: wordMakerText });
           setChosenWord(wordMakerText);
         }
+
+        // Animate card to table and notify other players
         addToTable(cardsRef.current[index], direction, setDisableHover);
         if (addAnimation)
           await addAnimationToOtherPlayers({
@@ -225,6 +242,7 @@ const Hand = forwardRef(
       }
     };
 
+    // Return card to hand position and update animations for other players
     const handleBackToHand = async (index) => {
       if (cardsRef.current[index]) {
         await addAnimationToOtherPlayers({
@@ -246,6 +264,7 @@ const Hand = forwardRef(
       }
     };
 
+    // Handle accept button click to confirm card selection
     const acceptClicked = async (url = null, currentIndex = null) => {
       setSelectedCard(currentIndex || currentClicked);
       handleAddCardOnTable(
@@ -263,18 +282,21 @@ const Hand = forwardRef(
       setInMenu(false);
     };
 
+    // Handle decline button click to cancel card selection
     const declineClicked = () => {
       handleBackToHand(currentClicked);
       setCurrentClicked(-1);
       setInMenu(false);
     };
 
+    // Assign ref to card element for direct manipulation
     const assignRef = (el, key) => {
       if (el) {
         cardsRef.current[key] = el;
       }
     };
 
+    // Render cards and action buttons based on current game state
     return (
       <>
         {cardsLayout.map((item, key) => (
@@ -300,6 +322,7 @@ const Hand = forwardRef(
             votingSelectedCardRef={votingSelectedCardRef}
           />
         ))}
+        {/* Show action buttons only when a card is clicked and conditions allow selection */}
         {currentClicked !== -1 &&
           selectedCard !== currentClicked &&
           ((!isThisPlayerWordMaker &&
