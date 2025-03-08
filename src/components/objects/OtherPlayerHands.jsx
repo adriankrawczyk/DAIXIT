@@ -1,24 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
-import Card from "../card/Card";
+import Card from "./card/Card";
 import {
   getOtherPlayersData,
   getSetupData,
   calculateCardsLayout,
   getOtherPlayerSelectedCards,
-} from "../../firebase/gameMethods";
-import { getAnimations } from "../../firebase/playerMethods";
-import {
-  addToTable,
-  backToHand,
-  rotateOnTable,
-} from "../../firebase/animations";
-import { useSetup } from "../../context/SetupContext";
+} from "../firebase/gameMethods";
+import { getAnimations } from "../firebase/playerMethods";
+import { addToTable, backToHand, rotateOnTable } from "../firebase/animations";
+import { useSetup } from "../context/SetupContext";
 import {
   showCardCloserOnVotingPhase,
   animateToPosition,
-} from "../../firebase/animations";
+} from "../firebase/animations";
 
-const OtherPlayerHand = ({
+const OtherPlayerHands = ({
   numberOfCards = 7,
   setVotingSelectedCardPosition,
   setVotingSelectedCardRef,
@@ -339,4 +335,4 @@ const OtherPlayerHand = ({
   );
 };
 
-export default OtherPlayerHand;
+export default OtherPlayerHands;
