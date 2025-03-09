@@ -40,6 +40,7 @@ import { getRandomCard } from "../firebase/gameMethods";
 import { playerUid } from "../firebase/localVariables";
 import PointsDisplayer from "../objects/PointsDisplayer";
 import WinScreenUI from "../objects/WinscreenUI";
+import InfoText from "../objects/InfoText";
 
 const GameScene = ({ setupContext }) => {
   // Setup context
@@ -436,6 +437,8 @@ const GameScene = ({ setupContext }) => {
         <>
           {/* Word input for the word maker */}
           {isThisPlayerWordMaker && !chosenWord.length && (
+            <>
+            {/* <InfoText text={"Click enter to submit your answer"}/> */}
             <Input
               position={[
                 inputData.position[0],
@@ -450,6 +453,7 @@ const GameScene = ({ setupContext }) => {
               textPosition={inputData.textPosition}
               textScale={inputData.textScaleMultiplier}
             />
+            </>
           )}
 
           {/* Display the chosen word or waiting message */}
