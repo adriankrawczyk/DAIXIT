@@ -336,15 +336,19 @@ const Hand = forwardRef(
                 ref={acceptButtonRef}
                 onClick={acceptClicked}
                 buttonSetupData={acceptButtonSetupData}
-                color="lightgreen"
+                color="#9a7ee6"
                 text="accept"
+                textColor = "#2b1f74"
+                strokeColor = "#1c115c"
               />
               <ActionButton
                 ref={declineButtonRef}
                 onClick={declineClicked}
                 buttonSetupData={declineButtonSetupData}
-                color="red"
+                color="#0F69F0"
                 text="cancel"
+                textColor = "#8db3ec"
+                strokeColor = "#2a1b81"
               />
             </>
           )}

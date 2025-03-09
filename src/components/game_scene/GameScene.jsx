@@ -439,7 +439,7 @@ const GameScene = ({ setupContext }) => {
           {isThisPlayerWordMaker && !chosenWord.length && (
             <>
             <InfoText 
-            text={"Write your special word and click"} 
+            text={"Write your special word and choose your"} 
             position={[-0.5,3,3]} 
             fontSize={0.27}
             color={"#F0B964"}
@@ -448,8 +448,8 @@ const GameScene = ({ setupContext }) => {
             />
 
             <InfoText 
-            text={"ENTER"} 
-            position={[2.5,3,3]} 
+            text={"card"} 
+            position={[3,3,3]} 
             fontSize={0.27}
             color={"#a32c64"}
             strokeWidth={0.012}
@@ -497,7 +497,7 @@ const GameScene = ({ setupContext }) => {
                   ref={acceptButtonRef}
                   onClick={handleAcceptOnVotingPhaseClicked}
                   buttonSetupData={acceptButtonSetupData}
-                  color="lightgreen"
+                  color = "lightgreen"
                   text="accept"
                   defaultScale={1}
                 />
