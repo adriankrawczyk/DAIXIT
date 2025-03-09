@@ -1,14 +1,18 @@
-import { Center, Text3D } from '@react-three/drei'
+import { Center, Text, Text3D } from '@react-three/drei'
 import React from 'react'
 
-const InfoText = ({text}) => {
+const InfoText = ({text, position, fontSize, color, strokeWidth, strokeColor}) => {
   return (
-    <Center>
-    <Text3D font="/fonts/KidsMagazine.ttf" position={[0, 1, 0]} size={1}>
+    <Text font="/DAIXIT/fonts/BrewedCoffee.otf" 
+    position={position}
+    fontSize={fontSize} 
+    letterSpacing={0.04} 
+    color={color} 
+    strokeWidth={strokeWidth}
+    strokeColor={strokeColor}
+    >
       {text}
-      <meshStandardMaterial color="orange" />
-    </Text3D>
-  </Center>
+    </Text>
   )
 }
 

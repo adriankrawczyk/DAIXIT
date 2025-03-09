@@ -41,6 +41,7 @@ import { playerUid } from "../firebase/localVariables";
 import PointsDisplayer from "../objects/PointsDisplayer";
 import WinScreenUI from "../objects/WinscreenUI";
 import InfoText from "../objects/InfoText";
+import { OrbitControls } from "@react-three/drei";
 
 const GameScene = ({ setupContext }) => {
   // Setup context
@@ -431,14 +432,30 @@ const GameScene = ({ setupContext }) => {
         />
       )}
 
-      {/* Main game UI */}
-      
+      {/* Main game UI */}      
       { gameStarted ? (
         <>
           {/* Word input for the word maker */}
           {isThisPlayerWordMaker && !chosenWord.length && (
             <>
-            {/* <InfoText text={"Click enter to submit your answer"}/> */}
+            <InfoText 
+            text={"Write your special word and click"} 
+            position={[-0.5,3,3]} 
+            fontSize={0.27}
+            color={"#F0B964"}
+            strokeWidth={0.012}
+            strokeColor={"#a32c64"}
+            />
+
+            <InfoText 
+            text={"ENTER"} 
+            position={[2.5,3,3]} 
+            fontSize={0.27}
+            color={"#a32c64"}
+            strokeWidth={0.012}
+            strokeColor={"#c49755"}
+            />
+
             <Input
               position={[
                 inputData.position[0],
