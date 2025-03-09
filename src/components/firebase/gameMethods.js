@@ -19,6 +19,8 @@ const ROTATION_HALF_PI = Math.PI / 2;
 const ROTATION_THREE_QUARTER_PI = Math.PI * 0.75;
 const ROTATION_PI = Math.PI;
 const CARDS_OFFSET = 0;
+const STANDARD_NUMBER_OF_POINTS_TO_WIN = 30;
+const MULTIPLICATION_FACTOR_TO_WINNING_POINTS = 5;
 
 async function getSetupData(n) {
   //uncomment to change player view
@@ -466,6 +468,17 @@ async function getOtherPlayerSelectedCards() {
   return selectedCards;
 }
 
+function getNumberOfPointsToWin(numberOfPlayers) 
+{
+  return Math.max( MULTIPLICATION_FACTOR_TO_WINNING_POINTS * numberOfPlayers, STANDARD_NUMBER_OF_POINTS_TO_WIN ) ; 
+}
+
+function getWinningPlayers(players, pointsToWin) {
+  const winningPlayers = players.filter(player => player.points >= pointsToWin);
+  const maxOfWinningPoints = Math.max(...players.map(player => player.points))
+  return winningPlayers.filter(player => player.points === maxOfWinningPoints); 
+}
+
 export {
   getPosition,
   setHandInDatabase,
@@ -478,4 +491,6 @@ export {
   getCardsPosition,
   updateGameWithData,
   getOtherPlayerSelectedCards,
+  getNumberOfPointsToWin,
+  getWinningPlayers
 };

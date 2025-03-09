@@ -155,7 +155,7 @@ const Galaxy = () => {
         <Planets
           key={key}
           texture={item.texture}
-          positionRadius={(key + 1) * 1.5 + 3}
+          positionRadius={(key + 1) * 1.5 + 5}
           speed={item.speed}
           fi={item.fi}
         />

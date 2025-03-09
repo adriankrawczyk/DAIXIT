@@ -6,8 +6,10 @@ import Input from "./lobby/util/Input";
 import SpinningWheel from "./objects/SpinningWheel";
 import { fetchGameData, joinToGame } from "./firebase/lobbyMethods";
 import {
+  getNumberOfPointsToWin,
   getOtherPlayerSelectedCards,
   getPosition,
+  getWinningPlayers,
   updateGameWithData,
 } from "./firebase/gameMethods";
 import FirebaseLogger from "./lobby/firebase/firebaseLogger";
@@ -88,6 +90,7 @@ const GameScene = ({ setupContext }) => {
   const [players, setPlayers] = useState([]);
   const [pointsAdded, setPointsAdded] = useState(false);
   const [afterVoteData, setAfterVoteData] = useState(null);
+  const [pointsToWin, setPointsToWin] = useState(null); // undefined value in case the game doesnt load
   const nextRoundButtonRef = useRef();
   const refreshCardsExecuted = useRef(false);
 
@@ -238,11 +241,17 @@ const GameScene = ({ setupContext }) => {
         handleNewRound(newRound);
       }
       if (everyPlayerHasVoted && isHost && !pointsAdded) {
+        
         setPointsAdded(true);
         const calculatedPoints = await calculateAndAddPoints();
         await updateGameWithData({
           afterVoteData: calculatedPoints,
         });
+        // WINNING MECHANISM HERE!!
+        // only after the points are added is it crucial to check whether some players win or not
+        // unnecessary 
+        // setPointsToWin( getNumberOfPointsToWin( fetchedPlayers.length ) ); 
+        // getWinningPlayers(fetchedPlayers, pointsToWin);
       }
 
       setChosenWordLabelData(getLeftTopButtonData(direction, votPhase));
@@ -257,6 +266,7 @@ const GameScene = ({ setupContext }) => {
       setNumberOfPlayers(fetchedPlayers.length);
       setGameStarted(started);
       setPlayers(fetchedPlayers);
+
       if (voted && !hasVoted) setHasVoted(true);
     };
 
