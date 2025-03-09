@@ -5,6 +5,7 @@ import ActionButton from "./ActionButton";
 import { Text } from "@react-three/drei";
 import { updateGameWithData } from "../firebase/gameMethods";
 import { updatePlayerInGame } from "../firebase/playerMethods";
+import { playerUid } from "../firebase/localVariables";
 
 const StartGameUI = ({
   numberOfPlayers,
@@ -19,14 +20,12 @@ const StartGameUI = ({
   const handleStartClick = async () => {
     // if (numberOfPlayers < 3) return;
     const players = Object.values(gameData.players);
-    const playerUid = localStorage.getItem("playerUid");
     if (
       isThisPlayerHost &&
       !players.some((player) => player.wordMaker === true)
     ) {
       // Set random word maker if there is none
-      //   const randomIndex = Math.floor(Math.random() * players.length);
-      const randomIndex = players.length - 1;
+      const randomIndex = Math.floor(Math.random() * players.length);
       const selectedPlayerUid = players[randomIndex].playerUid;
       if (selectedPlayerUid === playerUid) setIsThisPlayerWordMaker(true);
       await updatePlayerInGame(selectedPlayerUid, { wordMaker: true });

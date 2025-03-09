@@ -29,6 +29,8 @@ const OtherPlayerHand = ({
   players,
 }) => {
   const { votingPhase } = useSetup();
+
+  // State management for other players' data and card interactions
   const [otherPlayersData, setOtherPlayersData] = useState([]);
   const [otherPlayerHandsData, setOtherPlayerHandsData] = useState([]);
   const [processedAnimations, setProcessedAnimations] = useState(new Set());
@@ -36,11 +38,14 @@ const OtherPlayerHand = ({
     []
   );
   const [isInitialized, setIsInitialized] = useState(false);
+
+  // Refs to track component state across renders and store card DOM references
   const cardsRef = useRef({});
   const previousRoundRef = useRef(round);
   const hasRefreshedCardsRef = useRef(false);
   const votingPhaseHandled = useRef(false);
 
+  // Process card animations based on animation type (table placement or return to hand)
   const handleAnimation = (animation, cardRef) => {
     if (!cardRef?.current) return;
     const { type, direction, playerPosition, index } = animation;
@@ -64,6 +69,7 @@ const OtherPlayerHand = ({
     }
   };
 
+  // Initialize component and set up periodic data fetching from Firebase
   useEffect(() => {
     const fetchData = async () => {
       const players = await getOtherPlayersData();
@@ -80,6 +86,7 @@ const OtherPlayerHand = ({
     return () => clearInterval(dataInterval);
   }, []);
 
+  // Load and display other players' selected cards when component initializes
   useEffect(() => {
     const refreshOtherPlayersCards = async () => {
       if (
@@ -124,12 +131,14 @@ const OtherPlayerHand = ({
     refreshOtherPlayersCards();
   }, [isInitialized, otherPlayerHandsData, votingPhase]);
 
+  // Reset voting phase flag when round changes
   useEffect(() => {
     if (previousRoundRef.current !== round) {
       votingPhaseHandled.current = false;
     }
   }, [round]);
 
+  // Handle round changes by returning cards to hands and fetching new animations
   useEffect(() => {
     const changeRound = async () => {
       if (previousRoundRef.current !== round) {
@@ -163,6 +172,7 @@ const OtherPlayerHand = ({
     changeRound();
   }, [round, otherPlayerHandsData, selectedCards]);
 
+  // Handle voting phase transitions by randomizing and rotating cards on table
   useEffect(() => {
     const handleVotingPhase = async () => {
       if (votingPhase && votingPhaseHandled.current !== true) {
@@ -182,9 +192,11 @@ const OtherPlayerHand = ({
     handleVotingPhase();
   }, [votingPhase]);
 
+  // Fetch and process animations from Firebase
   const fetchAnimations = async () => {
     const animations = await getAnimations();
 
+    // Sort animations by timestamp to ensure proper sequence
     const sortedAnimations = animations.sort((a, b) => {
       return (a.timestamp || 0) - (b.timestamp || 0);
     });
@@ -206,6 +218,7 @@ const OtherPlayerHand = ({
         }
       });
 
+      // Limit the size of processed animations set
       if (newProcessed.size > 100) {
         const newProcessedArray = [...newProcessed];
         return new Set(newProcessedArray.slice(-100));
@@ -215,14 +228,18 @@ const OtherPlayerHand = ({
     });
   };
 
+  // Set up periodic animation fetching
   useEffect(() => {
     fetchAnimations();
     const animationInterval = setInterval(fetchAnimations, 1000);
     return () => clearInterval(animationInterval);
   }, [otherPlayerHandsData]);
 
+  // Handle card click during voting phase - showing selected card details or returning to original position
   const handleCardClick = async (cardKey, cardIndex, playerPosition) => {
     const currentCard = cardsRef.current[cardKey].current;
+
+    // Find which card on the table was clicked and get its data
     const getWhichCardIsItOnTable = () => {
       let count = -1;
       for (let i = 0; i < otherPlayerHandsData.length; i++) {
@@ -254,6 +271,7 @@ const OtherPlayerHand = ({
 
     const cardData = getWhichCardIsItOnTable();
 
+    // Show card close-up when clicked or return it to table if already selected
     if (!votingSelectedCardRef) {
       setVotingSelectedCardPosition({
         x: currentCard.position.x,
@@ -278,6 +296,7 @@ const OtherPlayerHand = ({
     }
   };
 
+  // Render cards for all other players, handling layout and selection state
   return (
     <>
       {(() => {

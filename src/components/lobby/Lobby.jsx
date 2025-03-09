@@ -7,10 +7,15 @@ import { leaveGame } from "../firebase/lobbyMethods";
 import { getActivePlayersInGame } from "../firebase/lobbyMethods";
 import { useSetup } from "../context/SetupContext";
 import { fetchAllPhotos } from "../firebase/gameMethods";
+import { currentGame, playerUid } from "../firebase/localVariables";
 
 const Lobby = () => {
-  const { setAllPhotos } = useSetup();
+  const { setAllPhotos, setCameraPosition, setCameraLookAt, setDirection } =
+    useSetup();
   useEffect(() => {
+    setDirection("Bottom");
+    setCameraPosition([0, 2, 4.4]);
+    setCameraLookAt([0, 0, -5]);
     const log = async () => {
       await FirebaseLogger();
       const photos = await fetchAllPhotos();
@@ -18,9 +23,8 @@ const Lobby = () => {
     };
     log();
   }, []);
-  const gameId = localStorage.getItem("currentGame");
-  if (gameId) {
-    leaveGame(gameId, localStorage.getItem("playerUid"));
+  if (currentGame) {
+    leaveGame(currentGame, playerUid);
   }
 
   return (

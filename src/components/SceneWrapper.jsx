@@ -4,7 +4,7 @@ import CameraControls from "./camera/CameraControls";
 import Cone from "./objects/Cone";
 import FullBackground from "./background/FullBackground";
 import SpinningWheel from "./objects/SpinningWheel";
-import GameScene from "./GameScene";
+import GameScene from "./game_scene/GameScene";
 import { useSetup } from "./context/SetupContext";
 
 const StaticSceneElements = memo(() => (
