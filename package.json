@@ -15,6 +15,7 @@
   "dependencies": {
     "@react-three/drei": "^9.121.4",
     "@react-three/fiber": "^8.17.14",
+    "dotenv": "^16.4.7",
     "firebase": "^11.3.1",
     "gh-pages": "^6.3.0",
     "gsap": "^3.12.7",
