@@ -67,7 +67,7 @@ const LobbyPage = ({ setPlayClicked }) => {
     }
     setIsProcessing(true);
     try {
-      localStorage.setItem("currentGame", gameId);
+      setCurrentGame(gameId);
       navigate(`/game/${gameId}`);
     } catch (error) {
       console.error("Error joining game:", error);
