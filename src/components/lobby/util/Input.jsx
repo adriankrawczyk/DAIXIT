@@ -22,6 +22,7 @@ const Input = ({
 
   // loading the texture
   const usedTexture = useLoader(THREE.TextureLoader, `/DAIXIT/${texture}`);
+  console.log(texture);
 
   useEffect(() => {
     setText(defaultText);

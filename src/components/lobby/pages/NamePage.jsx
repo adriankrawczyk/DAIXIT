@@ -23,13 +23,14 @@ const NamePage = ({ setPlayClicked }) => {
       <TextLabel position={[0, 0.45, 0.1]} fontSize={16} text={"Your name:"} />
       <Input
         position={[0, 0.15, 0.1]}
-        dimensions={[1, 0.15, 0.01]}
+        dimensions={[1, 0.4]}
         set={setName}
         defaultText={defaultText}
         fontSize={6}
         textPosition={[0, 0, 0.01]}
         textScale={[1, 1, 1]}
         rotation={[0, 0, 0]}
+        texture={"paper.png"}
       />
       <Button
         position={[0.7, -0.45, 0.1]}
