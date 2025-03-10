@@ -60,7 +60,6 @@ const ActionButton = forwardRef(
         >
           {text}
         </Text>
-        {/* <MeshWobbleMaterial {...materialProps} /> */}
         <meshStandardMaterial {...materialProps} />
       </RoundedBox>
   }

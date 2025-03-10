@@ -296,6 +296,8 @@ const Hand = forwardRef(
       }
     };
 
+    // Click animations to be added
+
     // Render cards and action buttons based on current game state
     return (
       <>
@@ -336,19 +338,19 @@ const Hand = forwardRef(
                 ref={acceptButtonRef}
                 onClick={acceptClicked}
                 buttonSetupData={acceptButtonSetupData}
-                color="#9a7ee6"
+                color="#8fda95"
                 text="accept"
-                textColor = "#2b1f74"
-                strokeColor = "#1c115c"
+                textColor = "#226319"
+                strokeColor = "#02580e"
               />
               <ActionButton
                 ref={declineButtonRef}
                 onClick={declineClicked}
                 buttonSetupData={declineButtonSetupData}
-                color="#0F69F0"
+                color="#ff7e7e"
                 text="cancel"
-                textColor = "#8db3ec"
-                strokeColor = "#2a1b81"
+                textColor = "#740000"
+                strokeColor = "#680000"
               />
             </>
           )}

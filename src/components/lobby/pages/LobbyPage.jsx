@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import GameListElement from "../util/GameListElement";
 import { debounce } from "lodash";
 import { setCurrentGame } from "../../firebase/localVariables";
+import FullBackground from "../../background/FullBackground";
+import PagesBackground from "../../background/PagesBackground";
 
 const LobbyPage = ({ setPlayClicked }) => {
   const [userCount, setUserCount] = useState(0);
@@ -117,6 +119,7 @@ const LobbyPage = ({ setPlayClicked }) => {
         handleClick={DebouncedHandleNewGame}
         disabled={isProcessing}
       />
+      <PagesBackground/>
     </>
   );
 };

@@ -22,7 +22,6 @@ const Input = ({
 
   // loading the texture
   const usedTexture = useLoader(THREE.TextureLoader, `/DAIXIT/${texture}`);
-  console.log(texture);
 
   useEffect(() => {
     setText(defaultText);
@@ -92,7 +91,7 @@ const Input = ({
       <TextLabel
         position={textPosition}
         fontSize={fontSize}
-        text={text}
+        text={text.slice(Math.max(0,text.length-16), text.length)} // dodac opcje scrollowania w lewo
         anchorX="center"
         anchorY="middle"
         textScale={textScale}

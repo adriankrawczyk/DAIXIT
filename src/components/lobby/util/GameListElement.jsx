@@ -1,5 +1,7 @@
 import Button from "./Button";
 import TextLabel from "./TextLabel";
+
+
 const GameListElement = ({ index, host, gameId, HandleJoinClick }) => {
   return (
     <mesh position={[0, 0.25 - index * 0.12, 0.1]}>

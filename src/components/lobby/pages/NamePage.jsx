@@ -3,6 +3,8 @@ import Button from "../util/Button";
 import Input from "../util/Input";
 import { useEffect, useState } from "react";
 import { setPlayerName } from "../../firebase/playerMethods";
+import FullBackground from "../../background/FullBackground";
+import PagesBackground from "../../background/PagesBackground";
 
 const NamePage = ({ setPlayClicked }) => {
   const [name, setName] = useState("");
@@ -20,7 +22,7 @@ const NamePage = ({ setPlayClicked }) => {
   };
   return (
     <>
-      <TextLabel position={[0, 0.45, 0.1]} fontSize={16} text={"Your name:"} />
+      <TextLabel position={[0, 0.4, 0.1]} fontSize={16} text={"Your name:"} />
       <Input
         position={[0, 0.15, 0.1]}
         dimensions={[1, 0.4]}
@@ -39,6 +41,7 @@ const NamePage = ({ setPlayClicked }) => {
         disabled={name.length === 0}
         handleClick={handleClick}
       />
+      <PagesBackground/>
     </>
   );
 };
