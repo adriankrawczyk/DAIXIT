@@ -40,8 +40,9 @@ import { getRandomCard } from "../firebase/gameMethods";
 import { playerUid } from "../firebase/localVariables";
 import PointsDisplayer from "../objects/PointsDisplayer";
 import WinScreenUI from "../objects/WinscreenUI";
-import InfoText from "../objects/InfoText";
+import InfoText from "../lobby/util/InfoText";
 import { OrbitControls } from "@react-three/drei";
+import EncouragingText from "../objects/EncouragingText";
 
 const GameScene = ({ setupContext }) => {
   // Setup context
@@ -438,37 +439,22 @@ const GameScene = ({ setupContext }) => {
           {/* Word input for the word maker */}
           {isThisPlayerWordMaker && !chosenWord.length && (
             <>
-            <InfoText 
-            text={"Write your special word and choose your"} 
-            position={[-0.5,3,3]} 
-            fontSize={0.27}
-            color={"#F0B964"}
-            strokeWidth={0.012}
-            strokeColor={"#a32c64"}
-            />
-
-            <InfoText 
-            text={"card"} 
-            position={[3,3,3]} 
-            fontSize={0.27}
-            color={"#a32c64"}
-            strokeWidth={0.012}
-            strokeColor={"#c49755"}
-            />
-
+            <EncouragingText/>
             <Input
               position={[
                 inputData.position[0],
-                inputData.position[1] + 0.5,
+                inputData.position[1] + 0.52,
                 inputData.position[2],
               ]}
-              dimensions={[2, 0.5, 0.01]}
+              dimensions={[2, 1.2]}
               defaultText={"Your special word..."}
               set={setWordMakerText}
               fontSize={18}
               rotation={inputData.rotation}
               textPosition={inputData.textPosition}
               textScale={inputData.textScaleMultiplier}
+              texture={"paper.png"}
+              textColor={"#080336"}
             />
             </>
           )}

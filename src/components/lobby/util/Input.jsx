@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { useThree } from "@react-three/fiber";
+import { useLoader, useThree } from "@react-three/fiber";
 import TextLabel from "./TextLabel";
+import * as THREE from "three";
 import { setPlayerName } from "../../firebase/playerMethods";
 
 const Input = ({
@@ -12,10 +13,15 @@ const Input = ({
   textPosition,
   textScale,
   rotation,
+  texture,
+  textColor = "black"
 }) => {
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const meshRef = useRef();
+
+  // loading the texture
+  const usedTexture = useLoader(THREE.TextureLoader, `/DAIXIT/${texture}`);
 
   useEffect(() => {
     setText(defaultText);
@@ -89,9 +95,12 @@ const Input = ({
         anchorX="center"
         anchorY="middle"
         textScale={textScale}
+        textColor = {textColor}
       />
-      <boxGeometry args={dimensions} />
-      <meshBasicMaterial color={isFocused ? "lightgray" : "white"} />
+      {/* <boxGeometry args={dimensions} /> */}
+      <planeGeometry args={dimensions} />
+      {/* <meshBasicMaterial color={isFocused ? "lightgreen" : "white"} /> */}
+      <meshStandardMaterial transparent={true} map={usedTexture} />
     </mesh>
   );
 };
