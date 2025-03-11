@@ -88,9 +88,9 @@ const LobbyPage = ({ setPlayClicked }) => {
 
   return (
     <>
-      <TextLabel position={[0, 0.45, 0.1]} fontSize={16} text={"Lobby:"} />
+      <TextLabel position={[0, 0.35, 0.1]} fontSize={16} text={"Lobby:"} />
       <TextLabel
-        position={[-0.7, 0.5, 0.1]}
+        position={[-0.625, 0.425, 0.1]}
         fontSize={4}
         text={`Currently online: ${userCount}`}
       />
@@ -107,13 +107,13 @@ const LobbyPage = ({ setPlayClicked }) => {
         ))
       ) : (
         <TextLabel
-          position={[0, 0.3, 0.1]}
+          position={[0, 0.2, 0.1]}
           fontSize={4}
           text="No games available. Create a new game!"
         />
       )}
       <Button
-        position={[0.7, -0.45, 0.1]}
+        position={[0.675, -0.39, 0.1]}
         dimensions={[0.2, 0.1, 0.01]}
         text={isProcessing ? "Joining..." : "New game"}
         handleClick={DebouncedHandleNewGame}

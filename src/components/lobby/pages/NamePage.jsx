@@ -22,9 +22,9 @@ const NamePage = ({ setPlayClicked }) => {
   };
   return (
     <>
-      <TextLabel position={[0, 0.4, 0.1]} fontSize={16} text={"Your name:"} />
+      <TextLabel position={[0, 0.35, 0.1]} fontSize={16} text={"Your name:"} />
       <Input
-        position={[0, 0.15, 0.1]}
+        position={[0, 0.1, 0.1]}
         dimensions={[1, 0.4]}
         set={setName}
         defaultText={defaultText}
@@ -35,7 +35,7 @@ const NamePage = ({ setPlayClicked }) => {
         texture={"paper.png"}
       />
       <Button
-        position={[0.7, -0.45, 0.1]}
+        position={[0.675, -0.39, 0.1]}
         dimensions={[0.2, 0.1, 0.01]}
         text="Play!"
         disabled={name.length === 0}
