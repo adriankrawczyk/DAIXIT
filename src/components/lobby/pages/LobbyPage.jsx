@@ -119,7 +119,6 @@ const LobbyPage = ({ setPlayClicked }) => {
         handleClick={DebouncedHandleNewGame}
         disabled={isProcessing}
       />
-      <PagesBackground/>
     </>
   );
 };

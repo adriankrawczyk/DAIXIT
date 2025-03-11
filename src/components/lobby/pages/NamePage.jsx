@@ -41,7 +41,6 @@ const NamePage = ({ setPlayClicked }) => {
         disabled={name.length === 0}
         handleClick={handleClick}
       />
-      <PagesBackground/>
     </>
   );
 };

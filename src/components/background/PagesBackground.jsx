@@ -1,12 +1,12 @@
-import React from 'react'
-import FullBackground from './FullBackground'
+import React from "react";
+import FullBackground from "./FullBackground";
 
-const PagesBackground = () => {
+const PagesBackground = React.memo(() => {
   return (
     <>
-    <FullBackground colorA="#AF4600" colorB="#006AAF"/>
+      <FullBackground colorA="#AF4600" colorB="#006AAF" />
     </>
-  )
-}
+  );
+});
 
-export default PagesBackground
+export default PagesBackground;
