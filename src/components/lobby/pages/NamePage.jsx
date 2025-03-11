@@ -35,7 +35,7 @@ const NamePage = ({ setPlayClicked }) => {
         texture={"paper.png"}
       />
       <Button
-        position={[0.7, -0.45, 0.1]}
+        position={[0, -0.3, 0.1]}
         dimensions={[0.2, 0.1, 0.01]}
         text="Play!"
         disabled={name.length === 0}

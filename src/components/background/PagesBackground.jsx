@@ -5,6 +5,7 @@ const PagesBackground = () => {
   return (
     <>
     <FullBackground colorA="#AF4600" colorB="#006AAF"/>
+    {/* <FullBackground/> */}
     </>
   )
 }
