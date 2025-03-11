@@ -14,7 +14,7 @@ const Input = ({
   textScale,
   rotation,
   texture,
-  textColor = "black"
+  textColor = "black",
 }) => {
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
@@ -91,16 +91,20 @@ const Input = ({
       <TextLabel
         position={textPosition}
         fontSize={fontSize}
-        text={text.slice(Math.max(0,text.length-16), text.length)} // dodac opcje scrollowania w lewo
+        text={text.slice(Math.max(0, text.length - 16), text.length)} // dodac opcje scrollowania w lewo
         anchorX="center"
         anchorY="middle"
         textScale={textScale}
-        textColor = {textColor}
+        textColor={textColor}
       />
       {/* <boxGeometry args={dimensions} /> */}
       <planeGeometry args={dimensions} />
       {/* <meshBasicMaterial color={isFocused ? "lightgreen" : "white"} /> */}
-      <meshStandardMaterial transparent={true} map={usedTexture} />
+      <meshStandardMaterial
+        transparent={true}
+        map={usedTexture}
+        side={THREE.DoubleSide}
+      />
     </mesh>
   );
 };
