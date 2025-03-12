@@ -8,8 +8,8 @@ const BG_SPEED = 0.05;
 
 const BackgroundColor = (
   { 
-    colorA = "#190042",
-    colorB = "#624475"
+    colorA,
+    colorB
   }
 ) => {
   const backgroundRef = useRef();
