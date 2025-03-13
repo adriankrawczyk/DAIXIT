@@ -5,8 +5,6 @@
 [![Game Preview](https://github.com/user-attachments/assets/3b544146-483d-4ddf-8c97-4f8d5e21865e)
 ](https://github.com/user-attachments/assets/3b544146-483d-4ddf-8c97-4f8d5e21865e)
 
-**✨ DAIXIT ✨** is a 3D multiplayer web game built with React that uses AI to generate images for cards that you are playing to ensure that they are always fresh 🥶. Connect with up to 8 friends for an really fun gaming experience! Currently in active development, DAIXIT reimagines the beloved classic board game Dixit with a technological twist 🤖.
-
 ---
 
 ## 🎲 How To Play DAIXIT 🎲
