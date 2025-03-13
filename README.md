@@ -9,18 +9,6 @@
 
 ---
 
-## 🃏 What Makes DAIXIT Special? 🃏
-
-DAIXIT takes inspiration from the award-winning board game Dixit but elevates it with:
-
-- 🤖 **AI-generated images** that ensures the cards never get stale
-- 🌐 **Multiplayer functionality** for up to 8 players
-- 🎭 **3D environment** making the experience cooler
-- ☁️ **Cloud-based architecture** for seamless gameplay
-- 📱 **Web-based interface** accessible across devices
-
----
-
 ## 🎲 How To Play DAIXIT 🎲
 
 DAIXIT puts your creativity and intuition to the test! Here's how it works:
@@ -72,6 +60,19 @@ Creating a multiplayer experience is one of our biggest challenges in this proje
 - ✨ **GSAP** - Smooth animations and transitions
 
 ---
+
+## 🃏 What Makes DAIXIT Special? 🃏
+
+DAIXIT takes inspiration from the award-winning board game Dixit but elevates it with:
+
+- 🤖 **AI-generated images** that ensures the cards never get stale
+- 🌐 **Multiplayer functionality** for up to 8 players
+- 🎭 **3D environment** making the experience cooler
+- ☁️ **Cloud-based architecture** for seamless gameplay
+- 📱 **Web-based interface** accessible across devices
+
+---
+
 ## 🔥 Link to play the game 🔥
 https://adriankrawczyk.github.io/DAIXIT
 
