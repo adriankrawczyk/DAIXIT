@@ -15,7 +15,7 @@ DAIXIT takes inspiration from the award-winning board game Dixit but elevates it
 
 - 🤖 **AI-generated images** that ensures the cards never get stale
 - 🌐 **Multiplayer functionality** for up to 8 players
-- 🎭 **Immersive 3D environment** bringing cards to life
+- 🎭 **3D environment** making the experience cooler
 - ☁️ **Cloud-based architecture** for seamless gameplay
 - 📱 **Web-based interface** accessible across devices
 
