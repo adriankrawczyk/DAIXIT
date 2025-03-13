@@ -32,6 +32,8 @@ The perfect clue walks the delicate balance between obvious and enigmatic! This 
 ![AI Generated Cards](https://github.com/user-attachments/assets/0d513bdb-ecad-4272-837d-e34ffd7fefbc)
 ![More AI Generated Cards](https://github.com/user-attachments/assets/83add461-4250-470d-a9c4-92c1295fa384)
 
+---
+
 ## 🔮 The Technical Stack 🔮
 
 - 🧠 **Gemini 2.0 Flash** creates imaginative, diverse prompts
