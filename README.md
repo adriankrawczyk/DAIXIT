@@ -75,4 +75,5 @@ Creating a multiplayer experience is one of our biggest challenges in this proje
 ## 🔥 Link to play the game 🔥
 https://adriankrawczyk.github.io/DAIXIT
 
+---
 
