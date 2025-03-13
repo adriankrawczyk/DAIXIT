@@ -72,5 +72,7 @@ Creating a multiplayer experience is one of our biggest challenges in this proje
 - ✨ **GSAP** - Smooth animations and transitions
 
 ---
+## 🎮 Link to play the game 🎮
+https://adriankrawczyk.github.io/DAIXIT
 
 
