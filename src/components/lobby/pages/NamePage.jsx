@@ -22,24 +22,27 @@ const NamePage = ({ setPlayClicked }) => {
   };
   return (
     <>
-      <TextLabel position={[0, 0.35, 0.1]} fontSize={16} text={"Your name:"} />
+      <TextLabel position={[0, 0.24, 0.08]} fontSize={18} text={"YOUR NAME"} font={"/DAIXIT/fonts/ELEGANT.ttf"} textColor={"#FF7600"} emissive={"true"}/>
       <Input
-        position={[0, 0.1, 0.1]}
-        dimensions={[1, 0.4]}
+        position={[0, 0.05, 0.08]}
+        dimensions={[1, 0.2]}
         set={setName}
         defaultText={defaultText}
         fontSize={6}
         textPosition={[0, 0, 0.01]}
         textScale={[1, 1, 1]}
         rotation={[0, 0, 0]}
-        texture={"paper.png"}
+        color={"#c300d1"}
+        textColor={"#FF7600"}
       />
       <Button
-        position={[0.675, -0.39, 0.1]}
-        dimensions={[0.2, 0.1, 0.01]}
+        position={[0, -0.2, 0.1]}
+        dimensions={[0.3, 0.1, 0.01]}
         text="Play!"
         disabled={name.length === 0}
         handleClick={handleClick}
+        disabledColor="#790079"
+        enabledColor="#ff9300"
       />
     </>
   );

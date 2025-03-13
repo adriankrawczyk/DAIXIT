@@ -3,6 +3,7 @@ const ROTATION_QUARTER_PI = Math.PI / 4;
 const ROTATION_THIRTEENTH_PI = Math.PI / 13;
 const TEXT_POSITION_OFFSET = 0.01;
 const BUTTON_HEIGHT = 1.5;
+const ENCOURAGING_HEIGHT = 2.277;
 const CORNER_BUTTON_HEIGHT = 1.7;
 const VOTING_BUTTON_HEIGHT = 3;
 const VOTING_POSITION_OFFSET = 1.5;
@@ -32,7 +33,8 @@ const TWO_VOTER_OFFSET = 0.4;
 const MULTI_VOTER_SPACING = 0.3;
 const SMALLER_OFFSET_MULTIPLIER = 3;
 const BIGGER_OFFSET_MULTIPLIER = 6;
-
+const ENCOURAGING_X_OFFSET = 0;
+const ENCOURAGING_Z_DISTANCE = STANDARD_DISTANCE / 0.9;
 const NORMAL_MULTIPLIER = [1, 1, 1];
 const REVERSE_X_MULTIPLIER = [-1, 1, 1];
 const REVERSE_Z_MULTIPLIER = [1, 1, -1];
@@ -238,6 +240,76 @@ function getDeclinePositionSetupData(direction, votingPhase = false) {
       };
     default:
       return bottomDefaultObject;
+  }
+}
+
+function getEncouragingButtonData(direction) {
+  switch (direction) {
+    case "Bottom":
+      return {
+        ...bottomDefaultObject,
+        position: [
+          ENCOURAGING_X_OFFSET,
+          ENCOURAGING_HEIGHT,
+          ENCOURAGING_Z_DISTANCE,
+        ],
+      };
+    case "Top":
+      return {
+        ...topDefaultObject,
+        position: [
+          ENCOURAGING_X_OFFSET,
+          ENCOURAGING_HEIGHT,
+          -ENCOURAGING_Z_DISTANCE,
+        ],
+      };
+    case "Left":
+      return {
+        ...leftDefaultObject,
+        position: [
+          ENCOURAGING_Z_DISTANCE,
+          ENCOURAGING_HEIGHT,
+          ENCOURAGING_X_OFFSET,
+        ],
+      };
+    case "Right":
+      return {
+        ...rightDefaultObject,
+        position: [
+          -ENCOURAGING_Z_DISTANCE,
+          ENCOURAGING_HEIGHT,
+          -ENCOURAGING_X_OFFSET,
+        ],
+      };
+    case "LeftBottom":
+      return {
+        ...leftBottomDefaultObject,
+        position: [CORNER_DISTANCE, ENCOURAGING_HEIGHT, CORNER_DISTANCE],
+      };
+    case "LeftTop":
+      return {
+        ...leftTopDefaultObject,
+        position: [CORNER_DISTANCE, ENCOURAGING_HEIGHT, -CORNER_DISTANCE],
+      };
+    case "RightTop":
+      return {
+        ...rightTopDefaultObject,
+        position: [-CORNER_DISTANCE, ENCOURAGING_HEIGHT, -CORNER_DISTANCE],
+      };
+    case "RightBottom":
+      return {
+        ...rightBottomDefaultObject,
+        position: [-CORNER_DISTANCE, ENCOURAGING_HEIGHT, CORNER_DISTANCE],
+      };
+    default:
+      return {
+        ...bottomDefaultObject,
+        position: [
+          ENCOURAGING_X_OFFSET,
+          ENCOURAGING_HEIGHT,
+          ENCOURAGING_Z_DISTANCE,
+        ],
+      };
   }
 }
 
@@ -550,4 +622,5 @@ export {
   getPointDisplayerData,
   getCardUIData,
   getNextRoundButtonData,
+  getEncouragingButtonData,
 };

@@ -13,15 +13,14 @@ const Input = ({
   textPosition,
   textScale,
   rotation,
-  texture,
-  textColor = "black"
+  texture = "",
+  color = "",
+  font = "",
+  textColor = "black",
 }) => {
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const meshRef = useRef();
-
-  // loading the texture
-  const usedTexture = useLoader(THREE.TextureLoader, `/DAIXIT/${texture}`);
 
   useEffect(() => {
     setText(defaultText);
@@ -80,6 +79,16 @@ const Input = ({
     setIsFocused(false);
   };
 
+  let materialOptions = {};
+  if (texture !== "")
+  {
+    materialOptions.map = useLoader(THREE.TextureLoader, `/DAIXIT/${texture}`);
+  }
+  if ( color !== "" )
+  {
+    materialOptions.color = color;
+  }
+
   return (
     <mesh
       ref={meshRef}
@@ -91,16 +100,21 @@ const Input = ({
       <TextLabel
         position={textPosition}
         fontSize={fontSize}
-        text={text.slice(Math.max(0,text.length-16), text.length)} // dodac opcje scrollowania w lewo
+        text={text.slice(Math.max(0, text.length - 16), text.length)} // dodac opcje scrollowania w lewo
         anchorX="center"
         anchorY="middle"
         textScale={textScale}
-        textColor = {textColor}
+        textColor={textColor}
+        font={font !== "" ? font : undefined}
       />
       {/* <boxGeometry args={dimensions} /> */}
       <planeGeometry args={dimensions} />
       {/* <meshBasicMaterial color={isFocused ? "lightgreen" : "white"} /> */}
-      <meshStandardMaterial transparent={true} map={usedTexture} />
+      <meshStandardMaterial
+        transparent={true}
+        {...materialOptions}
+        side={THREE.DoubleSide}
+      />
     </mesh>
   );
 };

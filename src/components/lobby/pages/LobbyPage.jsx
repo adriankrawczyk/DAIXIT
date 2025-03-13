@@ -88,11 +88,12 @@ const LobbyPage = ({ setPlayClicked }) => {
 
   return (
     <>
-      <TextLabel position={[0, 0.35, 0.1]} fontSize={16} text={"Lobby:"} />
+      <TextLabel position={[0, 0.35, 0.1]} fontSize={16} text={"Lobby:"} font={"/DAIXIT/fonts/ELEGANT.ttf"} textColor="#ff9300"/>
       <TextLabel
-        position={[-0.625, 0.425, 0.1]}
+        position={[0, 0.25, 0.1]}
         fontSize={4}
         text={`Currently online: ${userCount}`}
+        textColor="#ff9300"
       />
       {games && games.length > 0 ? (
         games.map((game, index) => (
@@ -107,17 +108,19 @@ const LobbyPage = ({ setPlayClicked }) => {
         ))
       ) : (
         <TextLabel
-          position={[0, 0.2, 0.1]}
+          position={[0, 0.15, 0.1]}
           fontSize={4}
           text="No games available. Create a new game!"
         />
       )}
       <Button
-        position={[0.675, -0.39, 0.1]}
+        position={[0, 0.04 - games.length * 0.12, 0.1]}
         dimensions={[0.2, 0.1, 0.01]}
         text={isProcessing ? "Joining..." : "New game"}
         handleClick={DebouncedHandleNewGame}
         disabled={isProcessing}
+        enabledColor="#ff9300"
+        disabledColor="#790079"
       />
     </>
   );

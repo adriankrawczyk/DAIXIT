@@ -467,15 +467,23 @@ async function getOtherPlayerSelectedCards() {
   return selectedCards;
 }
 
-function getNumberOfPointsToWin(numberOfPlayers) 
-{
-  return Math.max( MULTIPLICATION_FACTOR_TO_WINNING_POINTS * numberOfPlayers, STANDARD_NUMBER_OF_POINTS_TO_WIN ) ; 
+function getNumberOfPointsToWin(numberOfPlayers) {
+  return Math.max(
+    MULTIPLICATION_FACTOR_TO_WINNING_POINTS * numberOfPlayers,
+    STANDARD_NUMBER_OF_POINTS_TO_WIN
+  );
 }
 
 function getWinningPlayers(players, pointsToWin) {
-  const winningPlayers = players.filter(player => player.points >= pointsToWin);
-  const maxOfWinningPoints = Math.max(...players.map(player => player.points))
-  return winningPlayers.filter(player => player.points === maxOfWinningPoints); 
+  const winningPlayers = players.filter(
+    (player) => player.points >= pointsToWin
+  );
+  const maxOfWinningPoints = Math.max(
+    ...players.map((player) => player.points)
+  );
+  return winningPlayers.filter(
+    (player) => player.points === maxOfWinningPoints
+  );
 }
 
 export {
@@ -491,5 +499,5 @@ export {
   updateGameWithData,
   getOtherPlayerSelectedCards,
   getNumberOfPointsToWin,
-  getWinningPlayers
+  getWinningPlayers,
 };

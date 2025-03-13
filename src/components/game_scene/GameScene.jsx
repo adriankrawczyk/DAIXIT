@@ -29,6 +29,7 @@ import {
   getAcceptPositionSetupData,
   getDeclinePositionSetupData,
   getNextRoundButtonData,
+  getEncouragingButtonData,
 } from "../firebase/uiMethods";
 import {
   getHandFromDatabase,
@@ -78,6 +79,7 @@ const GameScene = ({ setupContext }) => {
   const [isThisPlayerHost, setIsThisPlayerHost] = useState(false);
   const [isThisPlayerWordMaker, setIsThisPlayerWordMaker] = useState(false);
   const [inputData, setInputData] = useState({});
+  const [encouragingButtonData, setEncouragingButtonData] = useState({});
   const [fetchedPhotos, setFetchedPhotos] = useState([]);
   const [wordMakerText, setWordMakerText] = useState("");
   const [chosenWordLabelData, setChosenWordLabelData] = useState({});
@@ -136,6 +138,7 @@ const GameScene = ({ setupContext }) => {
 
     // Initialize UI positioning data
     setInputData(getCenteredButtonData(dir));
+    setEncouragingButtonData(getEncouragingButtonData(dir));
     setChosenWordLabelData(getLeftTopButtonData(direction, votingPhase));
   };
 
@@ -289,10 +292,9 @@ const GameScene = ({ setupContext }) => {
           !Object.values(fetchedPlayer.chosenCard).length
         )
           everyPlayerAcceptedCard = false;
-        
+
         // Check if win screen is to be apeared
-        if (fetchedPlayer.points >= 30)
-          setShowWinScreen(true);
+        if (fetchedPlayer.points >= 30) setShowWinScreen(true);
       }
 
       // Host logic for managing game phase transitions
@@ -309,7 +311,6 @@ const GameScene = ({ setupContext }) => {
 
       // Calculate points at the end of voting if all players have voted
       if (everyPlayerHasVoted && isHost && !pointsAdded) {
-        
         setPointsAdded(true);
         const calculatedPoints = await calculateAndAddPoints();
         await updateGameWithData({
@@ -405,9 +406,8 @@ const GameScene = ({ setupContext }) => {
     return <SpinningWheel />;
   }
 
-  if (showWinScreen)
-  {
-    return <WinScreenUI/>
+  if (showWinScreen) {
+    return <WinScreenUI />;
   }
 
   return (
@@ -433,29 +433,29 @@ const GameScene = ({ setupContext }) => {
         />
       )}
 
-      {/* Main game UI */}      
-      { gameStarted ? (
+      {/* Main game UI */}
+      {gameStarted ? (
         <>
           {/* Word input for the word maker */}
           {isThisPlayerWordMaker && !chosenWord.length && (
             <>
-            <EncouragingText/>
-            <Input
-              position={[
-                inputData.position[0],
-                inputData.position[1] + 0.52,
-                inputData.position[2],
-              ]}
-              dimensions={[2, 1.2]}
-              defaultText={"Your special word..."}
-              set={setWordMakerText}
-              fontSize={18}
-              rotation={inputData.rotation}
-              textPosition={inputData.textPosition}
-              textScale={inputData.textScaleMultiplier}
-              texture={"paper.png"}
-              textColor={"#080336"}
-            />
+              <EncouragingText encouragingButtonData={encouragingButtonData} />
+              <Input
+                position={[
+                  inputData.position[0],
+                  inputData.position[1] + 0.52,
+                  inputData.position[2],
+                ]}
+                dimensions={[2, 1.2]}
+                defaultText={"Your special word..."}
+                set={setWordMakerText}
+                fontSize={18}
+                rotation={inputData.rotation}
+                textPosition={inputData.textPosition}
+                textScale={inputData.textScaleMultiplier}
+                texture={"paper.png"}
+                textColor={"#080336"}
+              />
             </>
           )}
 
@@ -483,7 +483,7 @@ const GameScene = ({ setupContext }) => {
                   ref={acceptButtonRef}
                   onClick={handleAcceptOnVotingPhaseClicked}
                   buttonSetupData={acceptButtonSetupData}
-                  color = "lightgreen"
+                  color="lightgreen"
                   text="accept"
                   defaultScale={1}
                 />
@@ -547,9 +547,7 @@ const GameScene = ({ setupContext }) => {
           setIsThisPlayerWordMaker={setIsThisPlayerWordMaker}
           direction={direction}
         />
-      )
-      }
-
+      )}
     </>
   );
 };

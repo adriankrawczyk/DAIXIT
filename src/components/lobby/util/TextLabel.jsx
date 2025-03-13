@@ -7,7 +7,8 @@ const TextLabel = ({
   textColor = "black",
   textScale = [1, 1, 1],
   rotation = [0, 0, 0],
-  font = "/DAIXIT/fonts/coolfont.otf"
+  font = "/DAIXIT/fonts/coolfont.otf",
+  emissive = "false"
 }) => {
   return (
     <Text
@@ -19,6 +20,7 @@ const TextLabel = ({
       color={textColor}
       anchorX="center"
       anchorY="middle"
+      emissive={emissive}
     >
       {text}
     </Text>
