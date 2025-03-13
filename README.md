@@ -23,8 +23,6 @@ DAIXIT puts your creativity and intuition to the test! Here's how it works:
    - 😱 EVERYONE guesses correctly (too obvious!)
    - 😭 NO ONE guesses correctly (too obscure!)
 
-The perfect clue walks the delicate balance between obvious and enigmatic! This creates a delightful strategic layer where being cleverly ambiguous is rewarded! 🧠✨
-
 ---
 
 ## 🤖 AI Image Generation 🤖
