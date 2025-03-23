@@ -20,7 +20,7 @@ DAIXIT puts your creativity and intuition to the test! Here's how it works:
 4. ⚡ **Scoring Twist**: Players get points if other players voted for their card, besides the WordMaker. Here's the clever catch - the WordMaker scores ZERO points if:
    - 😱 EVERYONE guesses correctly (too obvious)
    - 😭 NO ONE guesses correctly (too obscure)
-   - 😎 OTHERWISE he gets his points (right in the middle)
+   - 😎 Otherwise, he gets his points (right in the middle)
 
 ---
 
