@@ -166,7 +166,7 @@ export const animateActionButtons = (acceptButtonRef, declineButtonRef) => {
 export const addToTable = (
   cardRef,
   direction,
-  setDisableHover = null,
+  onComplete = null,
   votingPhase = false
 ) => {
   if (!cardRef) return;
@@ -193,32 +193,54 @@ export const addToTable = (
     },
   };
 
+  // For backward compatibility, check if onComplete is a function or a setDisableHover function
+  const setDisableHover = typeof onComplete === "function" ? null : onComplete;
+
   if (setDisableHover) setDisableHover(true);
 
-  gsap.to(cardRef.position, {
-    x: positions[direction].x,
-    y: POSITION_CONSTANTS.Y_TABLE,
-    z: positions[direction].z,
-    duration: ANIMATION_DEFAULTS.DURATION,
-    ease: ANIMATION_DEFAULTS.EASE_OUT,
+  // Create a timeline to sequence animations
+  const timeline = gsap.timeline({
+    onComplete: () => {
+      // Call the onComplete callback if it's a function (not a setDisableHover)
+      if (typeof onComplete === "function" && onComplete !== setDisableHover) {
+        onComplete();
+      }
+
+      // Handle setDisableHover if it exists
+      if (setDisableHover) {
+        setDisableHover(false);
+      }
+    },
   });
 
-  gsap.to(cardRef.rotation, {
-    x: ROTATION_CONSTANTS.X_TABLE,
-    y: 0,
-    z: -ROTATION_CONSTANTS.X_TABLE,
-    duration: ANIMATION_DEFAULTS.DURATION,
-    ease: ANIMATION_DEFAULTS.EASE_OUT,
-  });
+  // Add animations to the timeline
+  timeline.to(
+    cardRef.position,
+    {
+      x: positions[direction].x,
+      y: POSITION_CONSTANTS.Y_TABLE,
+      z: positions[direction].z,
+      duration: ANIMATION_DEFAULTS.DURATION,
+      ease: ANIMATION_DEFAULTS.EASE_OUT,
+    },
+    0
+  );
 
-  // if (votingPhase) {
-  //   setTimeout(() => {
-  //     rotateOnTable(cardRef);
-  //   }, ANIMATION_DEFAULTS.DURATION);
-  // }
-  if (setDisableHover) {
-    gsap.delayedCall(ANIMATION_DEFAULTS.DURATION, () => setDisableHover(false));
-  }
+  timeline.to(
+    cardRef.rotation,
+    {
+      x: ROTATION_CONSTANTS.X_TABLE,
+      y: 0,
+      z: -ROTATION_CONSTANTS.X_TABLE,
+      duration: ANIMATION_DEFAULTS.DURATION,
+      ease: ANIMATION_DEFAULTS.EASE_OUT,
+    },
+    0
+  );
+
+  // We've removed the automatic rotation for voting phase as it's now handled separately
+
+  return timeline;
 };
 
 export const showCardCloserOnVotingPhase = (cardRef) => {

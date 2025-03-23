@@ -60,11 +60,14 @@ const Hand = forwardRef(
     const [inMenu, setInMenu] = useState(false);
     const [disableHover, setDisableHover] = useState(true);
     const [photoUrls, setPhotoUrls] = useState([]);
+    const [imageLoaded, setImageLoaded] = useState(false);
+    const [readyToRotate, setReadyToRotate] = useState(false);
 
     // Refs for DOM elements and animations
     const acceptButtonRef = useRef();
     const declineButtonRef = useRef();
     const cardsRef = useRef({});
+    const rotationTimeoutRef = useRef(null);
 
     // Setup context provides game state and player position information
     const {
@@ -139,12 +142,35 @@ const Hand = forwardRef(
       }
     }, [photoUrls]);
 
-    // Rotate selected card when entering voting phase
-    useEffect(() => {
-      if (votingPhase) {
-        rotateOnTable(cardsRef.current[selectedCard]);
+    // Handle image loading for the selected card
+    const handleImageLoaded = () => {
+      if (selectedCard !== -1) {
+        setImageLoaded(true);
       }
-    }, [votingPhase]);
+    };
+
+    // Rotate selected card when entering voting phase - but only after image is loaded
+    useEffect(() => {
+      if (votingPhase && selectedCard !== -1 && imageLoaded && !readyToRotate) {
+        // Clear any existing timeout
+        if (rotationTimeoutRef.current) {
+          clearTimeout(rotationTimeoutRef.current);
+        }
+
+        // Set a small delay to ensure the image is fully rendered
+        rotationTimeoutRef.current = setTimeout(() => {
+          rotateOnTable(cardsRef.current[selectedCard]);
+          setReadyToRotate(true);
+        }, 500);
+      }
+
+      // Cleanup timeout on unmount
+      return () => {
+        if (rotationTimeoutRef.current) {
+          clearTimeout(rotationTimeoutRef.current);
+        }
+      };
+    }, [votingPhase, selectedCard, imageLoaded]);
 
     // Recalculate card layout when position or rotation changes
     useEffect(() => {
@@ -159,6 +185,9 @@ const Hand = forwardRef(
     // Handle card click events - different behavior in voting vs. normal phase
     const handleCardClick = (index) => {
       if (votingPhase) {
+        // Only allow interactions after the card has been rotated
+        if (!readyToRotate) return;
+
         const currentCard = cardsRef.current[index];
         if (index === selectedCard && !votingSelectedCardRef) {
           setVotingSelectedCardPosition({
@@ -224,6 +253,10 @@ const Hand = forwardRef(
     // Add card to the table and update game state
     const handleAddCardOnTable = async (index, addAnimation = true) => {
       if (cardsRef.current[index]) {
+        // Reset image loaded state when adding new card
+        setImageLoaded(false);
+        setReadyToRotate(false);
+
         // If player is word maker, update the chosen word in game state
         if (isThisPlayerWordMaker && !chosenWord.length) {
           await updateGameWithData({ chosenWord: wordMakerText });
@@ -231,7 +264,8 @@ const Hand = forwardRef(
         }
 
         // Animate card to table and notify other players
-        addToTable(cardsRef.current[index], direction, setDisableHover);
+        // Don't rotate until image is loaded
+        addToTable(cardsRef.current[index], direction, setDisableHover, false);
         if (addAnimation)
           await addAnimationToOtherPlayers({
             type: "addOnTable",
@@ -296,8 +330,6 @@ const Hand = forwardRef(
       }
     };
 
-    // Click animations to be added
-
     // Render cards and action buttons based on current game state
     return (
       <>
@@ -320,8 +352,10 @@ const Hand = forwardRef(
             playerPosition={playerPosition}
             ref={(el) => assignRef(el, key)}
             votingPhase={votingPhase}
+            readyToRotate={readyToRotate}
             afterVoteData={afterVoteData}
             votingSelectedCardRef={votingSelectedCardRef}
+            onImageLoaded={handleImageLoaded}
           />
         ))}
         {/* Show action buttons only when a card is clicked and conditions allow selection */}
@@ -340,8 +374,8 @@ const Hand = forwardRef(
                 buttonSetupData={acceptButtonSetupData}
                 color="#8fda95"
                 text="accept"
-                textColor = "#226319"
-                strokeColor = "#02580e"
+                textColor="#226319"
+                strokeColor="#02580e"
               />
               <ActionButton
                 ref={declineButtonRef}
@@ -349,8 +383,8 @@ const Hand = forwardRef(
                 buttonSetupData={declineButtonSetupData}
                 color="#ff7e7e"
                 text="cancel"
-                textColor = "#740000"
-                strokeColor = "#680000"
+                textColor="#740000"
+                strokeColor="#680000"
               />
             </>
           )}
