@@ -39,52 +39,11 @@ const OtherPlayerHand = ({
   );
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Image loading tracking
-  const [loadedImages, setLoadedImages] = useState(new Set());
-  const [requiredImages, setRequiredImages] = useState(new Set());
-  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
-  const [cardsRotated, setCardsRotated] = useState(false);
-
   // Refs to track component state across renders and store card DOM references
   const cardsRef = useRef({});
   const previousRoundRef = useRef(round);
   const hasRefreshedCardsRef = useRef(false);
   const votingPhaseHandled = useRef(false);
-  const rotationTimeoutsRef = useRef([]);
-
-  // Handle image loading notification from Card component
-  const handleImageLoaded = (imageUrl) => {
-    if (!imageUrl) return;
-
-    setLoadedImages((prev) => {
-      const newSet = new Set(prev);
-      newSet.add(imageUrl);
-      return newSet;
-    });
-  };
-
-  // Check if all required images are loaded
-  useEffect(() => {
-    if (requiredImages.size > 0 && loadedImages.size > 0) {
-      // Check if all required images are now in the loadedImages set
-      let allLoaded = true;
-      requiredImages.forEach((url) => {
-        if (!loadedImages.has(url)) {
-          allLoaded = false;
-        }
-      });
-
-      if (allLoaded && requiredImages.size === loadedImages.size) {
-        console.log(
-          "All images are loaded:",
-          loadedImages.size,
-          "of",
-          requiredImages.size
-        );
-        setAllImagesLoaded(true);
-      }
-    }
-  }, [requiredImages, loadedImages]);
 
   // Process card animations based on animation type (table placement or return to hand)
   const handleAnimation = (animation, cardRef) => {
@@ -93,7 +52,6 @@ const OtherPlayerHand = ({
 
     if (type === "addOnTable") {
       setSelectedCards((prev) => [...prev, cardRef.current]);
-      // Only add to table but don't rotate - rotation happens after all images load
       addToTable(cardRef.current, direction, null, votingPhase);
     } else if (type === "backToHand") {
       const playerHand = otherPlayerHandsData.find(
@@ -138,78 +96,45 @@ const OtherPlayerHand = ({
       ) {
         return;
       }
-
       const selectedCardsData = await getOtherPlayerSelectedCards();
       if (selectedCardsData && selectedCardsData.length > 0) {
-        // Collect all image URLs that need to be loaded
-        const imageUrls = new Set();
-        selectedCardsData.forEach((cardData) => {
-          if (cardData.url) {
-            imageUrls.add(cardData.url);
-          }
-        });
-
-        // Set the required images
-        setRequiredImages(imageUrls);
-
-        // Now add cards to the table but don't rotate yet
         for (const cardData of selectedCardsData) {
           const playerPosition = players.find(
             (player) => player.playerUid === cardData.playerUid
-          )?.currentGameData?.position;
-
+          ).currentGameData.position;
           const playerHand = otherPlayerHandsData.find(
             (hand) => hand.playerPosition === playerPosition
           );
-
           if (playerHand) {
             const cardKey = `${playerHand.playerPosition}-${cardData.index}`;
             const cardRef = cardsRef.current[cardKey];
             if (cardRef?.current) {
               setSelectedCards((prev) => [...prev, cardRef.current]);
-              // Add to table but don't rotate yet - rotation happens after all images load
               addToTable(
                 cardRef.current,
                 playerHand.direction,
                 null,
-                false // Don't rotate during initial load
+                votingPhase
               );
+
+              if (votingPhase) {
+                rotateOnTable(cardRef.current);
+              }
             }
           }
         }
-      } else {
-        // If no cards, mark as all loaded
-        setAllImagesLoaded(true);
       }
 
       hasRefreshedCardsRef.current = true;
     };
 
     refreshOtherPlayersCards();
-  }, [isInitialized, otherPlayerHandsData, players]);
-
-  // Clean up rotation timeouts when component unmounts or round changes
-  useEffect(() => {
-    return () => {
-      // Clear any pending rotation timeouts
-      rotationTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
-      rotationTimeoutsRef.current = [];
-    };
-  }, [round]);
+  }, [isInitialized, otherPlayerHandsData, votingPhase]);
 
   // Reset voting phase flag when round changes
   useEffect(() => {
     if (previousRoundRef.current !== round) {
-      // Clear any pending rotation timeouts
-      rotationTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
-      rotationTimeoutsRef.current = [];
-
       votingPhaseHandled.current = false;
-      setCardsRotated(false);
-      setAllImagesLoaded(false);
-      setLoadedImages(new Set());
-      setRequiredImages(new Set());
-      previousRoundRef.current = round;
     }
   }, [round]);
 
@@ -240,70 +165,32 @@ const OtherPlayerHand = ({
 
         await returnAllCardsToHands();
         await fetchAnimations();
+        previousRoundRef.current = round;
       }
     };
 
     changeRound();
   }, [round, otherPlayerHandsData, selectedCards]);
 
-  // Handle voting phase transitions by randomizing cards
+  // Handle voting phase transitions by randomizing and rotating cards on table
   useEffect(() => {
     const handleVotingPhase = async () => {
-      if (votingPhase && !votingPhaseHandled.current) {
-        // Fetch animations and prepare cards
+      if (votingPhase && votingPhaseHandled.current !== true) {
         await fetchAnimations();
         const cards = await getOtherPlayerSelectedCards();
-
-        // Get all card URLs for tracking image loading
-        const imageUrls = new Set();
-        cards.forEach((cardData) => {
-          if (cardData.url) {
-            imageUrls.add(cardData.url);
-          }
-        });
-
-        // Set the required images
-        setRequiredImages(imageUrls);
-
-        // Randomize the cards
         setSelectedCardsFromDatabase(
           [...cards].sort(() => Math.random() - 0.5)
         );
-
-        // Mark that we've handled initial voting phase setup
+        selectedCards.forEach((selectedCard, index) => {
+          setTimeout(() => {
+            rotateOnTable(selectedCard);
+          }, (index + 1) * 500);
+        });
         votingPhaseHandled.current = true;
       }
     };
-
     handleVotingPhase();
   }, [votingPhase]);
-
-  // Handle card rotation ONLY after all images are loaded
-  useEffect(() => {
-    if (
-      votingPhase &&
-      allImagesLoaded &&
-      !cardsRotated &&
-      selectedCards.length > 0
-    ) {
-      // Clear any existing timeouts
-      rotationTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
-      rotationTimeoutsRef.current = [];
-
-      // Rotate each card with a delay
-      selectedCards.forEach((selectedCard, index) => {
-        const timeout = setTimeout(() => {
-          rotateOnTable(selectedCard);
-        }, (index + 1) * 500);
-
-        // Store timeout IDs for cleanup
-        rotationTimeoutsRef.current.push(timeout);
-      });
-
-      // Mark cards as rotated so we don't rotate them again
-      setCardsRotated(true);
-    }
-  }, [votingPhase, allImagesLoaded, selectedCards, cardsRotated]);
 
   // Fetch and process animations from Firebase
   const fetchAnimations = async () => {
@@ -422,10 +309,6 @@ const OtherPlayerHand = ({
                 (card) => card === cardsRef.current[cardKey]?.current
               );
               const currentIndex = isSelected ? selectedCardIndex++ : -1;
-              const cardUrl = isSelected
-                ? selectedCardsFromDatabase[currentIndex]?.url
-                : "";
-
               return (
                 <Card
                   key={cardKey}
@@ -435,7 +318,7 @@ const OtherPlayerHand = ({
                   setCurrentHovered={() => {}}
                   currentClicked={-1}
                   onCardClick={() => {
-                    if (isSelected && votingPhase && cardsRotated)
+                    if (isSelected && votingPhase)
                       handleCardClick(
                         cardKey,
                         cardIndex,
@@ -445,7 +328,11 @@ const OtherPlayerHand = ({
                   setCurrentClicked={() => {}}
                   position={cardLayout.position}
                   rotation={cardLayout.rotation}
-                  imageUrl={cardUrl}
+                  imageUrl={
+                    isSelected
+                      ? selectedCardsFromDatabase[currentIndex]?.url
+                      : ""
+                  }
                   zOffset={playerHand.cardsPosition?.[2] || 0}
                   playerPosition={playerHand.playerPosition}
                   direction={playerHand.direction}
@@ -453,12 +340,10 @@ const OtherPlayerHand = ({
                   ref={(el) =>
                     el && (cardsRef.current[cardKey] = { current: el })
                   }
-                  votingPhase={votingPhase && allImagesLoaded}
-                  readyToRotate={allImagesLoaded && cardsRotated}
+                  votingPhase={votingPhase}
                   afterVoteData={afterVoteData}
                   playerUid={playerHand.playerUid}
                   votingSelectedCardRef={votingSelectedCardRef}
-                  onImageLoaded={handleImageLoaded}
                 />
               );
             }

@@ -32,7 +32,6 @@ const Card = React.forwardRef(
       votingPhase,
       afterVoteData,
       votingSelectedCardRef,
-      onImageLoaded, // New prop to signal when an image is loaded
     },
     ref
   ) => {
@@ -40,7 +39,6 @@ const Card = React.forwardRef(
     const defaultTexture = useLoader(TextureLoader, "/DAIXIT/card.png");
     const reverse = useLoader(TextureLoader, "/DAIXIT/card.png");
     const [cardImage, setCardImage] = useState(defaultTexture);
-    const [imageLoaded, setImageLoaded] = useState(false); // Track if this specific card's image has loaded
 
     // References for the card mesh and action buttons
     const internalRef = useRef();
@@ -54,34 +52,11 @@ const Card = React.forwardRef(
     useEffect(() => {
       if (imageUrl) {
         const loader = new TextureLoader();
-        loader.load(
-          imageUrl,
-          (texture) => {
-            setCardImage(texture);
-            setImageLoaded(true);
-            // Notify parent that this image has loaded
-            if (onImageLoaded) {
-              onImageLoaded(imageUrl);
-            }
-          },
-          undefined, // onProgress callback
-          (error) => {
-            console.error("Error loading texture:", error);
-            // Still trigger loaded to avoid blocking the game if an image fails
-            setImageLoaded(true);
-            if (onImageLoaded) {
-              onImageLoaded(imageUrl);
-            }
-          }
-        );
-      } else {
-        // If no image URL, consider it "loaded" right away
-        setImageLoaded(true);
-        if (onImageLoaded && imageUrl !== "") {
-          onImageLoaded("");
-        }
+        loader.load(imageUrl, (texture) => {
+          setCardImage(texture);
+        });
       }
-    }, [imageUrl, onImageLoaded]);
+    }, [imageUrl]);
 
     // Animation for when the card is hovered
     // Different hover animations based on the card's direction
